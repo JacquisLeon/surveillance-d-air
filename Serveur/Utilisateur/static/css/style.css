@@ -1,30 +1,44 @@
-
 body { 
     font-family: Arial, sans-serif;
     background-color: #f4f4f9;
     color: #333;
 }
+
 .container {
-    max-width: 600px;
+    max-width: 1200px; /* Augmenté pour avoir de l'espace pour les deux graphiques */
     margin: 50px auto;
     padding: 20px;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+
 h1 {
     text-align: center;
 }
+
+.charts-container {
+    display: flex;
+    justify-content: space-between; /* Espace les deux graphiques également */
+    align-items: flex-start; /* Aligne les graphiques au début verticalement */
+}
+
+.chart-wrapper {
+    flex: 1;
+    margin: 0 10px;
+    text-align: center;
+}
+
+canvas {
+    width: 100% !important;
+    height: auto;
+}
+
 .data {
     margin-top: 20px;
 }
+
 .data div {
     margin: 10px 0;
     font-size: 1.2em;
-}
-
-
-canvas {
-    width: 20%;
-    height: 100px;
 }
