@@ -1,0 +1,52 @@
+<!--{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Données du Capteur DHT22</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}"> 
+</head>
+<body>
+    <div class="container">
+        <h1>Données du Capteur DHT22</h1>
+        <div class="data">
+            <div><strong>Température :</strong> {{ dht_data.temperature }} °C</div>
+            <div><strong>Humidité :</strong> {{ dht_data.humidity }} %</div>
+        </div>
+    </div>
+</body>
+</html>
+-->
+
+<!-- Utilisateur/templates/affichage.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affichage des données DHT22</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const socket = new WebSocket('ws://' + window.location.host + '/ws/dht_data/');
+    
+            socket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                document.getElementById('temperature').textContent = data.temperature + '°C';
+                document.getElementById('humidity').textContent = data.humidity + '%';
+            };
+    
+            socket.onclose = function(e) {
+                console.error('WebSocket closed unexpectedly');
+            };
+        });
+    </script>
+    
+</head>
+<body>
+    <h1>Affichage des données DHT22</h1>
+    <p>Température : <span id="temperature">--</span></p>
+    <p>Humidité : <span id="humidity">--</span></p>
+</body>
+</html>

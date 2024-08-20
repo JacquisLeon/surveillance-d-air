@@ -1,0 +1,121 @@
+
+<!--
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affichage des données</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/jquery.js' %}"></script>
+    <script src="{% static 'js/scripts.js' %}"></script>
+
+</head>
+<body>
+    <div class="container">
+        <h1>Données DHT22</h1>
+        <div class="data">
+            <p>Température : <span id="temperature">--</span></p>
+            <p>Humidité : <span id="humidity">--</span></p>
+        </div>
+    </div>
+</body>
+</html>
+ -->
+ {% load static %}
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!--<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
+     <link rel="stylesheet" href="{% static 'css\style.css' %}">
+    <script src="{% static 'js\chart.umd.js' %}"></script>
+    <script src="{% static 'js\jquery.js' %}"></script>
+   
+</head>
+<body>
+    <div id="container">
+        <h1>Temperature Dashboard</h1>
+        <p><strong>Température : <span id="temperature">--</span></strong></p>
+        <p><strong>Humidité : <span id="humidity">--</span></strong></p>
+        <canvas id="temperatureChart" width="400" height="200"></canvas>
+        
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            var ctx = $('#temperatureChart')[0].getContext('2d');
+            var temperatureChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],  // Les labels des axes X (ex: heures, jours, etc.)
+                    datasets: [{
+                        label: 'Température',
+                        data: [],   // Les données de température
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Heure'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Température (°C)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            function fetchData() {
+                $.ajax({
+                    url: "{% url 'get_data' %}",  // Assure-toi que cette URL est correcte
+                    method: 'GET',
+                    success: function(data) {
+                       
+                        // Ajoute les nouvelles données
+                        var now = new Date();
+                        var time = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+                        
+                        temperatureChart.data.labels.push(time);
+                        temperatureChart.data.datasets[0].data.push(data.temperature);
+
+                        // Limite le nombre de points pour ne pas surcharger le graphique
+                        if (temperatureChart.data.labels.length > 10) {
+                            temperatureChart.data.labels.shift();
+                            temperatureChart.data.datasets[0].data.shift();
+                        }
+                        $('#temperature').text(data.temperature + '°C');//lecture temperature
+                        $('#humidity').text(data.humidity + '%');//lecture humidité
+                        temperatureChart.update();
+                    },
+                    error: function() {
+                        console.log('Erreur lors de la récupération des données');
+                    }
+                });
+            }
+
+            // Appel initial pour obtenir les données immédiatement
+            fetchData();
+
+            // Appel périodique pour mettre à jour les données
+            setInterval(fetchData, 2000); // Met à jour toutes les 5 secondes
+        });
+    </script>
+   
+</body>
+</html>
