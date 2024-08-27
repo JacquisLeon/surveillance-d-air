@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Utilisateur</title>
+    <script type="text/javascript"></script>
+    <link rel="stylesheet" href="{% static 'Utl\css\utlogin.css' %}">
+    <style>
+
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <form method="post">
+        <h3 >UTILISATEUR</h3>
+        {% csrf_token %}
+        <label for="username" >Nom d'utilisateur</label>
+        <input type="text" placeholder="Tapez votre nom d'utilisateur ici" id="username" name="name">
+        
+        <label for="password">Mot de passe</label>
+        <input type="password" placeholder="Tapez votre mot de passe ici" name="pass">
+
+        <button type="submit">Se connecter</button>
+
+        <a href="#" style="line-height: 50px;">Mot de passe oublier</a>
+     {% if messages %}
+        {% for message in messages %}
+        <p id="mssg">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    </form>
+</body>
+</html>

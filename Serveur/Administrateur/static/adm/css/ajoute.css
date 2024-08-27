@@ -1,0 +1,83 @@
+form {
+    height: auto;
+    width: 100%;
+    background-color: rgba(255,255,255,0.13);
+    position: absolute;
+    transform: translate(-50%,-50%);
+    padding: 50px 35px;
+    top: 50%;
+    left: 50%;
+    /* cadre
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+    border: 2px solid rgba(255,255,255,0.1);
+    box-shadow: 0 0 2px rgba(8,7,16,0.6);
+    */
+}
+
+button {
+    margin-top: 30px;
+    width: 100%;
+    background-color: #e30eca;
+    color: #ffffff;
+    padding: 15px 0;
+    font-size: 25px;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+input {
+    display: block;
+    height: 50px;
+    width: 100%;
+    background-color: rgba(255,255,255,0.07);
+    border-radius: 3px;
+    margin-top: 8px;
+    font-size: 18px;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: 300;
+}
+
+label {
+    display: block;
+    margin-top: 30px;
+    font-size: 20px;
+    font-weight: bold;
+    margin-left: 10px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+/* Flexbox layout for side-by-side alignment */
+form .flex-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+form .flex-container .col {
+    width: 40%; /* Adjust as needed */
+}
+form .flex-container .col.left {
+    text-align: left;
+}
+form .flex-container .col.right {
+    margin-left: 50px;
+}
+
+h4{
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
+}
+
+
+/* Messages */
+.success {
+    color: green;
+    font-weight: bold;
+}
+
+.error {
+    color: red;
+    font-weight: bold;
+}

@@ -1,0 +1,138 @@
+
+nav {
+    background-color: #2699dc;
+    width: 100%;
+    height: 70px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px; /* Ajoutez un peu de padding si nécessaire */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.logo {
+    width: 120px;
+}
+h3{
+   
+    color: #fff;
+    font-family: 'ALGERIAN', Times, serif;
+}
+
+.user{
+    width: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-left: 50px;
+}
+
+nav ul {
+    flex-grow: 1;
+    display: flex;
+    justify-content: right; /* Centrer les éléments de la liste */
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-weight: bold;
+}
+
+nav ul li {
+    margin: 0 15px; /* Ajustez selon vos préférences */
+}
+/**** sous liste de l'utilisateur*****/
+
+nav ul li ul{
+    position: absolute;
+    display: none;
+    background-color: #2699dc;
+    border-radius: 0px 0px 5px 5px;
+    top: 60px;
+    width: auto;
+}
+nav ul li:hover ul{/*afficher sous titre d'utilisateur*/
+    display: block;
+}
+nav ul li ul li{
+    line-height: 2;
+    width: 100%;
+    border-radius: 5px;
+    padding: 5px;
+}
+nav ul li ul li a{
+    padding: 0px 10px;
+    font-weight: bold;
+}
+nav ul li ul li a:hover{
+    background-color: #acbbae;
+    width: 100%;
+}
+/*****************/
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    padding: 14px 20px;
+}
+nav ul li a:hover {
+    background-color: #acbbae
+}
+
+/*************SUB-MENU******************/
+
+.sub-menu-wrap{
+    position: absolute;
+    top: 100%;
+    right: 1%;
+    width: 320px;
+    max-height: 0px;
+    overflow: hidden;
+    transform: max-height 0.5s
+}
+.sub-menu-wrap.open-menu{
+    max-height: 455px;
+}
+.sub-menu{
+    background: #fff;
+    padding: 20px;
+    margin: 10px;
+    box-shadow: 0 0 10px rgba(8,7,16,0.6);
+    border-radius: 5%;
+}
+.user-info{
+    display: flex;
+    align-items: center;
+}
+.user-info h4{
+    font-weight: 500;
+}
+.user-info img{
+    width: 60px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.sub-menu-link{
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #000000;
+    margin: 12px 0;
+}
+.sub-menu-link p{
+    width: 100%;
+}
+.sub-menu-link img{
+    width: 40px;
+    background: #e5e5e5;
+    border-radius: 50%;
+    padding: 8px;
+    margin-right: 15px;
+}
+.sub-menu-link:hover p{
+    font-weight: 600;
+    background-color: rgb(25, 156, 195);
+    border-radius: 2px;
+}

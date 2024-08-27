@@ -1,0 +1,36 @@
+{% extends 'admini\base.html' %}
+
+{% block content %}    
+    <div id="container">
+        <h4 class="text-center alert text-bg-warning">Liste des utilisateurs</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Nom d'utilisateur</th>
+                    <th scope="col">Email</th>
+                    <th scope="col" id="col_pass">Mot de passe</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in all_data %}
+                <tr>
+                    <th scope="row">{{ data.id }}</th>
+                    <td >{{ data.username }}</td>
+                    <td>{{ data.email }}</td>
+                    <td id="col_pass">{{ data.password }}</td>
+                    <td>
+                        <a href="#" class="btn btn-warning">Modifier</a>
+                        <a href="#" class="btn btn-danger">Suprimer</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3">Aucune donnée disponible</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock content %}

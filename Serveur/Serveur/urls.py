@@ -16,11 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from Utilisateur import urls as log_url
+from Utilisateur import urls as util_url
+from Administrateur import urls as admin_url
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include(log_url)),  # Affiche le template
-    #path('', include(log_url)),
-  
+    path('', include(util_url)),  # Affiche le template
+    path('admini/', include(admin_url)),
 ]

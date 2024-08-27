@@ -1,0 +1,46 @@
+{% extends 'admini/base.html' %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-sm-4">
+         <form method="POST">
+           <h4 class="text-center alert text-bg-warning">AJOUTER NOUVEAU UTULISATEUR</h4>            
+           {% csrf_token %}
+           
+           <div class="flex-container">
+                <div class="col left">
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" placeholder="Tapez ici son nom d'utilisateur" name="name">
+                    <label for="email">Email</label>
+                    <input type="email" placeholder="Tapez ici son adresse email" name="email">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" placeholder="Tapez ici son mot de passe" id="password" name="pass">
+                </div>
+
+                <div class="col right">
+                <!--    <label for="nom">Nom</label>
+                    <input type="text" placeholder="Tapez ici son nom" name="nom">
+                    <label for="prenom">Prenom</label>
+                    <input type="text" placeholder="Tapez ici son prénom" name="prenom">
+                    <label for="password">Confirmer le mot de passe</label>
+                    <input type="password" placeholder="Confirmer son mot de passe" id="password" name="passe">
+                -->
+                </div>
+            </div>
+            
+            <button type="submit">Enregistrer</button>
+            {% if messages %}
+            {% for message in messages %}
+                <p id="mssg" class="{% if message.tags == 'success' %}success
+                                        {% elif message.tags == 'error' %}error
+                                        {% endif %}">
+                    {{ message }}
+                </p>
+            {% endfor %}
+        {% endif %}
+        
+        </form>  
+    </div>
+</div>
+{% endblock %}

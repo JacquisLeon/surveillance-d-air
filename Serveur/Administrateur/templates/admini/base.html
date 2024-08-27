@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="{% static 'Utl\css\bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'adm\css\ajoute.css' %}">
+        <link rel="stylesheet" href="{% static 'adm\css\menu.css' %}">
+        <link rel="stylesheet" href="{% static 'adm\css\liste_util.css' %}">
+    </head>
+<body>
+  
+    <script src="{% static 'Utl\js\chart.umd.js' %}"></script>
+    <script src="{% static 'Utl\js\jquery.js' %}"></script>
+    {% csrf_token %}
+
+        <nav>
+           <!-- <img src="#" alt="Logo" class="logo">-->
+            <h3>SURVEILLANCE DE QUALITER DE L'AIR</h3>
+            <ul>
+                <li><a href="#">Accueil</a></li>
+                <li><a href="#">Utilisateurs <i class="fas fa-caret-down"></i></a>
+                    <!--<div class="dropdown-menu">-->
+                        <ul>
+                            <li><a href="{% url 'liste' %}">Liste</a></li>
+                            <li><a href="{% url 'ajouter' %}">Créer nouveau</a></li>
+                        </ul>
+                   <!--</div>--> 
+                </li>
+                <li><a href="#">Historique</a></li>
+            </ul>
+            <img src="{% static 'adm\image\admin.jpg' %}" alt="user_img" class="user" onclick="toggleMenu()">
+
+            <div class="sub-menu-wrap" id="subMenu">
+                <div class="sub-menu">
+                    <div class="user-info">
+                        <img src="{% static 'adm\image\admin.jpg' %}">
+                        <h4>Jacquis Léon</h4>
+                    </div>
+                    <hr>
+
+                    <a href="#" class="sub-menu-link">
+                        <img src="#" alt="img">
+                        <p>Profils</p>
+                        <span></span>
+                    </a>
+                    <a href="#" class="sub-menu-link">
+                        <img src="#" alt="img">
+                        <p>Parametre</p>
+                        <span></span>
+                    </a>
+                    <a href="#" class="sub-menu-link">
+                        <img src="#" alt="img">
+                        <p>A propos</p>
+                        <span></span>
+                    </a>
+                    <a href="{% url 'login_admin' %}" class="sub-menu-link">
+                        <img src="#" alt="img">
+                        <p>Deconnexion</p>
+                        <span></span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+
+    <main>
+        {% block content %}
+        <!-- Contenu spécifique de chaque page -->
+        {% endblock %}
+    </main>
+
+    <script>
+        let subMenu = document.getElementById("subMenu");
+        function toggleMenu(){
+            subMenu.classList.toggle("open-menu");
+        }
+    </script>
+</body>
+</html>
