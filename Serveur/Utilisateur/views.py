@@ -31,7 +31,7 @@ def receive_data(request):
             return JsonResponse({'status': 'error', 'message': 'Invalid data format'}, status=400)
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
-@login_required(login_url='login') #verroullage
+@login_required(login_url='login_util') #verroullage
 def show_data(request):
     # Récupérer les dernières données de la base de données
     latest_data = DHTData.objects.last()
@@ -59,7 +59,7 @@ def get_data(request):
         }
     return JsonResponse(data)
 
-@login_required(login_url='login') #verroullage
+@login_required(login_url='login_util') #verroullage
 def display_data(request):
     # Récupérer toutes les données de la base de données
     all_data = DHTData.objects.all().order_by('-timestamp')
@@ -87,7 +87,7 @@ def logout_util(request):
 
 
 
-@login_required(login_url='login')
+@login_required(login_url='login_util')
 def modifier_profil(request):
     utilisateur = request.user  # récupérer l'utilisateur connecté
      # Récupérer le profil de l'utilisateur connecté

@@ -6,7 +6,6 @@
     <script type="text/javascript"></script>
     <link rel="stylesheet" href="{% static 'Utl/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'Utl/css/graphique.css' %}">
-    <link rel="stylesheet" href="{% static 'Utl/css/page.css' %}">
     <link rel="stylesheet" href="{% static 'adm/css/menu.css' %}">
 </head>
 <body>
@@ -25,14 +24,14 @@
         <img src="{% if profil.image %}
         {{ profil.image.url }}
         {% else %}
-        {% static 'Utl/image/ea2i.jpg' %}
+        {% static 'Utl/image/user.png' %}
         {% endif %}" alt="user_img" class="user" onclick="toggleMenu()">
 
         <div class="sub-menu-wrap" id="subMenu">
             <div class="sub-menu">
                 <div class="user-info">
                     <!-- Affichage de l'image de profil -->
-                    <img src="{% if profil.image %}{{ profil.image.url }}{% else %}{% static 'Utl/image/ea2i.jpg' %}{% endif %}" alt="Photo de profil">
+                    <img src="{% if profil.image %}{{ profil.image.url }}{% else %}{% static 'Utl/image/user.png' %}{% endif %}" alt="Photo de profil">
                     <h4>{{ utilisateur.username }}</h4>
                 </div>
                 <hr>
@@ -42,11 +41,6 @@
                     <span></span>
                 </a>
           
-                <a href="#" class="sub-menu-link">
-                    <img src="#" alt="img">
-                    <p>A propos</p>
-                    <span></span>
-                </a>
                 <a href="{% url 'login_util' %}" class="sub-menu-link">
                     <img src="#" alt="img">
                     <p>Deconnexion</p>

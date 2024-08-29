@@ -6,7 +6,6 @@
         <link rel="stylesheet" href="{% static 'Utl\css\bootstrap.min.css' %}">
         <link rel="stylesheet" href="{% static 'adm\css\menu.css' %}">
         
-        <link rel="stylesheet" href="{% static 'Utl\css\graphique.css' %}">
     </head>
 <body>
   
@@ -27,33 +26,33 @@
                         </ul>
                    <!--</div>--> 
                 </li>
-                <li><a href="#">Historique</a></li>
+                <li><a href="{% url 'histo' %}">Historique</a></li>
             </ul>
-            <img src="{% static 'adm\image\admin.jpg' %}" alt="user_img" class="user" onclick="toggleMenu()">
+            <img src="{% if user_profile.image %}
+            {{ user_profile.image.url }}
+            {% else %}
+            {% static 'adm/image/image.jpg' %}
+            {% endif %}" alt="user_img" class="user" onclick="toggleMenu()">
+
 
             <div class="sub-menu-wrap" id="subMenu">
                 <div class="sub-menu">
                     <div class="user-info">
-                        <img src="{% static 'adm\image\admin.jpg' %}">
-                        <h4>{{administrateur.username}}</h4>
+                        <img src="{% if user_profile.image %}
+            {{ user_profile.image.url }}
+            {% else %}
+            {% static 'adm/image/image.jpg' %}
+            {% endif %}" alt="user_img">
+                        <h4>{{ administrateur.username }}</h4>
                     </div>
                     <hr>
 
-                    <a href="#" class="sub-menu-link">
+                    <a href="{% url 'profil_admin' %}" class="sub-menu-link">
                         <img src="#" alt="img">
                         <p>Profils</p>
                         <span></span>
                     </a>
-                    <a href="#" class="sub-menu-link">
-                        <img src="#" alt="img">
-                        <p>Parametre</p>
-                        <span></span>
-                    </a>
-                    <a href="#" class="sub-menu-link">
-                        <img src="#" alt="img">
-                        <p>A propos</p>
-                        <span></span>
-                    </a>
+               
                     <a href="{% url 'login_admin' %}" class="sub-menu-link">
                         <img src="#" alt="img">
                         <p>Deconnexion</p>

@@ -56,13 +56,13 @@ form .flex-container {
 }
 
 form .flex-container .col {
-    width: 40%; /* Adjust as needed */
+    width: 20%; /* Adjust as needed */
 }
 form .flex-container .col.left {
     text-align: left;
 }
 form .flex-container .col.right {
-    margin-left: 500px;
+    margin-left: 300px;
 }
 
 form .flex-container .col.right img{

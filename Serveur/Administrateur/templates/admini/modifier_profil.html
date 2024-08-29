@@ -1,0 +1,38 @@
+{% extends 'admini/base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'adm\css\modifier.css' %}">
+
+<form method="POST" enctype="multipart/form-data">
+    <h4 class="text-center alert text-bg-warning">Modifier le Profil Administrateur</h4>
+
+    {% csrf_token %}
+    <div class="flex-container">
+        <div class="col left">
+        <label for="username">Nom d'utilisateur :</label>
+        <input type="text" id="username" name="username" value="{{ user.username }}">
+        <label for="email">Email :</label>
+        <input type="email" id="email" name="email" value="{{ user.email }}">
+        <label for="password">Mot de passe :</label>
+        <input type="text" name="password" placeholder="Laisser vide pour conserver l'ancien mot de passe" required>
+    
+    </div>
+    
+    <div class="col right">
+        <div style="display: flex; align-items: center;">
+            <div>
+        <label for="image">Photo de profil :</label>
+       
+        {% if user.userprofile.image %}
+            <img src="{{ user.userprofile.image.url }}" alt="Image de profil actuelle">
+        {% endif %}
+        <input type="file" id="image" name="image" accept="image/*">
+            </div>
+        </div>
+    </div>
+    
+</div>
+<button type="submit">Mettre à jour</button>
+</form>
+
+{% endblock %}

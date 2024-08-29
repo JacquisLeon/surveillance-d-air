@@ -1,13 +1,15 @@
 from django.urls import path
-from .views import ajouteUtil,login_admin,liste_util,acceil_admin,supre_util,modifier_util
+from . import views
 #from django.conf import settings
 #from django.conf.urls.static import static
 
 urlpatterns = [
-   path('ajouter/', ajouteUtil, name='ajouter'), 
-   path('login/', login_admin, name='login_admin'),
-   path('liste_util/', liste_util, name='liste'),
-   path('acceil_admin/', acceil_admin, name='acceil'),
-   path('suprimer/<int:user_id>/', supre_util, name='suprimer'),
-   path('modifier/<int:user_id>/', modifier_util, name='modifier'),
+   path('ajouter/', views.ajouteUtil, name='ajouter'), 
+   path('login/', views.login_admin, name='login_admin'),
+   path('liste_util/', views.liste_util, name='liste'),
+   path('acceil_admin/', views.acceil_admin, name='acceil'),
+   path('suprimer/<int:user_id>/', views.supre_util, name='suprimer'),
+   path('modifier/<int:user_id>/', views.modifier_util, name='modifier'),
+   path('modifier-admin/', views.modifier_profil_admin, name='profil_admin'),
+   path('histo-admin/', views.historique_admin, name='histo'),
 ]# + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

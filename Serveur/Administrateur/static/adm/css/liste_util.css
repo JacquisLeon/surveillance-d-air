@@ -17,7 +17,7 @@ td:hover{
     background-color: rgb(201, 195, 206);
 }
 #col_pass{
-    width: 30%;
+    width: 20%;
     word-wrap: break-word; /* couper le texte si nécessaire*/
     overflow: hidden; /*cache le texte qui depasse*/
     white-space: nowrap; /*Empeche le texte de s'etendre plusieurs ligne*/
