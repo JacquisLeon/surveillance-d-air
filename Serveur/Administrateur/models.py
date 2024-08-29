@@ -1,13 +1,5 @@
-from django.db import models
-"""
-# Create your models here.
-class client(models.Model):
-    nom = models.CharField(max_length=100)
-    prenom = models.CharField(max_length=100)
-    email = models.CharField(max_length=100)
-    motdepasse = models.CharField(max_length=10)
-    """
-    
+# models.py
+
 from django.db import models
 from django.contrib.auth.models import User
 

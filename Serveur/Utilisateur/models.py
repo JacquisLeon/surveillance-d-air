@@ -15,3 +15,4 @@ class Client(models.Model):
     nom = models.CharField(max_length=100)
     email = models.EmailField(null=True)
     password = models.CharField(max_length=10)
+    

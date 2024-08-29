@@ -4,9 +4,9 @@
     <head>
         <meta charset="UTF-8">
         <link rel="stylesheet" href="{% static 'Utl\css\bootstrap.min.css' %}">
-        <link rel="stylesheet" href="{% static 'adm\css\ajoute.css' %}">
         <link rel="stylesheet" href="{% static 'adm\css\menu.css' %}">
-        <link rel="stylesheet" href="{% static 'adm\css\liste_util.css' %}">
+        
+        <link rel="stylesheet" href="{% static 'Utl\css\graphique.css' %}">
     </head>
 <body>
   
@@ -18,7 +18,7 @@
            <!-- <img src="#" alt="Logo" class="logo">-->
             <h3>SURVEILLANCE DE QUALITER DE L'AIR</h3>
             <ul>
-                <li><a href="#">Accueil</a></li>
+                <li><a href="{% url 'acceil' %}">Accueil</a></li>
                 <li><a href="#">Utilisateurs <i class="fas fa-caret-down"></i></a>
                     <!--<div class="dropdown-menu">-->
                         <ul>
@@ -35,7 +35,7 @@
                 <div class="sub-menu">
                     <div class="user-info">
                         <img src="{% static 'adm\image\admin.jpg' %}">
-                        <h4>Jacquis Léon</h4>
+                        <h4>{{administrateur.username}}</h4>
                     </div>
                     <hr>
 

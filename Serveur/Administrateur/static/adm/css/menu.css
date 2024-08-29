@@ -50,7 +50,7 @@ nav ul li ul{
     display: none;
     background-color: #2699dc;
     border-radius: 0px 0px 5px 5px;
-    top: 60px;
+    top: 55px;
     width: auto;
 }
 nav ul li:hover ul{/*afficher sous titre d'utilisateur*/
@@ -109,7 +109,7 @@ nav ul li a:hover {
     font-weight: 500;
 }
 .user-info img{
-    width: 60px;
+    width: 100px;
     border-radius: 50%;
     margin-right: 15px;
 }

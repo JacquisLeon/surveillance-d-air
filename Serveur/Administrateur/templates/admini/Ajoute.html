@@ -1,10 +1,13 @@
 {% extends 'admini/base.html' %}
+{% load static %}
 
 {% block content %}
 
+<link rel="stylesheet" href="{% static 'adm\css\ajoute.css' %}">
+
 <div class="row">
     <div class="col-sm-4">
-         <form method="POST">
+         <form method="POST" enctype="multipart/form-data">
            <h4 class="text-center alert text-bg-warning">AJOUTER NOUVEAU UTULISATEUR</h4>            
            {% csrf_token %}
            
@@ -15,7 +18,7 @@
                     <label for="email">Email</label>
                     <input type="email" placeholder="Tapez ici son adresse email" name="email">
                     <label for="password">Mot de passe</label>
-                    <input type="password" placeholder="Tapez ici son mot de passe" id="password" name="pass">
+                    <input type="text" placeholder="Tapez ici son mot de passe" id="password" name="pass">
                 </div>
 
                 <div class="col right">
@@ -26,6 +29,8 @@
                     <label for="password">Confirmer le mot de passe</label>
                     <input type="password" placeholder="Confirmer son mot de passe" id="password" name="passe">
                 -->
+                <label for="image">Photo de profil</label>
+                <input type="file" name="image" accept="image/*">
                 </div>
             </div>
             

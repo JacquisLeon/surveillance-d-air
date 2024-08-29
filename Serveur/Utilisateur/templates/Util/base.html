@@ -1,52 +1,47 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <script type="text/javascript"></script>
-        <link rel="stylesheet" href="{% static 'Utl\css\bootstrap.min.css' %}">
-        <link rel="stylesheet" href="{% static 'Utl\css\graphique.css' %}">
-        <link rel="stylesheet" href="{% static 'Utl\css\page.css' %}">
-        <link rel="stylesheet" href="{% static 'adm\css\menu.css' %}">
-       
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript"></script>
+    <link rel="stylesheet" href="{% static 'Utl/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'Utl/css/graphique.css' %}">
+    <link rel="stylesheet" href="{% static 'Utl/css/page.css' %}">
+    <link rel="stylesheet" href="{% static 'adm/css/menu.css' %}">
+</head>
 <body>
-     <script src="{% static 'Utl\js\chart.umd.js' %}"></script>
-     <script src="{% static 'Utl\js\jquery.js' %}"></script>
+    <script src="{% static 'Utl/js/chart.umd.js' %}"></script>
+    <script src="{% static 'Utl/js/jquery.js' %}"></script>
 
-     <nav>
-        <img src="#" alt="Logo" class="logo">
+    <nav>
+                   <!-- <img src="#" alt="Logo" class="logo">-->
+                   <h3>SURVEILLANCE DE QUALITER DE L'AIR</h3>
         <ul>
             <li><a href="{% url 'show_data' %}">Graphique</a></li>
-            <li><a href="{% url 'historique' %}">Historique <i class="fas fa-caret-down"></i></a>
-                <div class="dropdown-menu">
-                    <ul>
-                        <li><a href="#">Liste</a></li>
-                        <li><a href="#">Ajouter nouveau</a></li>
-                    </ul>
-                </div>
-            </li>
+            <li><a href="{% url 'historique' %}">Historique <i class="fas fa-caret-down"></i></a></li>
         </ul>
-        <img src="{% static 'Utl\image\user.png' %}" alt="user_img" class="user" onclick="toggleMenu()">
+
+        <!-- Affichage de l'image de l'utilisateur connecté -->
+        <img src="{% if profil.image %}
+        {{ profil.image.url }}
+        {% else %}
+        {% static 'Utl/image/ea2i.jpg' %}
+        {% endif %}" alt="user_img" class="user" onclick="toggleMenu()">
 
         <div class="sub-menu-wrap" id="subMenu">
             <div class="sub-menu">
                 <div class="user-info">
-                    <img src="{% static 'Utl\image\user.png' %}">
-                    <h3>Jacquis Léon</h3>
+                    <!-- Affichage de l'image de profil -->
+                    <img src="{% if profil.image %}{{ profil.image.url }}{% else %}{% static 'Utl/image/ea2i.jpg' %}{% endif %}" alt="Photo de profil">
+                    <h4>{{ utilisateur.username }}</h4>
                 </div>
                 <hr>
-
-                <a href="#" class="sub-menu-link">
+                <a href="{% url 'P_modifier' %}" class="sub-menu-link">
                     <img src="#" alt="img">
                     <p>Profils</p>
                     <span></span>
                 </a>
-                <a href="#" class="sub-menu-link">
-                    <img src="#" alt="img">
-                    <p>Parametre</p>
-                    <span></span>
-                </a>
+          
                 <a href="#" class="sub-menu-link">
                     <img src="#" alt="img">
                     <p>A propos</p>
@@ -60,14 +55,14 @@
             </div>
         </div>
     </nav>
-<script>
+
+    <script>
         let subMenu = document.getElementById("subMenu");
         function toggleMenu(){
             subMenu.classList.toggle("open-menu");
         }
-</script>
-{% block content %}
-
-{% endblock content %}
+    </script>
+    {% block content %}
+    {% endblock content %}
 </body>
 </html>

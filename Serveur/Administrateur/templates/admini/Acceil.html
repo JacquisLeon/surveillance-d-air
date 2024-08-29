@@ -1,0 +1,142 @@
+
+{% extends 'admini\base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+
+
+<div id="container">
+    <h1 class="text-center alert text-bg-success">Affichage des données actuelle</h1>
+    <div class="charts-container">
+        <!-- Sous-conteneur pour la température -->
+        <div class="chart-wrapper">
+            <p><strong>Température : <span id="temperature">--</span></strong></p>
+            <canvas id="temperatureChart" width="400" height="200"></canvas>
+        </div>
+
+        <!-- Sous-conteneur pour l'humidité -->
+        <div class="chart-wrapper">
+            <p><strong>Humidité : <span id="humidity">--</span></strong></p>
+            <canvas id="humidityChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+
+<script>
+   $(document).ready(function() {
+var tempCtx = $('#temperatureChart')[0].getContext('2d');
+var humCtx = $('#humidityChart')[0].getContext('2d');
+
+var temperatureChart = new Chart(tempCtx, {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [{
+            label: 'Température',
+            data: [],
+            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            fill: true
+        }]
+    },
+    options: {
+        scales: {
+            x: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Heure'
+                }
+            },
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Température (°C)'
+                }
+            }
+        }
+    }
+});
+
+var humidityChart = new Chart(humCtx, {
+    type: 'bar',  // Vous pouvez utiliser 'line' ou 'bar' selon votre préférence
+    data: {
+        labels: [],
+        datasets: [{
+            label: 'Humidité',
+            data: [],
+            borderColor: 'rgba(75, 192, 235, 1)',
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            fill: true
+        }]
+    },
+    options: {
+        scales: {
+            x: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Heure'
+                }
+            },
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Humidité (%)'
+                }
+            }
+        }
+    }
+});
+
+function fetchData() {
+    $.ajax({
+        url: "{% url 'get_data' %}",  // Assure-toi que cette URL est correcte
+        method: 'GET',
+        success: function(data) {
+            var now = new Date();
+            var time = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+            
+            // Mettre à jour les données de température
+            temperatureChart.data.labels.push(time);
+            temperatureChart.data.datasets[0].data.push(data.temperature);
+
+            // Mettre à jour les données d'humidité
+            humidityChart.data.labels.push(time);
+            humidityChart.data.datasets[0].data.push(data.humidity);
+
+            // Limiter le nombre de points pour les deux graphiques
+            if (temperatureChart.data.labels.length > 10) {
+                temperatureChart.data.labels.shift();
+                temperatureChart.data.datasets[0].data.shift();
+                humidityChart.data.labels.shift();
+                humidityChart.data.datasets[0].data.shift();
+            }
+
+            $('#temperature').text(data.temperature + '°C');
+            $('#humidity').text(data.humidity + '%');
+
+            temperatureChart.update();
+            humidityChart.update();
+        },
+        error: function() {
+            console.log('Erreur lors de la récupération des données');
+        }
+    });
+}
+
+// Appel initial pour obtenir les données immédiatement
+fetchData();
+
+// Appel périodique pour mettre à jour les données
+setInterval(fetchData, 2000); // Met à jour toutes les 2 secondes
+});
+
+</script>
+
+{% endblock content %}
