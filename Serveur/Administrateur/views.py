@@ -191,3 +191,14 @@ def modifier_profil_admin(request):
     return render(request, 'admini/modifier_profil.html', {'user': user,
                                                            'administrateur': user,
                                                            'user_profile': user_profile,})
+
+
+#suprimer données selectionner de l'historique
+#@login_required(login_url='login_util')
+def delete_selected(request):
+    if request.method == 'POST':
+        item_ids = request.POST.getlist('items_to_delete')
+        models.DHTData.objects.filter(id__in=item_ids).delete()
+        messages.success(request, "Données sélectionnées supprimées avec succès!")
+        return redirect('histo')  # Redirige vers la vue d'affichage des données
+    return redirect('histo')

@@ -1,41 +1,79 @@
-{% extends 'admini\base.html' %}
+{% extends 'admini/base.html' %}
 
 {% block content %}    
 
 <style>
-    #container{
+    #container {
         margin-top: 100px;
         width: 95%;
         text-align: center;
         margin-left: auto;
         margin-right: auto;
     }
+    .btn-danger {
+        display: none; /* Cache le bouton par défaut */
+    }
 </style>
-    <div id="container">
-        <h1 class="text-center alert text-bg-warning">Historique des données</h1>
+
+<div id="container">
+    <h1 class="text-center alert text-bg-warning">Historique des données</h1>
+    <form method="POST" action="{% url 'delete_selected' %}">
+        {% csrf_token %}
         <table class="table table-bordered">
             <thead>
                 <tr>
+                    <th scope="col">
+                        <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)">
+                        <button type="submit" class="btn btn-danger" id="deleteButton">Supprimer</button>
+                    </th>
                     <th scope="col">ID</th>
                     <th scope="col">Température (°C)</th>
                     <th scope="col">Humidité (%)</th>
-                    <th scope="col">Date et Heur</th>
+                    <th scope="col">Alcool (mg/L)</th>
+                    <th scope="col">Date et Heure</th>
                 </tr>
             </thead>
             <tbody>
                 {% for data in all_data %}
                 <tr>
+                    <td><input type="checkbox" class="select-item" name="items_to_delete" value="{{ data.id }}" onclick="toggleDeleteButton()"></td>
                     <th scope="row">{{ data.id }}</th>
                     <td>{{ data.temperature }}</td>
                     <td>{{ data.humidity }}</td>
+                    <td>{{ data.gaz }}</td>
                     <td>{{ data.timestamp }}</td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="3">Aucune donnée disponible</td>
+                    <td colspan="5">Aucune donnée disponible</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-    </div>
+    </form>
+</div>
+
+<script>
+// Fonction pour sélectionner ou désélectionner toutes les cases à cocher
+function toggleSelectAll(source) {
+    let checkboxes = document.querySelectorAll('.select-item');
+    checkboxes.forEach(function(checkbox) {
+        checkbox.checked = source.checked;
+    });
+    toggleDeleteButton(); // Met à jour l'état du bouton "Supprimer"
+}
+
+// Fonction pour afficher ou masquer le bouton "Supprimer" en fonction de la sélection
+function toggleDeleteButton() {
+    let checkboxes = document.querySelectorAll('.select-item:checked');
+    let deleteButton = document.getElementById('deleteButton');
+
+    if (checkboxes.length > 0) {
+        deleteButton.style.display = 'inline-block'; // Affiche le bouton
+    } else {
+        deleteButton.style.display = 'none'; // Cache le bouton
+    }
+}
+</script>
+
 {% endblock content %}

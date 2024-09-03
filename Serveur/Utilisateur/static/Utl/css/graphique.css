@@ -31,7 +31,7 @@ h1 {
 }
 
 canvas {
-    width: 100% !important;
+    max-width: 100% !important;
     height: auto;
 }
 
@@ -43,3 +43,11 @@ canvas {
     margin: 10px 0;
     font-size: 1.2em;
 }
+
+/*
+.chart-gaz{
+    width: 50%;
+    margin-left: 0;
+    padding: 0;
+}
+    */

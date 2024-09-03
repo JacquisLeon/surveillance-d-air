@@ -6,10 +6,11 @@ from datetime import datetime
 class DHTData(models.Model):
     temperature = models.FloatField()
     humidity = models.FloatField()
-    timestamp = models.DateTimeField(auto_now_add=True)
+    gaz = models.FloatField(null=True)
+    timestamp = models.DateTimeField(default=datetime.now,blank=True)
 
     def __str__(self):
-        return f"Temp: {self.temperature}°C, Hum: {self.humidity}%, Time: {self.timestamp}"
+        return f"Temp: {self.temperature}°C, Hum: {self.humidity}%, Time: {self.timestamp}, Gaz: {self.gaz}"
     
 class Client(models.Model):
     nom = models.CharField(max_length=100)

@@ -86,7 +86,7 @@ nav ul li a:hover {
     position: absolute;
     top: 100%;
     right: 1%;
-    width: 320px;
+    width: 260px;
     max-height: 0px;
     overflow: hidden;
     transform: max-height 0.5s
@@ -109,7 +109,7 @@ nav ul li a:hover {
     font-weight: 500;
 }
 .user-info img{
-    width: 100px;
+    width: 70px;
     border-radius: 50%;
     margin-right: 15px;
 }
@@ -123,6 +123,7 @@ nav ul li a:hover {
 }
 .sub-menu-link p{
     width: 100%;
+    margin-top: 20px;
 }
 .sub-menu-link img{
     width: 40px;

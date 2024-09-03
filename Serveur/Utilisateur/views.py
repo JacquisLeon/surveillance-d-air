@@ -1,9 +1,8 @@
 # views.py
-
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.http import JsonResponse
-from django.shortcuts import render, HttpResponse, redirect
-from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 import json
@@ -18,15 +17,16 @@ def receive_data(request):
             data = json.loads(request.body)
             temperature = data.get('temperature')
             humidity = data.get('humidity')
+            gaz = data.get('gaz')
             
             # Afficher les données dans le terminal
-            print(f"Température : {temperature}°C, Humidité : {humidity}%")
+            print(f"Température : {temperature}°C, Humidité : {humidity}% , Gaz : {gaz}mg/L")
             
             # Enregistrer les données dans la base de données
-            dht_data = DHTData(temperature=temperature, humidity=humidity)
+            dht_data = DHTData(temperature=temperature, humidity=humidity, gaz=gaz)
             dht_data.save()
 
-            return JsonResponse({'status': 'success', 'temperature': temperature, 'humidity': humidity})
+            return JsonResponse({'status': 'success', 'temperature': temperature, 'humidity': humidity, 'gaz': gaz})
         except json.JSONDecodeError:
             return JsonResponse({'status': 'error', 'message': 'Invalid data format'}, status=400)
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
@@ -50,12 +50,14 @@ def get_data(request):
         data = {
             'temperature': latest_data.temperature,
             'humidity': latest_data.humidity,
+            'gaz': latest_data.gaz,
             'timestamp': latest_data.timestamp
         }
     else:
         data = {
             'temperature': None,
-            'humidity': None
+            'humidity': None,
+            'gaz': None,
         }
     return JsonResponse(data)
 

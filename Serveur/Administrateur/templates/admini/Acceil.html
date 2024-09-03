@@ -31,6 +31,12 @@
             <canvas id="humidityChart" width="400" height="200"></canvas>
         </div>
     </div>
+    
+        <!-- Sous-conteneur pour le gaz -->
+        <div class="chart-wrapper">
+            <p><strong>Alcool : <span id="gaz">--</span></strong></p>
+            <canvas id="gazChart" width="400" height="200"></canvas>
+        </div>
 </div>
 
 
@@ -38,6 +44,7 @@
    $(document).ready(function() {
 var tempCtx = $('#temperatureChart')[0].getContext('2d');
 var humCtx = $('#humidityChart')[0].getContext('2d');
+var gazCtx = $('#gazChart')[0].getContext('2d');
 
 var temperatureChart = new Chart(tempCtx, {
     type: 'line',
@@ -103,6 +110,38 @@ var humidityChart = new Chart(humCtx, {
     }
 });
 
+var gazChart = new Chart(gazCtx, {
+    type: 'line',  // Vous pouvez utiliser 'line' ou 'bar' selon votre préférence
+    data: {
+        labels: [],
+        datasets: [{
+            label: 'Alcool',
+            data: [],
+            borderColor: 'rgba(75, 192, 235, 1)',
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            fill: true
+        }]
+    },
+    options: {
+        scales: {
+            x: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Heure'
+                }
+            },
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Alcool (mg/L)'
+                }
+            }
+        }
+    }
+});
+
 function fetchData() {
     $.ajax({
         url: "{% url 'get_data' %}",  // Assure-toi que cette URL est correcte
@@ -119,19 +158,27 @@ function fetchData() {
             humidityChart.data.labels.push(time);
             humidityChart.data.datasets[0].data.push(data.humidity);
 
+            // Mettre à jour les données du gaz
+            gazChart.data.labels.push(time);
+            gazChart.data.datasets[0].data.push(data.gaz);
+
             // Limiter le nombre de points pour les deux graphiques
             if (temperatureChart.data.labels.length > 10) {
                 temperatureChart.data.labels.shift();
                 temperatureChart.data.datasets[0].data.shift();
                 humidityChart.data.labels.shift();
                 humidityChart.data.datasets[0].data.shift();
+                gazChart.data.labels.shift();
+                gazChart.data.datasets[0].data.shift();
             }
 
             $('#temperature').text(data.temperature + '°C');
             $('#humidity').text(data.humidity + '%');
+            $('#gaz').text(data.gaz + 'mg/L');
 
             temperatureChart.update();
             humidityChart.update();
+            gazChart.update();
         },
         error: function() {
             console.log('Erreur lors de la récupération des données');

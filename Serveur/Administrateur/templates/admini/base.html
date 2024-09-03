@@ -31,7 +31,7 @@
             <img src="{% if user_profile.image %}
             {{ user_profile.image.url }}
             {% else %}
-            {% static 'adm/image/image.jpg' %}
+            {% static 'adm/image/img.jpg' %}
             {% endif %}" alt="user_img" class="user" onclick="toggleMenu()">
 
 
@@ -41,20 +41,20 @@
                         <img src="{% if user_profile.image %}
             {{ user_profile.image.url }}
             {% else %}
-            {% static 'adm/image/image.jpg' %}
+            {% static 'adm/image/img.jpg' %}
             {% endif %}" alt="user_img">
                         <h4>{{ administrateur.username }}</h4>
                     </div>
                     <hr>
 
                     <a href="{% url 'profil_admin' %}" class="sub-menu-link">
-                        <img src="#" alt="img">
+                        <img src="{% static 'adm/image/img.jpg' %}" alt="img">
                         <p>Profils</p>
                         <span></span>
                     </a>
                
                     <a href="{% url 'login_admin' %}" class="sub-menu-link">
-                        <img src="#" alt="img">
+                        <img src="{% static 'adm/image/lg.jpg' %}" alt="img">
                         <p>Deconnexion</p>
                         <span></span>
                     </a>

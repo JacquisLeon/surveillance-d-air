@@ -24,25 +24,25 @@
         <img src="{% if profil.image %}
         {{ profil.image.url }}
         {% else %}
-        {% static 'Utl/image/user.png' %}
+        {% static 'Utl/image/img.jpg' %}
         {% endif %}" alt="user_img" class="user" onclick="toggleMenu()">
 
         <div class="sub-menu-wrap" id="subMenu">
             <div class="sub-menu">
                 <div class="user-info">
                     <!-- Affichage de l'image de profil -->
-                    <img src="{% if profil.image %}{{ profil.image.url }}{% else %}{% static 'Utl/image/user.png' %}{% endif %}" alt="Photo de profil">
+                    <img src="{% if profil.image %}{{ profil.image.url }}{% else %}{% static 'Utl/image/img.jpg' %}{% endif %}" alt="Photo de profil">
                     <h4>{{ utilisateur.username }}</h4>
                 </div>
                 <hr>
                 <a href="{% url 'P_modifier' %}" class="sub-menu-link">
-                    <img src="#" alt="img">
+                    <img src="{% static 'Utl/image/img.jpg' %}" alt="img">
                     <p>Profils</p>
                     <span></span>
                 </a>
           
                 <a href="{% url 'login_util' %}" class="sub-menu-link">
-                    <img src="#" alt="img">
+                    <img src="{% static 'Utl/image/lg.jpg' %}" alt="img">
                     <p>Deconnexion</p>
                     <span></span>
                 </a>

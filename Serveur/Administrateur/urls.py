@@ -12,4 +12,5 @@ urlpatterns = [
    path('modifier/<int:user_id>/', views.modifier_util, name='modifier'),
    path('modifier-admin/', views.modifier_profil_admin, name='profil_admin'),
    path('histo-admin/', views.historique_admin, name='histo'),
+   path('delete_selected/', views.delete_selected, name='delete_selected'),
 ]# + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
