@@ -1,43 +1,40 @@
+{% extends 'admini/base.html' %}
+{% load static %}
 
-{% extends 'admini\base.html' %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'adm/css/modifier.css' %}">
 
-{% load static %}  
+<form method="POST" enctype="multipart/form-data">
+    <h4 class="text-center alert text-bg-warning">MODIFIER PROFIL D'UTILISATEUR</h4>
+    
+    {% csrf_token %}
+    <div class="flex-container">
+        <div class="col left">
+            <label for="username">Nom d'utilisateur :</label>
+            <input type="text" name="username" value="{{ utilisateur.username }}" required>
+            
+            <label for="email">Email :</label>
+            <input type="email" name="email" value="{{ utilisateur.email }}" required>
 
-{% block content %}  
-<link rel="stylesheet" href="{% static 'adm\css\modifier.css' %}">
+            <label for="password">Mot de passe :</label>
+            <input type="text" name="password" placeholder="Laisser vide pour conserver l'ancien mot de passe">
+        </div>
 
-    <form method="POST" enctype="multipart/form-data">
- <h4 class="text-center alert text-bg-warning">MODIFIER PROFIL D'UTILISATEUR</h4>            
-          
-        {% csrf_token %}
-     <div class="flex-container">
-     <div class="col left">
-        <label for="username">Nom d'utilisateur :</label>
-        <input type="text" name="username" value="{{utilisateur.username}}" required>
-        
-        <label for="email">Email :</label>
-        <input type="email" name="email" value="{{utilisateur.email}}" required>
-
-        <label for="password">Mot de passe :</label>
-        <input type="text" name="password" placeholder="Laisser vide pour conserver l'ancien mot de passe" required>
-    </div>
-
-    <div class="col right">
-        <div style="display: flex; align-items: center;">
-            <div>
-                <label for="image">Photo de profil actuelle :</label>
-                {% if utilisateur.userprofile.image.url %}
-                    <img src="{{ utilisateur.userprofile.image.url }}" alt="Photo de profil"
-                    >
+        <div class="col right">
+            <div style="display: flex; align-items: center;">
+                <div>
+                    <label for="image">Photo de profil actuelle :</label>
+                    {% if user_profile and user_profile.image %}
+                        <img src="{{ user_profile.image.url }}" alt="Photo de profil">
                     {% else %}
                         <p>Aucune image</p>
                     {% endif %}
                     <label for="new_image">Changer l'image :</label>
-                <input type="file" name="new_image" accept="imade/*">
+                    <input type="file" name="new_image" accept="image/*">
+                </div>
             </div>
         </div>
     </div>
-</div>
-        <button type="submit">Enregistrer les modification</button>
-    </form>
+    <button type="submit">Enregistrer les modifications</button>
+</form>
 {% endblock content %}

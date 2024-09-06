@@ -4,15 +4,6 @@
 {% load static %}
 
 {% block content %}
-<style>
-    h1{
-    margin-top: 100px;
-    width: 98%;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-}
-</style>
 
 <link rel="stylesheet" href="{% static 'Utl\css\graphique.css' %}">
 
@@ -33,7 +24,7 @@
     </div>
     
         <!-- Sous-conteneur pour le gaz -->
-        <div class="chart-wrapper">
+        <div class="chart-gaz">
             <p><strong>Alcool : <span id="gaz">--</span></strong></p>
             <canvas id="gazChart" width="400" height="200"></canvas>
         </div>

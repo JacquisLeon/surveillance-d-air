@@ -4,10 +4,11 @@
 {% block content %}
 
 <link rel="stylesheet" href="{% static 'adm\css\ajoute.css' %}">
+<script src="{% static 'adm/js/ajouter.js' %}"></script>
 
 <div class="row">
     <div class="col-sm-4">
-         <form method="POST" enctype="multipart/form-data">
+         <form method="POST" enctype="multipart/form-data" id="formulaire">
            <h4 class="text-center alert text-bg-warning">AJOUTER NOUVEAU UTULISATEUR</h4>            
            {% csrf_token %}
            
@@ -34,7 +35,8 @@
                 </div>
             </div>
             
-            <button type="submit">Enregistrer</button>
+            <button type="submit" value="Enregistrer">Enregistrer</button>
+            <p id="mssg" style="color: red;"></p>
             {% if messages %}
             {% for message in messages %}
                 <p id="mssg" class="{% if message.tags == 'success' %}success

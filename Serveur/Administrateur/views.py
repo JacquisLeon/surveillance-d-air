@@ -29,18 +29,22 @@ def ajouteUtil(request):
         uemail = request.POST.get('email')
         upass = request.POST.get('pass')
         image = request.FILES.get('image')  # Récupérer le fichier image
-
-        if not User.objects.filter(username=uname).exists(): 
-            utilisateur = User.objects.create_user(uname, uemail, upass)
-            utilisateur.save()
-
-            # Créer un profil utilisateur avec l'image
-            UserProfile.objects.create(user=utilisateur, image=image)
-
-            messages.success(request, "Utilisateur créé avec succès!")
+        
+        if not uname or not uemail or not upass: #verification si le champ est vide
+            messages.error(request, "Veuillez remplir tous les champs!")
             return redirect('ajouter')
         else:
-            messages.error(request, "Nom d'utilisateur existe déjà!")
+            if not User.objects.filter(username=uname).exists(): 
+                utilisateur = User.objects.create_user(uname, uemail, upass)
+                utilisateur.save()
+
+                # Créer un profil utilisateur avec l'image
+                UserProfile.objects.create(user=utilisateur, image=image)
+
+                messages.success(request, "Utilisateur créé avec succès!")
+                return redirect('ajouter')
+            else:
+                messages.error(request, "Nom d'utilisateur existe déjà!")
     return render(request, 'admini/Ajoute.html',{'user_profile': user_profile,
                                                   'administrateur': user})
     
@@ -113,7 +117,6 @@ def supre_util(request, user_id):
     util.delete()
     messages.success(request, "L'utilisateur a été supprimé avec succès!")
     return redirect('liste')
-
 @user_passes_test(is_admin, login_url='login_admin')
 def modifier_util(request, user_id):
     user = request.user  # Utilisateur actuellement connecté
@@ -123,32 +126,45 @@ def modifier_util(request, user_id):
         user_profile = user.userprofile  # Récupérer le profil associé
     except UserProfile.DoesNotExist:
         user_profile = None  # Si aucun profil n'existe, définir sur None
-        
+
     util = get_object_or_404(User, id=user_id)
-    if request.method =='POST':
+    if request.method == 'POST':
         nom_util = request.POST.get('username')
         email_util = request.POST.get('email')
         pass_util = request.POST.get('password')
-        nv_img = request.FILES.get('new_image') #recuperer la nouvelle image
-        util.username = nom_util #mettre a jour le nom
-        util.email = email_util #mettre a jour l'email
-        
-         #verifier si le mot de pass est forni
+        nv_img = request.FILES.get('new_image')  # Récupérer la nouvelle image
+
+        # Mettre à jour les informations de l'utilisateur
+        util.username = nom_util
+        util.email = email_util
+
+        # Vérifier si le mot de passe est fourni
         if pass_util:
             util.set_password(pass_util)
-        
-        #verifier si une nouvelle image telecharger
+
+        # Vérifier si une nouvelle image est téléchargée
         if nv_img:
+            # Créer ou récupérer le profil utilisateur
             user_profile, created = UserProfile.objects.get_or_create(user=util)
             user_profile.image = nv_img
             user_profile.save()
-            
+
         util.save()
         messages.success(request, "L'utilisateur a été modifié avec succès!")
         return redirect('liste')
-    return render(request, 'admini/modifier.html',{'utilisateur': util,
-                                                 'user_profile': user_profile,
-                                                  'administrateur': user})
+
+    # Vérifier si le profil de l'utilisateur a une image associée
+    if user_profile and user_profile.image:
+        image_url = user_profile.image.url  # Récupérer l'URL de l'image
+    else:
+        image_url = None  # Aucune image associée
+
+    return render(request, 'admini/modifier.html', {
+        'utilisateur': util,
+        'user_profile': user_profile,
+        'image_url': image_url,
+        'administrateur': user
+    })
 
 
 @user_passes_test(is_admin, login_url='login_admin')
