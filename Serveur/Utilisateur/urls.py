@@ -9,5 +9,10 @@ urlpatterns = [
    path('display/', views.display_data, name='historique'),
    path('logout/', views.logout_util, name='logout_util'),
    path('modifier_P/', views.modifier_profil, name='P_modifier'),
-
+#*****************androi*******************************
+   #path('sse/', views.sse_view, name='sse'),
+   path('app/login/', views.login_app, name='android'),
+   path('random-data/', views.apk_data, name='random_data'),
+   path('app/user_info/', views.user_profile_view, name='user_profile'),
+   path('app/dht-data/', views.dht_data_view, name='dht-data'),
 ]

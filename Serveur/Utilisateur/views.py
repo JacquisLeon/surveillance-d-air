@@ -1,4 +1,5 @@
 # views.py
+import random
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.http import JsonResponse
@@ -44,7 +45,7 @@ def show_data(request):
     })
 
 
-def get_data(request):
+def get_data(request):#pour le graphe avec ajax
     latest_data = DHTData.objects.last()
     if latest_data:
         data = {
@@ -62,7 +63,7 @@ def get_data(request):
     return JsonResponse(data)
 
 @login_required(login_url='login_util') #verroullage
-def display_data(request):
+def display_data(request):#historique
     # Récupérer toutes les données de la base de données
     all_data = DHTData.objects.all().order_by('-timestamp')
      # Récupérer le profil de l'utilisateur connecté
@@ -86,6 +87,8 @@ def login_util(request):
 def logout_util(request):
     logout(request)
     return redirect('login_util')
+
+from django.views.decorators.csrf import csrf_exempt
 
 
 
@@ -125,3 +128,106 @@ def modifier_profil(request):
  
     return render(request, 'Util/modifier.html', {'utilisateur': utilisateur,
                                                     'profil': profil})
+
+
+#**************************pour android**************************************
+
+from django.http import HttpResponse
+import time
+
+
+@csrf_exempt  # Désactiver CSRF pour les requêtes venant de l'application Android
+def login_app(request):
+    if request.method == 'POST':
+        nm = request.POST.get('name')
+        pwd = request.POST.get('pass')
+        user = authenticate(request, username=nm, password=pwd)
+        if user is not None:
+            login(request, user)
+            return JsonResponse({'status': 'success', 'message': 'Login successful'})
+        else:
+            return JsonResponse({'status': 'error', 'message': "Nom d'utilisateur ou mot de passe incorrect!"}, status=401)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+
+
+from django.http import JsonResponse
+import random
+
+def random_data(request):
+    # Génération de deux ensembles de données aléatoires
+    data1 = [random.uniform(10, 100) for _ in range(10)]  # Données pour le LineChart
+    data2 = [random.uniform(20, 200) for _ in range(10)]  # Données pour le BarChart
+
+    # Retourne une réponse JSON avec les deux jeux de données
+    return JsonResponse({"data1": data1, "data2": data2})
+
+
+def apk_data(request):
+    latest_data = DHTData.objects.last()
+    if latest_data:
+        data1 = latest_data.temperature,
+        data2 = latest_data.humidity,
+    else:
+        data1 = None,
+        data2 = None,
+    return JsonResponse({"data1": data1, "data2": data2})
+#efa mety f tss sary
+"""
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
+#from .models import UserProfile
+
+@login_required
+def user_profile_view(request):
+    user = request.user
+
+    # Récupérer le profil de l'utilisateur connecté
+    try:
+        user_profile = models.UserProfile.objects.get(user=user)
+        response_data = {
+            'username': user.username,
+            'email': user.email,
+            'profile_image': request.build_absolute_uri(user_profile.image.url) if user_profile.image else None,
+        }
+        return JsonResponse(response_data)
+
+    except models.UserProfile.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Profil utilisateur non trouvé'}, status=404)
+        """
+        
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
+#from .models import UserProfile  # Assurez-vous que vous importez UserProfile
+
+@login_required
+def user_profile_view(request):
+    user = request.user
+
+    # Récupérer le profil de l'utilisateur connecté
+    try:
+        user_profile = models.UserProfile.objects.get(user=user)
+        response_data = {
+            'username': user.username,
+            'email': user.email,
+            'profile_image': request.build_absolute_uri(user_profile.image.url) if user_profile.image else None,
+        }
+        return JsonResponse(response_data)
+
+    except models.UserProfile.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Profil utilisateur non trouvé'}, status=404)
+
+#recupere historique
+# views.py
+from django.http import JsonResponse
+from .models import DHTData
+
+def dht_data_view(request):
+    # Récupérer toutes les données de DHTData
+    data = DHTData.objects.all().order_by('-timestamp')  # Trier par date de façon décroissante
+    data_list = list(data.values('temperature', 'humidity', 'gaz', 'timestamp'))
+    
+    # Renvoyer les données sous forme de JSON
+    return JsonResponse({'dht_data': data_list})
+
