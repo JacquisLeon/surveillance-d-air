@@ -231,3 +231,88 @@ def dht_data_view(request):
     # Renvoyer les données sous forme de JSON
     return JsonResponse({'dht_data': data_list})
 
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
+#from .models import UserProfile  # Importez votre modèle UserProfile si vous en avez un
+from django.core.files.base import ContentFile
+import base64
+"""
+@csrf_exempt
+def update_profile(request):
+    if request.method == 'POST':
+        # Récupération des données de l'utilisateur
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        profile_image_base64 = request.POST.get('profile_image')
+
+        # Vérification si l'utilisateur est authentifié
+        if request.user.is_authenticated:
+            user = request.user
+
+            # Mise à jour des données de l'utilisateur
+            if username:
+                user.username = username
+            if email:
+                user.email = email
+            if password:
+                user.set_password(password)  # Change le mot de passe
+            user.save()
+
+            # Mise à jour de l'image de profil si fournie
+            if profile_image_base64:
+                try:
+                    format, imgstr = profile_image_base64.split(';base64,') 
+                    ext = format.split('/')[-1] 
+                    profile_image = ContentFile(base64.b64decode(imgstr), name=f"{user.username}.{ext}")
+                    
+                    # Assurez-vous que vous avez un champ `image` dans votre modèle UserProfile
+                    user_profile = models.UserProfile.objects.get(user=user)
+                    user_profile.image = profile_image
+                    user_profile.save()
+                except Exception as e:
+                    return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+            return JsonResponse({'status': 'success', 'message': 'Profile updated successfully'})
+        else:
+            return JsonResponse({'status': 'error', 'message': "User not authenticated"}, status=401)
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+"""
+@csrf_exempt
+def update_profile(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        if request.user.is_authenticated:
+            user = request.user
+
+            if username:
+                user.username = username
+            if email:
+                user.email = email
+            if password:
+                user.set_password(password)
+            user.save()
+
+            # Mise à jour de l'image de profil si fournie
+            if 'profile_image' in request.FILES:
+                try:
+                    profile_image = request.FILES['profile_image']
+                    
+                    user_profile, created = models.UserProfile.objects.get_or_create(user=user)
+                    user_profile.image = profile_image
+                    user_profile.save()
+                except Exception as e:
+                    print(f"Error updating profile image: {e}")
+                    return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+            return JsonResponse({'status': 'success', 'message': 'Profile updated successfully'})
+        else:
+            return JsonResponse({'status': 'error', 'message': "User not authenticated"}, status=401)
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
