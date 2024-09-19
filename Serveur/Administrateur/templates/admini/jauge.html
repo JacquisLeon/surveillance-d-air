@@ -1,0 +1,118 @@
+{% extends 'admini\base.html' %}
+
+
+{% load static %}
+{% load i18n %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'Utl\css\graphique.css' %}">
+
+<div id="container">
+    <h1 class="text-center alert text-bg-success">Affichage des données actuelles</h1>
+    <div class="charts-container">
+        <!-- Sous-conteneur pour la température -->
+        <div class="chart-wrapper">
+            <p><strong>Température : <span id="temperature">--</span></strong></p>
+            <div id="temperatureChart" style="width: 500px; height: 400px; margin-left: 20%;"></div>
+        </div>
+
+        <!-- Sous-conteneur pour l'humidité -->
+        <div class="chart-wrapper">
+            <p><strong>Humidité : <span id="humidity">--</span></strong></p>
+            <div id="humidityChart" style="width: 500px; height: 400px; margin-left: 20%;"></div>
+        </div>
+    </div>
+    
+    <!-- Sous-conteneur pour le gaz -->
+    <div class="chart-gaz">
+        <p><strong>Gaz : <span id="gaz">--</span></strong></p>
+        <div id="gazChart" style="width: 500px; height: 400px; margin-left: 20%;"></div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Initialisation des graphiques
+        var temperatureChart = echarts.init(document.getElementById('temperatureChart'));
+        var humidityChart = echarts.init(document.getElementById('humidityChart'));
+        var gazChart = echarts.init(document.getElementById('gazChart'));
+
+        // Fonction pour créer les options de la jauge
+        function createGaugeOption(label, value, min, max, unit) {
+            return {
+                tooltip: {
+                    formatter: '{a} <br/>{b} : {c}' + unit
+                },
+                series: [
+                    {
+                        name: label,
+                        type: 'gauge',
+                        radius: '90%',
+                        min: min,
+                        max: max,
+                        splitNumber: 10,
+                        axisLine: {
+                            lineStyle: {
+                                color: [[0.2, '#ff4500'], [0.8, '#ffab00'], [1, '#4b8b6d']],
+                                width: 10
+                            }
+                        },
+                        axisTick: {
+                            length: 15,
+                            lineStyle: {
+                                color: 'auto'
+                            }
+                        },
+                        splitLine: {
+                            length: 20,
+                            lineStyle: {
+                                color: 'auto'
+                            }
+                        },
+                        title: {
+                            show: true,
+                            offsetCenter: [0, '-30%'],
+                            textStyle: {
+                                fontSize: 20
+                            }
+                        },
+                        detail: {
+                            formatter: '{value}' + unit,
+                            fontSize: 20
+                        },
+                        data: [{ value: value, name: label }]
+                    }
+                ]
+            };
+        }
+
+        // Fonction pour récupérer les données
+        function fetchData() {
+            $.ajax({
+                url: "{% url 'get_data' %}",
+                method: 'GET',
+                success: function(data) {
+                    $('#temperature').text(data.temperature + '°C');
+                    $('#humidity').text(data.humidity + '%');
+                    $('#gaz').text(data.gaz + 'PPT');
+
+                    // Mise à jour des jauges
+                    temperatureChart.setOption(createGaugeOption('Température', data.temperature, -10, 50, '°C'));
+                    humidityChart.setOption(createGaugeOption('Humidité', data.humidity, 0, 100, '%'));
+                    gazChart.setOption(createGaugeOption('Gaz', data.gaz, 0, 500, 'mg/L'));
+                },
+                error: function() {
+                    console.log('Erreur lors de la récupération des données');
+                }
+            });
+        }
+
+        // Appel initial pour obtenir les données immédiatement
+        fetchData();
+
+        // Appel périodique pour mettre à jour les données
+        setInterval(fetchData, 2000); // Met à jour toutes les 2 secondes
+    });
+</script>
+
+{% endblock content %}

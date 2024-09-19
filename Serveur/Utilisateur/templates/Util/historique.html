@@ -2,19 +2,14 @@
 
 {% extends 'Util/base.html' %}
 
+{% load static %}
+
 {% block content %}
 
-<style>
-    #container {
-        margin-top: 100px;
-        width: 95%;
-        text-align: center;
-        margin-left: auto;
-        margin-right: auto;
-    }
-</style>
-<div id="container">
+<link rel="stylesheet" href="{% static 'Utl/css/page.css' %}">
+
     <h1 class="text-center alert text-bg-warning">Historique des données</h1>
+    <div id="container">
     <form method="POST" action="#">
         {% csrf_token %}
         <table class="table table-bordered">
@@ -24,7 +19,8 @@
                     <th scope="col">ID</th>
                     <th scope="col">Température (°C)</th>
                     <th scope="col">Humidité (%)</th>
-                    <th scope="col">Alcool (mg/L)</th>
+                    <th scope="col">Gaz (PPT)</th>
+                    <th scope="col">Incendie</th>
                     <th scope="col">Date et Heure</th>
                 </tr>
             </thead>
@@ -36,6 +32,7 @@
                     <td>{{ data.temperature }}</td>
                     <td>{{ data.humidity }}</td>
                     <td>{{ data.gaz }}</td>
+                    <td>{{ data.feux }}</td>
                     <td>{{ data.timestamp }}</td>
                 </tr>
                 {% empty %}

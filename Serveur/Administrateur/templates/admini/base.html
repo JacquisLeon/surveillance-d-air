@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
 <html>
     <head>
@@ -8,16 +9,24 @@
         
     </head>
 <body>
-  
+    <script src="{% static 'Utl/js/echarts.min.js' %}"></script>
     <script src="{% static 'Utl\js\chart.umd.js' %}"></script>
     <script src="{% static 'Utl\js\jquery.js' %}"></script>
     {% csrf_token %}
 
         <nav>
            <!-- <img src="#" alt="Logo" class="logo">-->
-            <h3>SURVEILLANCE DE QUALITER DE L'AIR</h3>
-            <ul>
-                <li><a href="{% url 'acceil' %}">Accueil</a></li>
+            <h3>SURVEILLANCE DE QUALITE DE L'AIR</h3>
+            <ul> 
+                <li><a href="#">Graphique<i class="fas fa-caret-down"></i></a>
+                           <!--<div class="dropdown-menu">-->
+                            <ul>
+                                <li><a href="{% url 'courbe_admin' %}">Courbe</a></li>
+                                <li><a href="{% url 'bar_admin' %}">Bar</a></li>
+                                <li><a href="{% url 'jauge_admin' %}">Jauge</a></li>
+                            </ul>
+                       <!--</div>--> 
+                </li>
                 <li><a href="#">Utilisateurs <i class="fas fa-caret-down"></i></a>
                     <!--<div class="dropdown-menu">-->
                         <ul>
@@ -28,8 +37,8 @@
                 </li>
                 <li><a href="{% url 'histo' %}">Historique</a></li>
             </ul>
-            <img src="{% if user_profile.image %}
-            {{ user_profile.image.url }}
+            <img src="{% if admin_profile.image %}
+            {{ admin_profile.image.url }}
             {% else %}
             {% static 'adm/image/img.jpg' %}
             {% endif %}" alt="user_img" class="user" onclick="toggleMenu()">
@@ -38,8 +47,8 @@
             <div class="sub-menu-wrap" id="subMenu">
                 <div class="sub-menu">
                     <div class="user-info">
-                        <img src="{% if user_profile.image %}
-            {{ user_profile.image.url }}
+                        <img src="{% if admin_profile.image %}
+            {{ admin_profile.image.url }}
             {% else %}
             {% static 'adm/image/img.jpg' %}
             {% endif %}" alt="user_img">
@@ -75,5 +84,13 @@
             subMenu.classList.toggle("open-menu");
         }
     </script>
+
+<footer class="footer bg-dark text-light text-center py-3 mt-5">
+    <p>&copy; 2024 Surveillance de qualité de l'air.</p>
+    <p>&copy; Jacquis Léon</p>
+
+</footer>
+
+    
 </body>
 </html>

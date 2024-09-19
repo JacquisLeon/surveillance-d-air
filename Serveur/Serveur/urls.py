@@ -20,10 +20,15 @@ from Utilisateur import urls as util_url
 from Administrateur import urls as admin_url
 from django.conf import settings
 from django.conf.urls.static import static
+from django.conf.urls.i18n import i18n_patterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(util_url)),  # Affiche le template
-    path('admini/', include(admin_url)),
+    #path('admini/', include(admin_url)),
     path('accounts/', include('django.contrib.auth.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+urlpatterns += i18n_patterns(
+    path('admini/', include(admin_url)),
+)

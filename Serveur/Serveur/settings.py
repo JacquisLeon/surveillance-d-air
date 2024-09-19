@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.locale.LocaleMiddleware',    #dossier locale
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -133,6 +134,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #AUTH_USER_MODEL = 'Utilisateur.UtilisateurPersonnalise'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+ 
+ #chemin pour dossier locale des langue
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]
 
-#LOGIN_URL ='login_util'
-#LOGIN_REDIRECT_URL = 'show_data'
+LANGUAGE_COOKIE_NAME = 'django_language'  # Nom du cookie où Django stocke la langue
+
+from django.utils.translation import gettext_lazy as _
+LANGUAGES = [
+    ('en', _('English')),
+    ('fr', _('Français')),
+]

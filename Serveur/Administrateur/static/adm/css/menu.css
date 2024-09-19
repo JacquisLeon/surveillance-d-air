@@ -137,3 +137,28 @@ nav ul li a:hover {
     background-color: rgb(25, 156, 195);
     border-radius: 2px;
 }
+
+/* fin du page*/
+/* Assurez-vous que html et body prennent toute la hauteur de la fenêtre */
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Assurez-vous que le contenu principal prend tout l'espace disponible sauf celui du footer */
+main {
+    flex: 1;
+}
+
+/* Style pour le footer */
+.footer {
+    background-color: #343A40; /* Gris foncé */
+    color: #ECF0F1; /* Blanc cassé */
+    padding: 1rem 0; /* Ajouter du padding au pied de page */
+    text-align: center;
+    height: 100px;
+    width: 100%;
+    /* Aucun positionnement fixe nécessaire */
+}

@@ -9,14 +9,24 @@
     <link rel="stylesheet" href="{% static 'adm/css/menu.css' %}">
 </head>
 <body>
-    <script src="{% static 'Utl/js/chart.umd.js' %}"></script>
+   
+    <script src="{% static 'Utl/js/echarts.min.js' %}"></script>
     <script src="{% static 'Utl/js/jquery.js' %}"></script>
 
     <nav>
                    <!-- <img src="#" alt="Logo" class="logo">-->
                    <h3>SURVEILLANCE DE QUALITER DE L'AIR</h3>
         <ul>
-            <li><a href="{% url 'show_data' %}">Graphique</a></li>
+            
+            <li><a href="#">Graphique<i class="fas fa-caret-down"></i></a>
+                <!--<div class="dropdown-menu">-->
+                 <ul>
+                     <li><a href="{% url 'courbe_data' %}">Courbe</a></li>
+                     <li><a href="{% url 'bar_data' %}">Bar</a></li>
+                     <li><a href="{% url 'jauge_data' %}">Jauge</a></li>
+                 </ul>
+            <!--</div>--> 
+     </li>
             <li><a href="{% url 'historique' %}">Historique <i class="fas fa-caret-down"></i></a></li>
         </ul>
 
@@ -57,6 +67,14 @@
         }
     </script>
     {% block content %}
+    
     {% endblock content %}
+    
+    <footer class="footer bg-dark text-light text-center py-3 mt-5">
+        <p>&copy; 2024 Surveillance de qualité de l'air.</p>
+        <p>&copy; Jacquis Léon</p>
+    
+    </footer>
+    
 </body>
 </html>

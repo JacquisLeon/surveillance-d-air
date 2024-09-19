@@ -1,0 +1,215 @@
+{% extends 'admini/base.html' %}
+
+{% block content %}
+
+<div id="container" style="margin-top: 100px;">
+    <h1 class="text-center alert text-bg-success">Affichage des données actuelle</h1>
+    <div class="charts-container">
+        <!-- Sous-conteneur pour la température et l'humidité côte à côte -->
+        <div class="charts-row">
+            <!-- Sous-conteneur pour la température -->
+            <div class="chart-wrapper">
+                <p><strong>Température : <span id="temperature">--</span></strong></p>
+                <div id="temperatureChart" class="chart" style="width: 700px; height: 400px;"></div>
+            </div>
+
+            <!-- Sous-conteneur pour l'humidité -->
+            <div class="chart-wrapper">
+                <p><strong>Humidité : <span id="humidity">--</span></strong></p>
+                <div id="humidityChart" class="chart" style="width: 700px; height: 400px;"></div>
+            </div>
+        </div>
+
+        <!-- Sous-conteneur pour le gaz en dessous de la température -->
+        <div class="chart-gaz">
+            <p><strong>Gaz : <span id="gaz">--</span></strong></p>
+            <div id="gazChart" class="chart" style="width: 700px; height: 400px; margin: 0;"></div>
+        </div>
+    </div>
+
+    <a href="{% url 'add_dht_data' %}">Ajouter des données DHT</a>
+</div>
+
+
+<script>
+   $(document).ready(function() {
+       var temperatureChart = echarts.init(document.getElementById('temperatureChart'));
+       var humidityChart = echarts.init(document.getElementById('humidityChart'));
+       var gazChart = echarts.init(document.getElementById('gazChart'));
+
+       var temperatureData = { labels: [], values: [] };
+       var humidityData = { labels: [], values: [] };
+       var gazData = { labels: [], values: [] };
+
+       function createLineOption(name, color, data) {
+    return {
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: data.labels,
+            axisLabel: {
+                color: '#000',
+                fontSize: 14,
+                fontWeight: 'bold'
+            },
+            axisLine: {
+                lineStyle: {
+                    color: '#333',
+                    width: 2
+                }
+            },
+            axisTick: {
+                show: true,
+                lineStyle: {
+                    color: '#333',
+                    width: 1
+                }
+            },
+            splitLine: {
+                show: true,
+                lineStyle: {
+                    color: '#ddd', // Couleur des lignes de grille
+                    width: 1 // Épaisseur des lignes de grille
+                }
+            }
+        },
+        yAxis: {
+            type: 'value',
+            axisLabel: {
+                color: '#000',
+                fontSize: 14,
+                fontWeight: 'bold'
+            },
+            axisLine: {
+                lineStyle: {
+                    color: '#333',
+                    width: 2
+                }
+            },
+            axisTick: {
+                show: true,
+                lineStyle: {
+                    color: '#333',
+                    width: 1
+                }
+            },
+            splitLine: {
+                show: true,
+                lineStyle: {
+                    color: '#ddd', // Couleur des lignes de grille
+                    width: 1 // Épaisseur des lignes de grille
+                }
+            }
+        },
+        series: [
+            {
+                name: name,
+                type: 'line',
+                smooth: true,
+                data: data.values,
+                lineStyle: {
+                    color: color
+                },
+                itemStyle: {
+                    color: color,
+                    borderColor: 'rgba(0, 0, 0, 0.5)',
+                    borderWidth: 2
+                },
+                symbol: 'circle',
+                symbolSize: 8,
+                emphasis: {
+                    itemStyle: {
+                        color: color,
+                        borderColor: 'rgba(0, 0, 0, 0.7)'
+                    }
+                }
+            }
+        ]
+    };
+}
+
+
+
+       function fetchData() {
+           $.ajax({
+               url: "{% url 'get_data' %}",  // Assure-toi que cette URL est correcte
+               method: 'GET',
+               success: function(data) {
+                   var now = new Date();
+                   var time = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+                   
+                   // Mettre à jour les données de température
+                   temperatureData.labels.push(time);
+                   temperatureData.values.push(data.temperature);
+
+                   // Mettre à jour les données d'humidité
+                   humidityData.labels.push(time);
+                   humidityData.values.push(data.humidity);
+
+                   // Mettre à jour les données du gaz
+                   gazData.labels.push(time);
+                   gazData.values.push(data.gaz);
+
+                   // Limiter le nombre de points pour chaque graphique
+                   if (temperatureData.labels.length > 10) {
+                       temperatureData.labels.shift();
+                       temperatureData.values.shift();
+                       humidityData.labels.shift();
+                       humidityData.values.shift();
+                       gazData.labels.shift();
+                       gazData.values.shift();
+                   }
+
+                   // Mettre à jour les graphiques
+                   temperatureChart.setOption(createLineOption('Température', 'rgba(75, 192, 192, 1)', temperatureData));
+                   humidityChart.setOption(createLineOption('Humidité', 'rgba(75, 192, 235, 1)', humidityData));
+                   gazChart.setOption(createLineOption('Gaz', 'rgba(75, 192, 235, 1)', gazData));
+
+                   // Mettre à jour les valeurs affichées
+                   $('#temperature').text(data.temperature + '°C');
+                   $('#humidity').text(data.humidity + '%');
+                   $('#gaz').text(data.gaz + 'PPT');
+               },
+               error: function() {
+                   console.log('Erreur lors de la récupération des données');
+               }
+           });
+       }
+
+       // Appel initial pour obtenir les données immédiatement
+       fetchData();
+
+       // Appel périodique pour mettre à jour les données
+       setInterval(fetchData, 2000); // Met à jour toutes les 2 secondes
+   });
+</script>
+<style>
+    .charts-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .charts-row {
+      display: flex;
+      justify-content: center;
+      gap: 30px; /* Espace entre les graphiques */
+      margin-bottom: 20px; /* Espace en dessous de la ligne de graphiques */
+    }
+  
+    .chart-wrapper {
+            border: 1px solid #555; /* Bordure autour de chaque graphique */
+            border-radius: 4px; /* Coins arrondis pour chaque graphique */
+            background-color: #fff; /* Couleur de fond de chaque graphique */
+            margin-bottom: 20px; /* Espace entre les graphiques */
+        }
+  
+    .chart-gaz {
+      text-align: center;
+    }
+    p{
+        margin-top: 50px;
+    }
+  </style>
+  
+{% endblock content %}

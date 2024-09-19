@@ -1,0 +1,17 @@
+{% extends "Util/base.html" %}
+
+{% block content %}
+<style>
+    div{
+        margin-top: 200px;
+    }
+</style>
+<div>
+  <h2>Ajouter des données DHT</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Enregistrer</button>
+  </form>
+</div>
+{% endblock %}
