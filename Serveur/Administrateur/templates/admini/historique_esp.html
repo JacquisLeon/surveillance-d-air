@@ -1,0 +1,61 @@
+{% extends 'admini\base.html' %}
+
+{% load static %}
+{% load i18n %}
+{% block content %}
+
+<style>
+    #container {
+        margin-top: 100px;
+        width: 95%;
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .btn-danger {
+        display: none; /* Cache le bouton par défaut */
+    }
+</style>
+    <script src="{% static 'adm/js/historique.js' %}"></script>
+<div id="container">
+    <h4 class="text-center alert text-bg-warning">Historique des données d'{{ esp.lieu }}</h4>
+    <form method="POST" action="{% url 'delete_selected' %}">
+        {% csrf_token %}
+        {% if esp_data %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">
+                        <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)">
+                        <button type="submit" class="btn btn-danger" id="deleteButton">Supprimer</button>
+                    </th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Température (°C)</th>
+                    <th scope="col">Humidité (%)</th>
+                    <th scope="col">Gaz (PPT)</th>
+                    <th scope="col">Incendie</th>
+                    <th scope="col">Date et Heure</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in esp_data %}
+                <tr>
+                    <td><input type="checkbox" class="select-item" name="items_to_delete" value="{{ data.id }}" onclick="toggleDeleteButton()"></td>
+                    <th scope="row">{{ data.id }}</th>
+                    <td>{{ data.temperature }}</td>
+                    <td>{{ data.humidity }}</td>
+                    <td>{{ data.gaz }}</td>
+                    <td>{{ data.feux }}</td>
+                    <td>{{ data.timestamp }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">Aucune donnée disponible pour cet utilisateur</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,30 +1,51 @@
 {% extends 'Util/base.html' %}
 
+{% load static %}
 {% block content %}
-
+ <link rel="stylesheet" href="{% static 'adm/css/menu_graphe.css' %}">
+ <link rel="stylesheet" href="{% static 'adm/css/tous_graphe.css' %}">
 <div id="container">
-    <h1 class="text-center alert text-bg-success">Affichage des données actuelle</h1>
+    <div class="d-flex justify-content-between align-items-center" >
+        <h5 class="text-center alert text-bg-warning mb-xxl-5" style="width: 80%; margin-left: 50px;"><strong>Affichage des données actuelle d'{{ esp.lieu }}</strong> </h5>
+    
+       
+            <ul class="menu text-center alert text-bg-warning mb-xxl-5">
+                <li class="dropdown">
+                    <a href="#">Type de graphique <i class="fas fa-caret-down"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'courbe_data' esp_id=esp_id %}">Graphique courbe</a></li>
+                        <li><a href="{% url 'bar_data' esp_id=esp_id %}">Graphique bar</a></li>
+                        <li><a href="{% url 'jauge_data' esp_id=esp_id %}">Graphique jauge</a></li>
+                        <li><a href="{% url 'historique' esp_id=esp_id %}">Historique</a></li>
+                    </ul>
+                </li>
+            </ul>
+        
+    </div>
+
     <div class="charts-container">
         <!-- Sous-conteneur pour la température et l'humidité côte à côte -->
         <div class="charts-row">
             <!-- Sous-conteneur pour la température -->
             <div class="chart-wrapper">
-                <p><strong>Température : <span id="temperature">--</span></strong></p>
+                <p style="text-align: center;"><strong>Température : <span id="temperature">--</span></strong></p>
                 <div id="temperatureChart" class="chart" style="width: 700px; height: 400px;"></div>
             </div>
 
             <!-- Sous-conteneur pour l'humidité -->
             <div class="chart-wrapper">
-                <p><strong>Humidité : <span id="humidity">--</span></strong></p>
+                <p style="text-align: center;"><strong>Humidité : <span id="humidity">--</span></strong></p>
                 <div id="humidityChart" class="chart" style="width: 700px; height: 400px;"></div>
             </div>
         </div>
 
         <!-- Sous-conteneur pour le gaz en dessous de la température -->
+        <div class="chart-wrapper">
         <div class="chart-gaz">
-            <p><strong>Gaz : <span id="gaz">--</span></strong></p>
+            <p style="text-align: center;"><strong>Gaz : <span id="gaz">--</span></strong></p>
             <div id="gazChart" class="chart" style="width: 700px; height: 400px; margin: 0;"></div>
         </div>
+    </div>
     </div>
 
     <a href="{% url 'add_dht_data' %}">Ajouter des données DHT</a>
@@ -132,7 +153,7 @@
 
        function fetchData() {
            $.ajax({
-               url: "{% url 'get_data' %}",  // Assure-toi que cette URL est correcte
+               url: "{% url 'get_data' esp_id=esp_id %}",  // Assure-toi que cette URL est correcte
                method: 'GET',
                success: function(data) {
                    var now = new Date();
@@ -183,33 +204,5 @@
        setInterval(fetchData, 2000); // Met à jour toutes les 2 secondes
    });
 </script>
-<style>
-    .charts-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-  
-    .charts-row {
-      display: flex;
-      justify-content: center;
-      gap: 30px; /* Espace entre les graphiques */
-      margin-bottom: 20px; /* Espace en dessous de la ligne de graphiques */
-    }
-  
-    .chart-wrapper {
-            border: 1px solid #555; /* Bordure autour de chaque graphique */
-            border-radius: 4px; /* Coins arrondis pour chaque graphique */
-            background-color: #fff; /* Couleur de fond de chaque graphique */
-            margin-bottom: 20px; /* Espace entre les graphiques */
-        }
-  
-    .chart-gaz {
-      text-align: center;
-    }
-    p{
-        margin-top: 50px;
-    }
-  </style>
   
 {% endblock content %}

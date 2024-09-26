@@ -5,29 +5,30 @@
     <meta charset="UTF-8">
     <script type="text/javascript"></script>
     <link rel="stylesheet" href="{% static 'Utl/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'Utl/css/graphique.css' %}">
+   
     <link rel="stylesheet" href="{% static 'adm/css/menu.css' %}">
 </head>
 <body>
    
     <script src="{% static 'Utl/js/echarts.min.js' %}"></script>
     <script src="{% static 'Utl/js/jquery.js' %}"></script>
-
+    <link href="{% static 'adm/css/bootstrap.min.css' %}" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="{% static 'adm/js/bootstrap.bundle.min.js' %}" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <nav>
                    <!-- <img src="#" alt="Logo" class="logo">-->
                    <h3>SURVEILLANCE DE QUALITER DE L'AIR</h3>
         <ul>
             
-            <li><a href="#">Graphique<i class="fas fa-caret-down"></i></a>
-                <!--<div class="dropdown-menu">-->
+            <li><a href="{% url 'acceil' %}">Acceil<i class="fas fa-caret-down"></i></a>
+                <!--<div class="dropdown-menu">
                  <ul>
-                     <li><a href="{% url 'courbe_data' %}">Courbe</a></li>
-                     <li><a href="{% url 'bar_data' %}">Bar</a></li>
-                     <li><a href="{% url 'jauge_data' %}">Jauge</a></li>
-                 </ul>
+                     <li><a href="#">Courbe</a></li>
+                     <li><a href="#">Bar</a></li>
+                     <li><a href="#">Jauge</a></li>
+                 </ul>-->
             <!--</div>--> 
      </li>
-            <li><a href="{% url 'historique' %}">Historique <i class="fas fa-caret-down"></i></a></li>
+            <li><a href="#">Historique <i class="fas fa-caret-down"></i></a></li>
         </ul>
 
         <!-- Affichage de l'image de l'utilisateur connecté -->
@@ -45,7 +46,7 @@
                     <h4>{{ utilisateur.username }}</h4>
                 </div>
                 <hr>
-                <a href="{% url 'P_modifier' %}" class="sub-menu-link">
+                <a href="#" class="sub-menu-link" data-bs-toggle="modal" data-bs-target="#modifier_profils">
                     <img src="{% static 'Utl/image/img.jpg' %}" alt="img">
                     <p>Profils</p>
                     <span></span>
@@ -66,10 +67,62 @@
             subMenu.classList.toggle("open-menu");
         }
     </script>
+    <main style="margin-top: 100px;">
     {% block content %}
     
     {% endblock content %}
+    </main>
+
+    <div id="container">
+
+        <div class="modal fade" id="modifier_profils" tabindex="-1" aria-labelledby="modifierAdminLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modifierAdminLabel">Modifier votre Profil</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{% url 'P_modifier' %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Nom d'utilisateur</label>
+                                <input type="text" class="form-control" name="username" value="{{ utilisateur.username }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" value="{{ utilisateur.email }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Mot de passe</label>
+                                <input type="password" class="form-control" name="password" placeholder="Nouveau mot de passe (laisser vide pour ne pas changer)">
+                            </div>
+                            <div class="mb-3">
+                                <label for="new_image" class="form-label">Photo de profil</label>
+                                <input type="file" class="form-control" name="new_image" accept="image/*">
+                                {% if user.userprofile.image %}
+                                    <img src="{{ user.userprofile.image.url }}" alt="Photo de profil" style="width: 100px; height: 100px; object-fit: cover;">
+                                {% else %}
+                                    <p>Aucune image</p>
+                                {% endif %}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Mettre à jour</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     
+        {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+    </div>
+
     <footer class="footer bg-dark text-light text-center py-3 mt-5">
         <p>&copy; 2024 Surveillance de qualité de l'air.</p>
         <p>&copy; Jacquis Léon</p>

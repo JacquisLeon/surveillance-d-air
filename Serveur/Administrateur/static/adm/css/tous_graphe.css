@@ -1,0 +1,27 @@
+.charts-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .charts-row {
+    display: flex;
+    justify-content: center;
+    gap: 30px; /* Espace entre les graphiques */
+    margin-bottom: 20px; /* Espace en dessous de la ligne de graphiques */
+  }
+
+  .chart-wrapper {
+          border: 0px solid #555; /* Bordure autour de chaque graphique */
+          border-radius: 10px; /* Coins arrondis pour chaque graphique */
+          background-color: #fff; /* Couleur de fond de chaque graphique */
+          margin-bottom: 20px; /* Espace entre les graphiques */
+          box-shadow: 0 0 10px rgba(35, 34, 47, 0.6);
+      }
+
+  .chart-gaz {
+    text-align: center;
+  }
+  p{
+      margin-top: 50px;
+  }

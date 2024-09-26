@@ -4,13 +4,13 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <link rel="stylesheet" href="{% static 'Utl\css\bootstrap.min.css' %}">
         <link rel="stylesheet" href="{% static 'adm\css\menu.css' %}">
-        
+        <link href="{% static 'Utl/css/bootstrap.min.css' %}" rel="stylesheet">
     </head>
 <body>
+    
+    <script src="{% static 'adm/js/bootstrap.bundle.min.js' %}" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="{% static 'Utl/js/echarts.min.js' %}"></script>
-    <script src="{% static 'Utl\js\chart.umd.js' %}"></script>
     <script src="{% static 'Utl\js\jquery.js' %}"></script>
     {% csrf_token %}
 
@@ -18,24 +18,25 @@
            <!-- <img src="#" alt="Logo" class="logo">-->
             <h3>SURVEILLANCE DE QUALITE DE L'AIR</h3>
             <ul> 
-                <li><a href="#">Graphique<i class="fas fa-caret-down"></i></a>
-                           <!--<div class="dropdown-menu">-->
+                <li><a href="{% url 'acceil_admin' %}">Acceil</a></li>
+                <!-- <li><a href="#">Graphique<i class="fas fa-caret-down"></i></a>
+                          
                             <ul>
-                                <li><a href="{% url 'courbe_admin' %}">Courbe</a></li>
-                                <li><a href="{% url 'bar_admin' %}">Bar</a></li>
-                                <li><a href="{% url 'jauge_admin' %}">Jauge</a></li>
+                                <li><a href="#">Courbe</a></li>
+                                <li><a href="#">Bar</a></li>
+                                <li><a href="#">Jauge</a></li>
                             </ul>
-                       <!--</div>--> 
-                </li>
-                <li><a href="#">Utilisateurs <i class="fas fa-caret-down"></i></a>
-                    <!--<div class="dropdown-menu">-->
+                     
+                </li> -->
+                <li><a href="{% url 'liste' %}">Utilisateurs <i class="fas fa-caret-down"></i></a>
+                    <!--<div class="dropdown-menu">
                         <ul>
                             <li><a href="{% url 'liste' %}">Liste</a></li>
-                            <li><a href="{% url 'ajouter' %}">Créer nouveau</a></li>
-                        </ul>
+                            <li><a href="#">Créer nouveau</a></li>
+                        </ul>-->
                    <!--</div>--> 
                 </li>
-                <li><a href="{% url 'histo' %}">Historique</a></li>
+                <li><a href="{% url 'liste_esp' %}">Appareils</a></li>
             </ul>
             <img src="{% if admin_profile.image %}
             {{ admin_profile.image.url }}
@@ -56,10 +57,10 @@
                     </div>
                     <hr>
 
-                    <a href="{% url 'profil_admin' %}" class="sub-menu-link">
+                    <a href="#" class="sub-menu-link" data-bs-toggle="modal" data-bs-target="#modifierAdmin">
                         <img src="{% static 'adm/image/img.jpg' %}" alt="img">
                         <p>Profils</p>
-                        <span></span>
+                        
                     </a>
                
                     <a href="{% url 'login_admin' %}" class="sub-menu-link">
@@ -72,7 +73,7 @@
         </nav>
 
 
-    <main>
+    <main style="margin-top: 100px;">
         {% block content %}
         <!-- Contenu spécifique de chaque page -->
         {% endblock %}
@@ -84,7 +85,56 @@
             subMenu.classList.toggle("open-menu");
         }
     </script>
+    <!-- modal profil admin-->
+<div id="container">
 
+    <div class="modal fade" id="modifierAdmin" tabindex="-1" aria-labelledby="modifierAdminLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modifierAdminLabel">Modifier Profil Administrateur</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'profil_admin' %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Nom d'utilisateur</label>
+                            <input type="text" class="form-control" name="username" value="{{ user.username }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" value="{{ user.email }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Mot de passe</label>
+                            <input type="password" class="form-control" name="password" placeholder="Nouveau mot de passe (laisser vide pour ne pas changer)">
+                        </div>
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Photo de profil</label>
+                            <input type="file" class="form-control" name="image" accept="image/*">
+                            {% if user.userprofile.image %}
+                                <img src="{{ user.userprofile.image.url }}" alt="Photo de profil" style="width: 100px; height: 100px; object-fit: cover;">
+                            {% else %}
+                                <p>Aucune image</p>
+                            {% endif %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Mettre à jour</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+</div>
 <footer class="footer bg-dark text-light text-center py-3 mt-5">
     <p>&copy; 2024 Surveillance de qualité de l'air.</p>
     <p>&copy; Jacquis Léon</p>

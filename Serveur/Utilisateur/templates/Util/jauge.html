@@ -4,29 +4,52 @@
 {% load i18n %}
 {% block content %}
 
-<link rel="stylesheet" href="{% static 'Utl\css\graphique.css' %}">
-
+<link rel="stylesheet" href="{% static 'adm/css/tous_graphe.css' %}">
+<link rel="stylesheet" href="{% static 'adm/css/menu_graphe.css' %}">
 <div id="container">
-    <h1 class="text-center alert text-bg-success">Affichage des données actuelles</h1>
+    <div class="d-flex justify-content-between align-items-center" >
+        <h5 class="text-center alert text-bg-warning mb-xxl-5" style="width: 80%; margin-left: 50px;"><strong> Affichage des données actuelle d'{{ esp.lieu }}</strong></h5>
+    
+       
+            <ul class="menu text-center alert text-bg-warning mb-xxl-5">
+                <li class="dropdown">
+                    <a href="#">Type de graphique <i class="fas fa-caret-down"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'courbe_data' esp_id=esp_id %}">Graphique courbe</a></li>
+                        <li><a href="{% url 'bar_data' esp_id=esp_id %}">Graphique bar</a></li>
+                        <li><a href="{% url 'jauge_data' esp_id=esp_id %}">Graphique jauge</a></li>
+                        <li><a href="{% url 'historique' esp_id=esp_id %}">Historique</a></li>
+                    </ul>
+                </li>
+            </ul>
+        
+    </div>
     <div class="charts-container">
-        <!-- Sous-conteneur pour la température -->
-        <div class="chart-wrapper">
-            <p><strong>Température : <span id="temperature">--</span></strong></p>
-            <div id="temperatureChart" style="width: 500px; height: 400px; margin-left: 20%;"></div>
+        <!-- Sous-conteneur pour la température et l'humidité côte à côte -->
+        <div class="charts-row">
+            <!-- Sous-conteneur pour la température -->
+            <div class="chart-wrapper">
+                <p style="text-align: center;"><strong>Température : <span id="temperature">--</span></strong></p>
+                <div id="temperatureChart" class="chart" style="width: 700px; height: 400px;"></div>
+            </div>
+
+            <!-- Sous-conteneur pour l'humidité -->
+            <div class="chart-wrapper">
+                <p style="text-align: center;"><strong>Humidité : <span id="humidity">--</span></strong></p>
+                <div id="humidityChart" class="chart" style="width: 700px; height: 400px;"></div>
+            </div>
         </div>
 
-        <!-- Sous-conteneur pour l'humidité -->
+        <!-- Sous-conteneur pour le gaz en dessous de la température -->
         <div class="chart-wrapper">
-            <p><strong>Humidité : <span id="humidity">--</span></strong></p>
-            <div id="humidityChart" style="width: 500px; height: 400px; margin-left: 20%;"></div>
+        <div class="chart-gaz">
+            <p style="text-align: center;"><strong>Gaz : <span id="gaz">--</span></strong></p>
+            <div id="gazChart" class="chart" style="width: 700px; height: 400px; margin: 0;"></div>
         </div>
     </div>
-    
-    <!-- Sous-conteneur pour le gaz -->
-    <div class="chart-gaz">
-        <p><strong>Gaz : <span id="gaz">--</span></strong></p>
-        <div id="gazChart" style="width: 500px; height: 400px; margin-left: 20%;"></div>
     </div>
+
+    
 </div>
 
 <script>
@@ -52,7 +75,7 @@
                         splitNumber: 10,
                         axisLine: {
                             lineStyle: {
-                                color: [[0.2, '#ff4500'], [0.8, '#ffab00'], [1, '#4b8b6d']],
+                                color: [[0.2, '#4b8b6d'], [0.8, '#ffab00'], [1, '#ff4500']],
                                 width: 10
                             }
                         },
@@ -88,7 +111,7 @@
         // Fonction pour récupérer les données
         function fetchData() {
             $.ajax({
-                url: "{% url 'get_data' %}",
+                url: "{% url 'get_data' esp_id=esp_id %}",
                 method: 'GET',
                 success: function(data) {
                     $('#temperature').text(data.temperature + '°C');
@@ -113,6 +136,5 @@
         setInterval(fetchData, 2000); // Met à jour toutes les 2 secondes
     });
 </script>
-
 
 {% endblock content %}

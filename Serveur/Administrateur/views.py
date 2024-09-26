@@ -1,6 +1,7 @@
 
 #from gettext import translation
 from django.conf import settings
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 #from .decorators import superuser_required # type: ignore
 from django.contrib.auth import authenticate, login, logout
@@ -16,41 +17,23 @@ from django.utils.translation import gettext as _
 
 def is_admin(user):
     return user.is_staff  # Vérifie si l'utilisateur est un administrateur
-
 @user_passes_test(is_admin, login_url='login_admin')
-def ajouteUtil(request):
-    user = request.user  # Utilisateur actuellement connecté
-
-    # Vérifier si l'utilisateur a un profil et récupérer l'image
+def acceil_admin(request):
+         # Récupérer l'image de profil de l'administrateur connecté
+    admin = request.user
     try:
-        admin_profile = user.userprofile  # Récupérer le profil associé
+        admin_profile = admin.userprofile  # Profil de l'administrateur
     except UserProfile.DoesNotExist:
-        admin_profile = None  # Si aucun profil n'existe, définir sur None
-        
-    if request.method == 'POST':
-        uname = request.POST.get('name')
-        uemail = request.POST.get('email')
-        upass = request.POST.get('pass')
-        image = request.FILES.get('image')  # Récupérer le fichier image
-        
-        if not uname or not uemail or not upass: #verification si le champ est vide
-            messages.error(request, _("Veuillez remplir tous les champs!"))
-            return redirect('ajouter')
-        else:
-            if not User.objects.filter(username=uname).exists(): 
-                utilisateur = User.objects.create_user(uname, uemail, upass)
-                utilisateur.save()
+        admin_profile = None  # Si l'administrateur n'a pas de profil
+    # Récupérer l'utilisateur sélectionné
+    return render(request, 'admini/Acceil.html',{'admin_profile': admin_profile,  # Profil de l'administrateur
+                                                 'administrateur':request.user})
 
-                # Créer un profil utilisateur avec l'image
-                UserProfile.objects.create(user=utilisateur, image=image)
-
-                messages.success(request, _("Utilisateur créé avec succès!"))
-                return redirect('ajouter')
-            else:
-                messages.error(request, _("Nom d'utilisateur existe déjà!"))
-    return render(request, 'admini/Ajoute.html',{'admin_profile': admin_profile,
-                                                  'administrateur': user})
-    
+#@user_passes_test(is_admin, login_url='login_admin')
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from .models import UserProfile
     
 @user_passes_test(is_admin, login_url='login_admin')
 def liste_util(request):
@@ -68,55 +51,69 @@ def liste_util(request):
                                                   'administrateur': user})
 
 @user_passes_test(is_admin, login_url='login_admin')
-def courbe_admin(request):
+def courbe_admin(request, esp_id):
     user = request.user  # Utilisateur actuellement connecté
-
-    # Vérifier si l'utilisateur a un profil et récupérer l'image
+     # Vérifier si l'utilisateur a un profil et récupérer l'image
     try:
         admin_profile = user.userprofile  # Récupérer le profil associé
     except UserProfile.DoesNotExist:
         admin_profile = None  # Si aucun profil n'existe, définir sur None
-    return render(request, 'admini/courbe.html', {'admin_profile': admin_profile,
-                                                  'administrateur': user})
+    # Récupérez les données de DHTData sans utiliser le champ esp
+    data = models.DHTData.objects.last()  # Ou appliquez d'autres filtres si nécessaire
+    esp = get_object_or_404(models.ESP, id=esp_id)
+    # Préparez les données pour votre template
+    context = {
+        'admin_profile': admin_profile,
+        'administrateur': user,
+        'data': data,
+        'esp_id': esp_id,  # Ajoutez esp_id ici
+         'esp': esp,
+    }
+    return render(request, 'admini/courbe.html', context)
 
 
 @user_passes_test(is_admin, login_url='login_admin')
-def jauge_admin(request):
+def jauge_admin(request, esp_id):
     user = request.user  # Utilisateur actuellement connecté
-
-    # Vérifier si l'utilisateur a un profil et récupérer l'image
+     # Vérifier si l'utilisateur a un profil et récupérer l'image
     try:
         admin_profile = user.userprofile  # Récupérer le profil associé
     except UserProfile.DoesNotExist:
         admin_profile = None  # Si aucun profil n'existe, définir sur None
-    return render(request, 'admini/jauge.html', {'admin_profile': admin_profile,
-                                                  'administrateur': user})
+    # Récupérez les données de DHTData sans utiliser le champ esp
+    data = models.DHTData.objects.last()  # Ou appliquez d'autres filtres si nécessaire
+    esp = get_object_or_404(models.ESP, id=esp_id)
+    # Préparez les données pour votre template
+    context = {
+        'admin_profile': admin_profile,
+        'administrateur': user,
+        'data': data,
+        'esp_id': esp_id,  # Ajoutez esp_id ici
+        'esp': esp,
+    }
+    return render(request, 'admini/jauge.html', context)
 
 @user_passes_test(is_admin, login_url='login_admin')
-def bar_admin(request):
+def bar_admin(request, esp_id):
     user = request.user  # Utilisateur actuellement connecté
-
-    # Vérifier si l'utilisateur a un profil et récupérer l'image
+     # Vérifier si l'utilisateur a un profil et récupérer l'image
     try:
         admin_profile = user.userprofile  # Récupérer le profil associé
     except UserProfile.DoesNotExist:
         admin_profile = None  # Si aucun profil n'existe, définir sur None
-    return render(request, 'admini/Bar.html', {'admin_profile': admin_profile,
-                                                  'administrateur': user})
+    # Récupérez les données de DHTData sans utiliser le champ esp
+    data = models.DHTData.objects.last()  # Ou appliquez d'autres filtres si nécessaire
+    esp = get_object_or_404(models.ESP, id=esp_id)
+    # Préparez les données pour votre template
+    context = {
+        'admin_profile': admin_profile,
+        'administrateur': user,
+        'data': data,
+        'esp_id': esp_id,  # Ajoutez esp_id ici
+        'esp': esp,
+    }
+    return render(request, 'admini/bar.html', context)
 
-def historique_admin(request):
-    user = request.user  # Utilisateur actuellement connecté
-    # Vérifier si l'utilisateur a un profil et récupérer l'image
-    try:
-        admin_profile = user.userprofile  # Récupérer le profil associé
-    except UserProfile.DoesNotExist:
-        admin_profile = None  # Si aucun profil n'existe, définir sur None
-    # Récupérer toutes les données de la base de données
-    all_data = models.DHTData.objects.all().order_by('-timestamp')
-  
-    return render(request, 'admini/historique.html', {'all_data': all_data,
-                                                    'admin_profile': admin_profile,
-                                                    'administrateur': user})
 
 def login_admin(request):
     if request.method == 'POST':
@@ -129,7 +126,7 @@ def login_admin(request):
             if adm is not None:
                 if adm.is_superuser: 
                     login(request,adm)
-                    return redirect('courbe_admin') #ouvrir la paged'admin
+                    return redirect('acceil_admin') #ouvrir la paged'admin
                 else:
                     messages.error(request,"Vous n'avez pas les droits administratifs!")
             else:
@@ -148,49 +145,67 @@ def supre_util(request, user_id):
     messages.success(request, "L'utilisateur a été supprimé avec succès!")
     return redirect('liste')
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.models import User
+from .models import UserProfile
+
+# Vue pour ajouter un nouvel utilisateur
 @user_passes_test(is_admin, login_url='login_admin')
-def modifier_util(request, user_id):
-    # Récupérer l'utilisateur sélectionné pour la modification
-    util = get_object_or_404(User, id=user_id)
-    
-    # Récupérer ou créer un profil pour l'utilisateur sélectionné
-    user_profile, created = UserProfile.objects.get_or_create(user=util)
-
-    # Récupérer l'image de profil de l'administrateur connecté
-    admin = request.user
-    try:
-        admin_profile = admin.userprofile  # Profil de l'administrateur
-    except UserProfile.DoesNotExist:
-        admin_profile = None  # Si l'administrateur n'a pas de profil
-
+def ajouter_utilisateur(request):
     if request.method == 'POST':
-        nom_util = request.POST.get('username')
+        nom_util = request.POST.get('name')
         email_util = request.POST.get('email')
-        pass_util = request.POST.get('password')
-        nv_img = request.FILES.get('new_image')  # Récupérer la nouvelle image
+        pass_util = request.POST.get('pass')
+        img = request.FILES.get('image')
 
-        # Mettre à jour les informations de l'utilisateur sélectionné
-        util.username = nom_util
-        util.email = email_util
+        # Vérifier si un utilisateur avec cet email ou ce nom d'utilisateur existe déjà
+        if User.objects.filter(username=nom_util).exists() or User.objects.filter(email=email_util).exists():
+            messages.error(request, "Cet utilisateur existe déjà.")
+            return redirect('liste')
 
-        # Vérifier si le mot de passe est fourni
-        if pass_util:
-            util.set_password(pass_util)
+        # Créer un nouvel utilisateur
+        utilisateur = User.objects.create_user(username=nom_util, email=email_util, password=pass_util)
 
-        # Vérifier si une nouvelle image est téléchargée
-        if nv_img:
-            user_profile.image = nv_img
-            user_profile.save()
+        # Ajouter une image de profil si elle est fournie
+        if img:
+            UserProfile.objects.create(user=utilisateur, image=img)
+        else:
+            UserProfile.objects.create(user=utilisateur)
 
-        util.save()
-        messages.success(request, "L'utilisateur a été modifié avec succès!")
+        messages.success(request, "Utilisateur ajouté avec succès!")
         return redirect('liste')
 
-    return render(request, 'admini/modifier.html', {
-        'utilisateur': util,
-        'user_profile': user_profile,  # Profil de l'utilisateur sélectionné
-        'admin_profile': admin_profile  # Profil de l'administrateur
-    })
+    return render(request, 'admini/liste_util.html')
+
+# Vue pour modifier un utilisateur existant
+@user_passes_test(is_admin, login_url='login_admin')
+def modifier_utilisateur(request, user_id):
+    utilisateur = get_object_or_404(User, id=user_id)
+    user_profile, created = UserProfile.objects.get_or_create(user=utilisateur)
+
+    if request.method == 'POST':
+        nom_util = request.POST.get('name')
+        email_util = request.POST.get('email')
+        pass_util = request.POST.get('pass')
+        img = request.FILES.get('image')
+
+        # Mettre à jour les informations de l'utilisateur
+        utilisateur.username = nom_util
+        utilisateur.email = email_util
+
+        if pass_util:
+            utilisateur.set_password(pass_util)
+
+        if img:
+            user_profile.image = img
+            user_profile.save()
+
+        utilisateur.save()
+        messages.success(request, "Utilisateur modifié avec succès!")
+        return redirect('liste')
+
+    return render(request, 'admini/liste_util.html', {'utilisateur': utilisateur})
 
 
 @user_passes_test(is_admin, login_url='login_admin')
@@ -228,11 +243,13 @@ def modifier_profil_admin(request):
         # Mettre à jour la session pour éviter la déconnexion après le changement de mot de passe
         update_session_auth_hash(request, user)
         messages.success(request, "Profil administrateur mis à jour avec succès!")
-        return redirect('profil_admin')  # Redirige vers la page d'accueil après modification
+        #return redirect(None)  # Redirige vers la page d'accueil après modification
 
-    return render(request, 'admini/modifier_profil.html', {'user': user,
-                                                           'administrateur': user,
-                                                           'user_profile': admin_profile,})
+  # Vous pouvez retourner une réponse HTTP 204 No Content pour indiquer que tout s'est bien passé
+        return HttpResponse(status=204)
+
+    # Si la méthode n'est pas POST, vous n'avez pas besoin de faire quoi que ce soit.
+    return HttpResponse(status=400)  # Ou un autre statut si nécessaire
 
 
 #suprimer données selectionner de l'historique
@@ -259,39 +276,9 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import UserProfile  # Assurez-vous que UserProfile est importé correctement
 
-"""
-def modifier_util(request, user_id):
-    util = get_object_or_404(User, id=user_id)
-    user_profile = UserProfile.objects.filter(user=util).first()  # Récupérer le profil de l'utilisateur
-    if request.method == 'POST':
-        nom_util = request.POST.get('username')
-        email_util = request.POST.get('email')
-        pass_util = request.POST.get('password')
-        nv_img = request.FILES.get('new_image')  # Récupérer la nouvelle image
-        util.username = nom_util  # Mettre à jour le nom
-        util.email = email_util  # Mettre à jour l'email
-
-        # Vérifier si le mot de passe est fourni
-        if pass_util:
-            util.set_password(pass_util)
-
-        # Vérifier si une nouvelle image est téléchargée
-        if nv_img:
-            if user_profile:
-                user_profile.image = nv_img
-            else:
-                user_profile = UserProfile(user=util, image=nv_img)
-            user_profile.save()
-
-        util.save()
-        messages.success(request, "L'utilisateur a été modifié avec succès!")
-        return redirect('liste')
-    return render(request, 'admini/modifier.html', {'utilisateur': util,
-                                                    'user_profile': user_profile})
-"""
 
 @user_passes_test(is_admin, login_url='login_admin')
-def historique_utilisateur(request, user_id):
+def historique_esp(request, esp_id):
         # Récupérer l'image de profil de l'administrateur connecté
     admin = request.user
     try:
@@ -299,14 +286,64 @@ def historique_utilisateur(request, user_id):
     except UserProfile.DoesNotExist:
         admin_profile = None  # Si l'administrateur n'a pas de profil
     # Récupérer l'utilisateur sélectionné
-    utilisateur = get_object_or_404(User, id=user_id)
+    esp = get_object_or_404(models.ESP, id=esp_id)
 
     # Récupérer les données DHTData de l'utilisateur sélectionné
-    user_data = models.DHTData.objects.filter(user=utilisateur).order_by('-timestamp')
+    esp_data = models.DHTData.objects.filter(esp=esp).order_by('-timestamp')
 
-    return render(request, 'admini/historique_utilisateur.html', {
-        'utilisateur': utilisateur,
-        'user_data': user_data,
-        'admin_profile': admin_profile  # Profil de l'administrateur
-    
+    return render(request, 'admini/historique_esp.html', {
+        'esp':esp,
+        'esp_data': esp_data,
+        'admin_profile': admin_profile,  # Profil de l'administrateur
+        'administrateur':request.user
     })
+from Administrateur.forms import Esp_forms
+
+
+from Administrateur import models
+def liste_ESP(request):
+    # Récupérer l'image de profil de l'administrateur connecté
+    admin = request.user
+    try:
+        admin_profile = admin.userprofile  # Profil de l'administrateur
+    except UserProfile.DoesNotExist:
+        admin_profile = None  # Si l'administrateur n'a pas de profil
+        
+    if request.method == 'POST':
+        form = Esp_forms(request.POST)
+        if form.is_valid():
+            dht_data = form.save(commit=False)
+            #dht_data.user = request.user
+            dht_data.save()
+            return redirect('liste_esp')  # Redirige vers une page où les données sont affichées
+    else:
+        form = Esp_forms()
+    # Récupérer toutes les données de la base de données
+    all_esp = models.ESP.objects.all().order_by('-id')
+  
+    #profil = models.UserProfile.objects.get(user=request.user)
+    return render(request, 'admini/liste_esp.html', {'all_esp': all_esp,
+                                                     'form': form,
+                                                    'admin_profile': admin_profile,  # Profil de l'administrateur
+                                                    'administrateur':request.user})
+    
+def modifier_esp(request, esp_id):
+    esp = get_object_or_404(models.ESP, id=esp_id)  # Récupère l'appareil
+    if request.method == 'POST':
+        form = Esp_forms(request.POST, instance=esp)  # Pré-remplit le formulaire avec l'appareil
+        if form.is_valid():
+            form.save()
+            return redirect('liste_esp')  # Redirige après modification
+    else:
+        form = Esp_forms(instance=esp)  # Affiche le formulaire pré-rempli
+    
+    all_esp = models.ESP.objects.all().order_by('-id')
+    
+    return render(request, 'admini/liste_esp.html', {'all_esp': all_esp, 'form': form, 'admin_profile': request.user.userprofile})
+
+
+def supre_esp(request, esp_id):
+    esp = get_object_or_404(models.ESP, id=esp_id)
+    esp.delete()
+    messages.success(request, "Suppression succès!")
+    return redirect('liste_esp')
