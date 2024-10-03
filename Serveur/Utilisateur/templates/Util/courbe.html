@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="{% static 'adm/css/tous_graphe.css' %}">
 <div id="container">
     <div class="d-flex justify-content-between align-items-center" >
-        <h5 class="text-center alert text-bg-warning mb-xxl-5" style="width: 80%; margin-left: 50px;"><strong>Affichage des données actuelle de {{esp.lieu}}</strong></h5>
+        <h4 class="text-center alert text-bg-warning mb-xxl-5" style="width: 80%; margin-left: 50px;">Affichage des données actuelle: {{esp.lieu}}</h4>
     
        
             <ul class="menu text-center alert text-bg-warning mb-xxl-5">
@@ -29,6 +29,7 @@
             <div class="chart-wrapper">
                 <p style="text-align: center;"><strong>Température : <span id="temperature">--</span></strong></p>
                 <div id="temperatureChart" class="chart" style="width: 700px; height: 400px;"></div>
+               <!--  <p id="temperatureAlert" style=" font-weight: bold; text-align: center;"></p>-->
             </div>
 
             <!-- Sous-conteneur pour l'humidité -->
@@ -149,15 +150,24 @@
 }
 
 
+function determineColor(value, min, max) {
+    if (value >= min && value <= max) {
+        return 'green';
+    } else if (value < min) {
+        return 'blue';
+    } else {
+        return 'red';
+    }
+}
+
 function fetchData() {
     $.ajax({
-        url: "{% url 'get_data' esp_id=esp_id %}",  // Passe l'ID de l'ESP ici
+        url: "{% url 'get_data' esp_id=esp_id %}",
         method: 'GET',
         success: function(data) {
             var now = new Date();
             var time = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
             
-            // Ajouter les nouvelles valeurs
             temperatureData.labels.push(time);
             temperatureData.values.push(data.temperature);
             humidityData.labels.push(time);
@@ -165,35 +175,32 @@ function fetchData() {
             gazData.labels.push(time);
             gazData.values.push(data.gaz);
 
-            // Limiter à 5 points pour chaque jeu de données
-            if (temperatureData.labels.length > 10) {
-                temperatureData.labels.shift();  // Supprime le premier élément (le plus ancien)
-                temperatureData.values.shift();
-            }
-            if (humidityData.labels.length > 10) {
-                humidityData.labels.shift();
-                humidityData.values.shift();
-            }
-            if (gazData.labels.length > 10) {
-                gazData.labels.shift();
-                gazData.values.shift();
-            }
+            // Limiter à 10 points pour chaque jeu de données
+            if (temperatureData.labels.length > 10) temperatureData.labels.shift();
+            if (humidityData.labels.length > 10) humidityData.labels.shift();
+            if (gazData.labels.length > 10) gazData.labels.shift();
+
+            // Définir les couleurs
+            var temperatureColor = determineColor(data.temperature, 20, 25);
+            var humidityColor = determineColor(data.humidity, 40, 60);
+            var gazColor = determineColor(data.gaz, 0, 1000);
+
+            // Mettre à jour les textes et couleurs
+            $('#temperature').text(data.temperature).css('color', temperatureColor);
+            $('#humidity').text(data.humidity).css('color', humidityColor);
+            $('#gaz').text(data.gaz).css('color', gazColor);
 
             // Mettre à jour les graphiques
-            temperatureChart.setOption(createLineOption('Température', '#ff0000', temperatureData));
-            humidityChart.setOption(createLineOption('Humidité', '#0000ff', humidityData));
-            gazChart.setOption(createLineOption('Gaz', '#00ff00', gazData));
-
-            // Mettre à jour les valeurs affichées
-            $('#temperature').text(data.temperature);
-            $('#humidity').text(data.humidity);
-            $('#gaz').text(data.gaz);
+            temperatureChart.setOption(createLineOption('Température', temperatureColor, temperatureData));
+            humidityChart.setOption(createLineOption('Humidité', humidityColor, humidityData));
+            gazChart.setOption(createLineOption('Gaz', gazColor, gazData));
         },
         error: function() {
             console.log('Erreur lors de la récupération des données');
         }
     });
 }
+
 
 
 

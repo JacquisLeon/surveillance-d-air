@@ -3,206 +3,154 @@
 {% load static %}
 {% block content %}
 <link rel="stylesheet" href="{% static 'adm/css/menu_graphe.css' %}">
- <link rel="stylesheet" href="{% static 'adm/css/tous_graphe.css' %}">
+<link rel="stylesheet" href="{% static 'adm/css/tous_graphe.css' %}">
 <div id="container">
-    <div class="d-flex justify-content-between align-items-center" >
-        <h5 class="text-center alert text-bg-warning mb-xxl-5" style="width: 80%; margin-left: 50px;">Affichage des données actuelle de {{esp.lieu}}</h5>
-    
+    <div class="d-flex justify-content-between align-items-center">
+        <h5 class="text-center alert text-bg-warning mb-xxl-5" style="width: 80%; margin-left: 50px;">Affichage des données actuelles: {{esp.lieu}}</h5>
         
         <ul class="menu text-center alert text-bg-warning mb-xxl-5">
             <li class="dropdown">
                 <a href="#">Type de graphique <i class="fas fa-caret-down"></i></a>
                 <ul class="dropdown-menu">
-                    <li><a href="{% url 'courbe_admin' esp_id=esp_id %}">Graphique courbe</a></li>
-                    <li><a href="{% url 'bar_admin' esp_id=esp_id %}">Graphique bar</a></li>
-                    <li><a href="{% url 'jauge_admin' esp_id=esp_id %}">Graphique jauge</a></li>
-                    <li><a href="{% url 'histo_esp' esp_id=esp_id %}">Historique</a></li>
+                    <li><a href="{% url 'courbe_data' esp_id=esp_id %}">Graphique courbe</a></li>
+                    <li><a href="{% url 'bar_data' esp_id=esp_id %}">Graphique bar</a></li>
+                    <li><a href="{% url 'jauge_data' esp_id=esp_id %}">Graphique jauge</a></li>
+                    <li><a href="{% url 'historique' esp_id=esp_id %}">Historique</a></li>
                 </ul>
             </li>
         </ul>
-        
-        
-       
-        
     </div>
 
     <div class="charts-container">
-        <!-- Sous-conteneur pour la température et l'humidité côte à côte -->
         <div class="charts-row">
-            <!-- Sous-conteneur pour la température -->
             <div class="chart-wrapper">
                 <p style="text-align: center;"><strong>Température : <span id="temperature">--</span></strong></p>
                 <div id="temperatureChart" class="chart" style="width: 700px; height: 400px;"></div>
             </div>
-
-            <!-- Sous-conteneur pour l'humidité -->
             <div class="chart-wrapper">
                 <p style="text-align: center;"><strong>Humidité : <span id="humidity">--</span></strong></p>
                 <div id="humidityChart" class="chart" style="width: 700px; height: 400px;"></div>
             </div>
         </div>
 
-        <!-- Sous-conteneur pour le gaz en dessous de la température -->
         <div class="chart-wrapper">
-        <div class="chart-gaz">
-            <p style="text-align: center;"><strong>Gaz : <span id="gaz">--</span></strong></p>
-            <div id="gazChart" class="chart" style="width: 700px; height: 400px; margin: 0;"></div>
+            <div class="chart-gaz">
+                <p style="text-align: center;"><strong>Gaz : <span id="gaz">--</span></strong></p>
+                <div id="gazChart" class="chart" style="width: 700px; height: 400px; margin: 0;"></div>
+            </div>
         </div>
-    </div>
     </div>
 
     <a href="{% url 'add_dht_data' %}">Ajouter des données DHT</a>
 </div>
 
-
 <script>
-   $(document).ready(function() {
-       var temperatureChart = echarts.init(document.getElementById('temperatureChart'));
-       var humidityChart = echarts.init(document.getElementById('humidityChart'));
-       var gazChart = echarts.init(document.getElementById('gazChart'));
+    $(document).ready(function() {
+        var temperatureChart = echarts.init(document.getElementById('temperatureChart'));
+        var humidityChart = echarts.init(document.getElementById('humidityChart'));
+        var gazChart = echarts.init(document.getElementById('gazChart'));
 
-       var temperatureData = { labels: [], values: [] };
-       var humidityData = { labels: [], values: [] };
-       var gazData = { labels: [], values: [] };
+        var temperatureData = { labels: [], values: [] };
+        var humidityData = { labels: [], values: [] };
+        var gazData = { labels: [], values: [] };
 
-       function createStackedBarOption(name, color, data, stackName) {
-    return {
-        xAxis: {
-            type: 'category',
-            boundaryGap: true,
-            data: data.labels,
-            axisLabel: {
-                color: '#000',
-                fontSize: 14,
-                fontWeight: 'bold'
-            },
-            axisLine: {
-                lineStyle: {
-                    color: '#333',
-                    width: 2
-                }
-            },
-            axisTick: {
-                show: true,
-                lineStyle: {
-                    color: '#333',
-                    width: 1
-                }
-            },
-            splitLine: {
-                show: true,
-                lineStyle: {
-                    color: '#ddd',
-                    width: 1
-                }
-            }
-        },
-        yAxis: {
-            type: 'value',
-            axisLabel: {
-                color: '#000',
-                fontSize: 14,
-                fontWeight: 'bold'
-            },
-            axisLine: {
-                lineStyle: {
-                    color: '#333',
-                    width: 2
-                }
-            },
-            axisTick: {
-                show: true,
-                lineStyle: {
-                    color: '#333',
-                    width: 1
-                }
-            },
-            splitLine: {
-                show: true,
-                lineStyle: {
-                    color: '#ddd',
-                    width: 1
-                }
-            }
-        },
-        series: [
-            {
-                name: name,
-                type: 'bar',
-                stack: stackName, // Ajout de la propriété de stack
-                data: data.values,
-                itemStyle: {
-                    color: color,
-                    borderColor: 'rgba(0, 0, 0, 0.5)',  // Bordure autour des barres
-                    borderWidth: 2
+        function getTemperatureColor(value) {
+            if (value < 20) return 'blue';
+            else if (value >= 20 && value <= 25) return 'green';
+            else return 'red';
+        }
+
+        function getHumidityColor(value) {
+            if (value < 40) return 'blue';
+            else if (value >= 40 && value <= 60) return 'green';
+            else return 'red';
+        }
+
+        function getGazColor(value) {
+            return value < 1000 ? 'green' : 'red';
+        }
+
+        function createStackedBarOption(name, data, colorFunc) {
+            return {
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: true,
+                    data: data.labels,
+                    axisLabel: { color: '#000', fontSize: 14, fontWeight: 'bold' },
+                    axisLine: { lineStyle: { color: '#333', width: 2 } },
+                    axisTick: { show: true, lineStyle: { color: '#333', width: 1 } },
+                    splitLine: { show: true, lineStyle: { color: '#ddd', width: 1 } }
                 },
-                emphasis: {
-                    itemStyle: {
-                        color: color,
-                        borderColor: 'rgba(0, 0, 0, 0.7)'  // Bordure à l'emphase
+                yAxis: {
+                    type: 'value',
+                    axisLabel: { color: '#000', fontSize: 14, fontWeight: 'bold' },
+                    axisLine: { lineStyle: { color: '#333', width: 2 } },
+                    axisTick: { show: true, lineStyle: { color: '#333', width: 1 } },
+                    splitLine: { show: true, lineStyle: { color: '#ddd', width: 1 } }
+                },
+                series: [
+                    {
+                        name: name,
+                        type: 'bar',
+                        data: data.values.map(value => ({
+                            value: value,
+                            itemStyle: { color: colorFunc(value) }
+                        })),
+                        emphasis: {
+                            itemStyle: {
+                                borderColor: 'rgba(0, 0, 0, 0.7)'
+                            }
+                        }
                     }
+                ]
+            };
+        }
+
+        function fetchData() {
+            $.ajax({
+                url: "{% url 'get_data' esp_id=esp_id %}",
+                method: 'GET',
+                success: function(data) {
+                    var now = new Date();
+                    var time = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+                    
+                    temperatureData.labels.push(time);
+                    temperatureData.values.push(data.temperature);
+
+                    humidityData.labels.push(time);
+                    humidityData.values.push(data.humidity);
+
+                    gazData.labels.push(time);
+                    gazData.values.push(data.gaz);
+
+                    if (temperatureData.labels.length > 10) {
+                        temperatureData.labels.shift();
+                        temperatureData.values.shift();
+                        humidityData.labels.shift();
+                        humidityData.values.shift();
+                        gazData.labels.shift();
+                        gazData.values.shift();
+                    }
+
+                    // Mettre à jour les graphiques avec les couleurs dynamiques
+                    temperatureChart.setOption(createStackedBarOption('Température', temperatureData, getTemperatureColor));
+                    humidityChart.setOption(createStackedBarOption('Humidité', humidityData, getHumidityColor));
+                    gazChart.setOption(createStackedBarOption('Gaz', gazData, getGazColor));
+
+                    $('#temperature').text(data.temperature + '°C');
+                    $('#humidity').text(data.humidity + '%');
+                    $('#gaz').text(data.gaz + 'PPT');
+                },
+                error: function() {
+                    console.log('Erreur lors de la récupération des données');
                 }
-            }
-        ]
-    };
+            });
+        }
 
-
-}
-
-
-
-       function fetchData() {
-           $.ajax({
-               url: "{% url 'get_data' esp_id=esp_id %}",  // Assure-toi que cette URL est correcte
-               method: 'GET',
-               success: function(data) {
-                   var now = new Date();
-                   var time = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
-                   
-                   // Mettre à jour les données de température
-                   temperatureData.labels.push(time);
-                   temperatureData.values.push(data.temperature);
-
-                   // Mettre à jour les données d'humidité
-                   humidityData.labels.push(time);
-                   humidityData.values.push(data.humidity);
-
-                   // Mettre à jour les données du gaz
-                   gazData.labels.push(time);
-                   gazData.values.push(data.gaz);
-
-                   // Limiter le nombre de points pour chaque graphique
-                   if (temperatureData.labels.length > 10) {
-                       temperatureData.labels.shift();
-                       temperatureData.values.shift();
-                       humidityData.labels.shift();
-                       humidityData.values.shift();
-                       gazData.labels.shift();
-                       gazData.values.shift();
-                   }
-
-                  // Mettre à jour les graphiques avec barres empilées
-temperatureChart.setOption(createStackedBarOption('Température', 'rgba(75, 192, 192, 1)', temperatureData, 'stack1'));
-humidityChart.setOption(createStackedBarOption('Humidité', 'rgba(75, 10, 235, 1)', humidityData, 'stack1'));
-gazChart.setOption(createStackedBarOption('Gaz', 'rgba(192, 75, 75, 1)', gazData, 'stack1'));
-
-                   // Mettre à jour les valeurs affichées
-                   $('#temperature').text(data.temperature + '°C');
-                   $('#humidity').text(data.humidity + '%');
-                   $('#gaz').text(data.gaz + 'PPT');
-               },
-               error: function() {
-                   console.log('Erreur lors de la récupération des données');
-               }
-           });
-       }
-
-       // Appel initial pour obtenir les données immédiatement
-       fetchData();
-
-       // Appel périodique pour mettre à jour les données
-       setInterval(fetchData, 2000); // Met à jour toutes les 2 secondes
-   });
+        fetchData();
+        setInterval(fetchData, 2000);
+    });
 </script>
+
   
 {% endblock content %}

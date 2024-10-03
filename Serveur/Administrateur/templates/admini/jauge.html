@@ -7,49 +7,41 @@
 <link rel="stylesheet" href="{% static 'adm/css/tous_graphe.css' %}">
 <link rel="stylesheet" href="{% static 'adm/css/menu_graphe.css' %}">
 <div id="container">
-    <div class="d-flex justify-content-between align-items-center" >
-        <h4 class="text-center alert text-bg-warning mb-xxl-5" style="width: 80%; margin-left: 50px;">Affichage des données actuelle de {{esp.lieu}}</h4>
-    
+    <div class="d-flex justify-content-between align-items-center">
+        <h4 class="text-center alert text-bg-warning mb-xxl-5" style="width: 80%; margin-left: 50px;">Affichage des données actuelle: {{esp.lieu}}</h4>
        
-            <ul class="menu text-center alert text-bg-warning mb-xxl-5">
-                <li class="dropdown">
-                    <a href="#">Type de graphique <i class="fas fa-caret-down"></i></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{% url 'courbe_admin' esp_id=esp_id %}">Graphique courbe</a></li>
-                        <li><a href="{% url 'bar_admin' esp_id=esp_id %}">Graphique bar</a></li>
-                        <li><a href="{% url 'jauge_admin' esp_id=esp_id %}">Graphique jauge</a></li>
-                        <li><a href="{% url 'histo_esp' esp_id=esp_id %}">Historique</a></li>
-                    </ul>
-                </li>
-            </ul>
-        
+        <ul class="menu text-center alert text-bg-warning mb-xxl-5">
+            <li class="dropdown">
+                <a href="#">Type de graphique <i class="fas fa-caret-down"></i></a>
+                <ul class="dropdown-menu">
+                    <li><a href="{% url 'courbe_admin' esp_id=esp_id %}">Graphique courbe</a></li>
+                    <li><a href="{% url 'bar_admin' esp_id=esp_id %}">Graphique bar</a></li>
+                    <li><a href="{% url 'jauge_admin' esp_id=esp_id %}">Graphique jauge</a></li>
+                    <li><a href="{% url 'histo_esp' esp_id=esp_id %}">Historique</a></li>
+                </ul>
+            </li>
+        </ul>
     </div>
     <div class="charts-container">
-        <!-- Sous-conteneur pour la température et l'humidité côte à côte -->
         <div class="charts-row">
-            <!-- Sous-conteneur pour la température -->
             <div class="chart-wrapper">
                 <p style="text-align: center;"><strong>Température : <span id="temperature">--</span></strong></p>
                 <div id="temperatureChart" class="chart" style="width: 700px; height: 400px;"></div>
             </div>
 
-            <!-- Sous-conteneur pour l'humidité -->
             <div class="chart-wrapper">
                 <p style="text-align: center;"><strong>Humidité : <span id="humidity">--</span></strong></p>
                 <div id="humidityChart" class="chart" style="width: 700px; height: 400px;"></div>
             </div>
         </div>
 
-        <!-- Sous-conteneur pour le gaz en dessous de la température -->
         <div class="chart-wrapper">
-        <div class="chart-gaz">
-            <p style="text-align: center;"><strong>Gaz : <span id="gaz">--</span></strong></p>
-            <div id="gazChart" class="chart" style="width: 700px; height: 400px; margin: 0;"></div>
+            <div class="chart-gaz">
+                <p style="text-align: center;"><strong>Gaz : <span id="gaz">--</span></strong></p>
+                <div id="gazChart" class="chart" style="width: 700px; height: 400px; margin: 0;"></div>
+            </div>
         </div>
     </div>
-    </div>
-
-    
 </div>
 
 <script>
@@ -60,7 +52,7 @@
         var gazChart = echarts.init(document.getElementById('gazChart'));
 
         // Fonction pour créer les options de la jauge
-        function createGaugeOption(label, value, min, max, unit) {
+        function createGaugeOption(label, value, min, max, unit, colorRanges) {
             return {
                 tooltip: {
                     formatter: '{a} <br/>{b} : {c}' + unit
@@ -75,7 +67,7 @@
                         splitNumber: 10,
                         axisLine: {
                             lineStyle: {
-                                color: [[0.2, '#ff4500'], [0.8, '#ffab00'], [1, '#4b8b6d']],
+                                color: colorRanges,
                                 width: 10
                             }
                         },
@@ -119,9 +111,22 @@
                     $('#gaz').text(data.gaz + 'PPT');
 
                     // Mise à jour des jauges
-                    temperatureChart.setOption(createGaugeOption('Température', data.temperature, -10, 50, '°C'));
-                    humidityChart.setOption(createGaugeOption('Humidité', data.humidity, 0, 100, '%'));
-                    gazChart.setOption(createGaugeOption('Gaz', data.gaz, 0, 500, 'mg/L'));
+                    temperatureChart.setOption(createGaugeOption('Température', data.temperature, 0, 50, '°C', [
+                        [0.4, '#0000FF'], // Bleu pour 0 à 20
+                        [0.5, '#008000'], // Vert pour 20 à 25
+                        [1, '#FF0000']    // Rouge au-dessus de 25
+                    ]));
+
+                    humidityChart.setOption(createGaugeOption('Humidité', data.humidity, 0, 100, '%', [
+                        [0.4, '#0000FF'], // Vert pour 0 à 40
+                        [0.6, '#008000'], // Bleu pour 40 à 60
+                        [1, '#FF0000']    // Rouge au-dessus de 60
+                    ]));
+
+                    gazChart.setOption(createGaugeOption('Gaz', data.gaz, 0, 2000, 'mg/L', [
+                        [0.5, '#008000'], // Vert pour inférieur à 1000
+                        [1, '#FF0000']    // Rouge au-dessus de 1000
+                    ]));
                 },
                 error: function() {
                     console.log('Erreur lors de la récupération des données');
