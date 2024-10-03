@@ -17,9 +17,10 @@ urlpatterns = [
     path('modifier/<int:user_id>/', views.modifier_utilisateur, name='modifier'),
     path('modifier-admin/', views.modifier_profil_admin, name='profil_admin'),
     path('delete_selected/', views.delete_selected, name='delete_selected'),
-    path('set_language/', views.set_language, name='set_language'),
+    #path('i18n/setlang/', views.set_language, name='set_language'),
     path('histo_esp/<int:esp_id>/', views.historique_esp, name='histo_esp'),
     path('modifier_esp/<int:esp_id>/', views.modifier_esp, name='modifier_esp'),
     path('liste_esp/', views.liste_ESP, name='liste_esp'),
-   
+    path('set-langue/', views.set_langue, name='set_language'),
+    path('download-pdf/<int:esp_id>/', views.download_pdf, name='download_pdf'),
 ]# + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

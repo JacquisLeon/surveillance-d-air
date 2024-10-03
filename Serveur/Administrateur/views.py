@@ -12,6 +12,7 @@ from .models import UserProfile  # Importer le modèle UserProfile
 from django.contrib.auth import update_session_auth_hash  # Import supplémentaire pour garder la session active
 from django.contrib.auth.decorators import user_passes_test
 from Utilisateur import models
+import json
 # Create your views here.
 from django.utils.translation import gettext as _
 
@@ -25,9 +26,13 @@ def acceil_admin(request):
         admin_profile = admin.userprofile  # Profil de l'administrateur
     except UserProfile.DoesNotExist:
         admin_profile = None  # Si l'administrateur n'a pas de profil
-    # Récupérer l'utilisateur sélectionné
+        
+    esp_list = models.ESP.objects.all()
+    esp_data = [{'id':esp.id,'latitude': esp.latitude, 'longitude': esp.longitude, 'lieu': esp.lieu} for esp in esp_list]
     return render(request, 'admini/Acceil.html',{'admin_profile': admin_profile,  # Profil de l'administrateur
-                                                 'administrateur':request.user})
+                                                 'administrateur':request.user,
+                                                 'esp_list': json.dumps(esp_data)})
+
 
 #@user_passes_test(is_admin, login_url='login_admin')
 from django.contrib import messages
@@ -45,7 +50,7 @@ def liste_util(request):
     except UserProfile.DoesNotExist:
         admin_profile = None  # Si aucun profil n'existe, définir sur None
     # Récupérer toutes les données de la base de données, y compris le profil utilisateur
-    all_data = User.objects.filter(is_superuser=False).select_related('userprofile').order_by('-id')
+    all_data = User.objects.select_related('userprofile').order_by('-id')
     return render(request, 'admini/liste_util.html', {'all_data': all_data,
                                                     'admin_profile': admin_profile,
                                                   'administrateur': user})
@@ -158,6 +163,7 @@ def ajouter_utilisateur(request):
         email_util = request.POST.get('email')
         pass_util = request.POST.get('pass')
         img = request.FILES.get('image')
+        role_util = request.POST.get('role')  # Récupérer le rôle de l'utilisateur
 
         # Vérifier si un utilisateur avec cet email ou ce nom d'utilisateur existe déjà
         if User.objects.filter(username=nom_util).exists() or User.objects.filter(email=email_util).exists():
@@ -167,11 +173,19 @@ def ajouter_utilisateur(request):
         # Créer un nouvel utilisateur
         utilisateur = User.objects.create_user(username=nom_util, email=email_util, password=pass_util)
 
-        # Ajouter une image de profil si elle est fournie
-        if img:
-            UserProfile.objects.create(user=utilisateur, image=img)
+        # Vérifier le rôle et définir is_superuser
+        if role_util == 'admin':
+            utilisateur.is_superuser = True
+            utilisateur.is_staff = True  # Assurez-vous que l'utilisateur peut accéder à l'admin
         else:
-            UserProfile.objects.create(user=utilisateur)
+            # Si le rôle est 'utilisateur', vous pouvez ajouter des paramètres par défaut
+            utilisateur.is_superuser = False
+            utilisateur.is_staff = False
+
+        utilisateur.save()  # Sauvegarder les changements
+
+        # Ajouter une image de profil si elle est fournie
+        UserProfile.objects.create(user=utilisateur, image=img, role=role_util)
 
         messages.success(request, "Utilisateur ajouté avec succès!")
         return redirect('liste')
@@ -189,24 +203,33 @@ def modifier_utilisateur(request, user_id):
         email_util = request.POST.get('email')
         pass_util = request.POST.get('pass')
         img = request.FILES.get('image')
+        role = request.POST.get('role')  # Récupération du rôle depuis le formulaire
 
         # Mettre à jour les informations de l'utilisateur
         utilisateur.username = nom_util
         utilisateur.email = email_util
 
         if pass_util:
-            utilisateur.set_password(pass_util)
+            utilisateur.set_password(pass_util)  # Mise à jour du mot de passe
 
         if img:
             user_profile.image = img
             user_profile.save()
 
+        # Mise à jour du rôle de l'utilisateur
+        if role == 'admin':
+            utilisateur.is_superuser = True
+            utilisateur.is_staff = True  # Optionnel : si vous souhaitez que l'admin soit aussi staff
+        else:
+            utilisateur.is_superuser = False
+            utilisateur.is_staff = False
+
         utilisateur.save()
+
         messages.success(request, "Utilisateur modifié avec succès!")
         return redirect('liste')
 
     return render(request, 'admini/liste_util.html', {'utilisateur': utilisateur})
-
 
 @user_passes_test(is_admin, login_url='login_admin')
 def modifier_profil_admin(request):
@@ -262,16 +285,6 @@ def delete_selected(request):
         return redirect('histo')  # Redirige vers la vue d'affichage des données
     return redirect('histo')
 
-from django.shortcuts import redirect
-from django.utils import translation
-
-def set_language(request):
-    user_language = request.POST.get('language', 'en')
-    translation.activate(user_language)
-    response = redirect(request.META.get('HTTP_REFERER', '/'))
-    response.set_cookie(settings.LANGUAGE_COOKIE_NAME, user_language)
-    return response
-
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import UserProfile  # Assurez-vous que UserProfile est importé correctement
@@ -326,8 +339,14 @@ def liste_ESP(request):
                                                      'form': form,
                                                     'admin_profile': admin_profile,  # Profil de l'administrateur
                                                     'administrateur':request.user})
-    
+
 def modifier_esp(request, esp_id):
+        # Récupérer l'image de profil de l'administrateur connecté
+    admin = request.user
+    try:
+        admin_profile = admin.userprofile  # Profil de l'administrateur
+    except UserProfile.DoesNotExist:
+        admin_profile = None  # Si l'administrateur n'a pas de profil
     esp = get_object_or_404(models.ESP, id=esp_id)  # Récupère l'appareil
     if request.method == 'POST':
         form = Esp_forms(request.POST, instance=esp)  # Pré-remplit le formulaire avec l'appareil
@@ -339,7 +358,8 @@ def modifier_esp(request, esp_id):
     
     all_esp = models.ESP.objects.all().order_by('-id')
     
-    return render(request, 'admini/liste_esp.html', {'all_esp': all_esp, 'form': form, 'admin_profile': request.user.userprofile})
+    return render(request, 'admini/liste_esp.html', {'all_esp': all_esp, 'form': form, 'admin_profile': admin_profile,  # Profil de l'administrateur
+                                                    'administrateur':request.user})
 
 
 def supre_esp(request, esp_id):
@@ -347,3 +367,43 @@ def supre_esp(request, esp_id):
     esp.delete()
     messages.success(request, "Suppression succès!")
     return redirect('liste_esp')
+
+from django.shortcuts import redirect
+from django.utils import translation
+from django.views.decorators.csrf import csrf_exempt
+
+from django.shortcuts import redirect
+from django.utils import translation
+from .models import UserProfile
+
+def set_langue(request):
+    if request.method == 'POST':
+        langue = request.POST.get('language', 'fr')
+        translation.activate(langue)
+        request.session['django_language'] = langue
+        
+        # Mettre à jour la langue préférée de l'utilisateur
+        if request.user.is_authenticated:
+            user_profile = UserProfile.objects.get(user=request.user)
+            user_profile.langue_preferée = langue
+            user_profile.save()
+
+        next_url = request.POST.get('next', '/')
+        return redirect(next_url)
+    return redirect('/')
+
+from weasyprint import HTML
+def download_pdf(request, esp_id):
+    esp = get_object_or_404(models.ESP, id=esp_id)
+    esp_data = models.DHTData.objects.filter(esp=esp)
+
+    # Créez le contenu HTML pour le PDF
+    html_string = render(request, 'admini/pdf_template.html', {'esp': esp, 'esp_data': esp_data}).content.decode('utf-8')
+
+    # Générer le PDF
+    pdf_file = HTML(string=html_string).write_pdf()
+
+    # Envoyer le PDF comme réponse HTTP avec l'en-tête Content-Disposition pour forcer le téléchargement
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="historique_{esp.lieu}.pdf"'
+    return response

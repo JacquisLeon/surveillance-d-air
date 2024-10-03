@@ -2,24 +2,27 @@
 
 {% load static %}
 {% block content %}
- <link rel="stylesheet" href="{% static 'adm/css/menu_graphe.css' %}">
+<link rel="stylesheet" href="{% static 'adm/css/menu_graphe.css' %}">
  <link rel="stylesheet" href="{% static 'adm/css/tous_graphe.css' %}">
 <div id="container">
     <div class="d-flex justify-content-between align-items-center" >
-        <h5 class="text-center alert text-bg-warning mb-xxl-5" style="width: 80%; margin-left: 50px;"><strong>Affichage des données actuelle d'{{ esp.lieu }}</strong> </h5>
+        <h5 class="text-center alert text-bg-warning mb-xxl-5" style="width: 80%; margin-left: 50px;">Affichage des données actuelle de {{esp.lieu}}</h5>
     
+        
+        <ul class="menu text-center alert text-bg-warning mb-xxl-5">
+            <li class="dropdown">
+                <a href="#">Type de graphique <i class="fas fa-caret-down"></i></a>
+                <ul class="dropdown-menu">
+                    <li><a href="{% url 'courbe_admin' esp_id=esp_id %}">Graphique courbe</a></li>
+                    <li><a href="{% url 'bar_admin' esp_id=esp_id %}">Graphique bar</a></li>
+                    <li><a href="{% url 'jauge_admin' esp_id=esp_id %}">Graphique jauge</a></li>
+                    <li><a href="{% url 'histo_esp' esp_id=esp_id %}">Historique</a></li>
+                </ul>
+            </li>
+        </ul>
+        
+        
        
-            <ul class="menu text-center alert text-bg-warning mb-xxl-5">
-                <li class="dropdown">
-                    <a href="#">Type de graphique <i class="fas fa-caret-down"></i></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{% url 'courbe_data' esp_id=esp_id %}">Graphique courbe</a></li>
-                        <li><a href="{% url 'bar_data' esp_id=esp_id %}">Graphique bar</a></li>
-                        <li><a href="{% url 'jauge_data' esp_id=esp_id %}">Graphique jauge</a></li>
-                        <li><a href="{% url 'historique' esp_id=esp_id %}">Historique</a></li>
-                    </ul>
-                </li>
-            </ul>
         
     </div>
 
@@ -62,11 +65,11 @@
        var humidityData = { labels: [], values: [] };
        var gazData = { labels: [], values: [] };
 
-       function createLineOption(name, color, data) {
+       function createStackedBarOption(name, color, data, stackName) {
     return {
         xAxis: {
             type: 'category',
-            boundaryGap: false,
+            boundaryGap: true,
             data: data.labels,
             axisLabel: {
                 color: '#000',
@@ -89,8 +92,8 @@
             splitLine: {
                 show: true,
                 lineStyle: {
-                    color: '#ddd', // Couleur des lignes de grille
-                    width: 1 // Épaisseur des lignes de grille
+                    color: '#ddd',
+                    width: 1
                 }
             }
         },
@@ -117,8 +120,8 @@
             splitLine: {
                 show: true,
                 lineStyle: {
-                    color: '#ddd', // Couleur des lignes de grille
-                    width: 1 // Épaisseur des lignes de grille
+                    color: '#ddd',
+                    width: 1
                 }
             }
         },
@@ -126,27 +129,24 @@
             {
                 name: name,
                 type: 'bar',
-                smooth: true,
+                stack: stackName, // Ajout de la propriété de stack
                 data: data.values,
-                lineStyle: {
-                    color: color
-                },
                 itemStyle: {
                     color: color,
-                    borderColor: 'rgba(0, 0, 0, 0.5)',
+                    borderColor: 'rgba(0, 0, 0, 0.5)',  // Bordure autour des barres
                     borderWidth: 2
                 },
-                symbol: 'circle',
-                symbolSize: 8,
                 emphasis: {
                     itemStyle: {
                         color: color,
-                        borderColor: 'rgba(0, 0, 0, 0.7)'
+                        borderColor: 'rgba(0, 0, 0, 0.7)'  // Bordure à l'emphase
                     }
                 }
             }
         ]
     };
+
+
 }
 
 
@@ -181,10 +181,10 @@
                        gazData.values.shift();
                    }
 
-                   // Mettre à jour les graphiques
-                   temperatureChart.setOption(createLineOption('Température', 'rgba(75, 192, 192, 1)', temperatureData));
-                   humidityChart.setOption(createLineOption('Humidité', 'rgba(75, 192, 235, 1)', humidityData));
-                   gazChart.setOption(createLineOption('Gaz', 'rgba(75, 192, 235, 1)', gazData));
+                  // Mettre à jour les graphiques avec barres empilées
+temperatureChart.setOption(createStackedBarOption('Température', 'rgba(75, 192, 192, 1)', temperatureData, 'stack1'));
+humidityChart.setOption(createStackedBarOption('Humidité', 'rgba(75, 10, 235, 1)', humidityData, 'stack1'));
+gazChart.setOption(createStackedBarOption('Gaz', 'rgba(192, 75, 75, 1)', gazData, 'stack1'));
 
                    // Mettre à jour les valeurs affichées
                    $('#temperature').text(data.temperature + '°C');

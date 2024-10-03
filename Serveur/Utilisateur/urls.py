@@ -18,7 +18,9 @@ urlpatterns = [
    path('app/login/', views.login_app, name='android'),
    path('random-data/', views.apk_data, name='random_data'),
    path('app/user_info/', views.user_profile_view, name='user_profile'),
-   path('app/dht-data/', views.dht_data_view, name='dht-data'),
    path('app/update_profile/', views.update_profile, name='update_profile'),
+   #################################
+   path('app/get_esp_data/<int:esp_id>/', views.get_esp_data, name='get_esp_data'),
+   path('app/get_last_data/<int:esp_id>/', views.get_last_data, name='get_last_data'),
    
 ]

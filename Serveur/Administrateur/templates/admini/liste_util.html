@@ -20,6 +20,7 @@
                     <th scope="col">ID</th>
                     <th scope="col">Nom d'utilisateur</th>
                     <th scope="col">Email</th>
+                    <th scope="col">Rôle</th>
                     <th scope="col" id="col_pass">Mot de passe</th>
                     <th scope="col">Photo</th>
                     <th scope="col">Action</th>
@@ -31,6 +32,13 @@
                     <th scope="row">{{ data.id }}</th>
                     <td>{{ data.username }}</td>
                     <td>{{ data.email }}</td>
+                    <td>
+                        {% if data.is_superuser %}
+                            Administrateur
+                        {% else %}
+                            Utilisateur
+                        {% endif %}
+                    </td>
                     <td id="col_pass">{{ data.password }}</td>
                     
                     <td>
@@ -79,6 +87,14 @@
                         <input type="email" class="form-control" name="email" id="email" required>
                     </div>
                     <div class="mb-3">
+                        <label for="role" class="form-label">Rôle</label>
+                        <select class="form-select" name="role" id="role" required>
+                            <option value="" disabled selected>Sélectionnez un rôle</option>
+                            <option value="admin">Administrateur</option>
+                            <option value="user">Utilisateur</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label for="password" class="form-label">Mot de passe</label>
                         <input type="password" class="form-control" name="pass" id="password" required>
                     </div>
@@ -86,6 +102,7 @@
                         <label for="image" class="form-label">Photo de profil</label>
                         <input type="file" class="form-control" name="image" id="image" accept="image/*">
                     </div>
+                 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
                         <button type="submit" class="btn btn-primary">Ajouter</button>
@@ -95,6 +112,7 @@
         </div>
     </div>
 </div>
+
 
 {% for data in all_data %}
 <div class="modal fade" id="modifier{{ data.id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -116,8 +134,15 @@
                         <input type="email" class="form-control" value="{{ data.email }}" name="email" id="email{{ data.id }}" required>
                     </div>
                     <div class="mb-3">
+                        <label for="role{{ data.id }}" class="form-label">Rôle</label>
+                        <select class="form-select" name="role" id="role{{ data.id }}" required>
+                            <option value="admin" {% if data.is_superuser %}selected{% endif %}>Administrateur</option>
+                            <option value="user" {% if not data.is_superuser %}selected{% endif %}>Utilisateur</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label for="password{{ data.id }}" class="form-label">Mot de passe</label>
-                        <input type="password" class="form-control" value="{{ data.password }}" name="pass" id="password{{ data.id }}">
+                        <input type="password" class="form-control" placeholder="laisser vide pour ne pas changer" name="pass" id="password{{ data.id }}">
                     </div>
                     <div class="mb-3">
                         <label for="image{{ data.id }}" class="form-label">Photo de profil</label>

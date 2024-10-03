@@ -13,10 +13,9 @@
     <script src="{% static 'Utl/js/echarts.min.js' %}"></script>
     <script src="{% static 'Utl\js\jquery.js' %}"></script>
     {% csrf_token %}
-
-        <nav>
+      <nav>
            <!-- <img src="#" alt="Logo" class="logo">-->
-            <h3>SURVEILLANCE DE QUALITE DE L'AIR</h3>
+            <h3 style="color: white;">SURVEILLANCE DE QUALITE DE L'AIR</h3>
             <ul> 
                 <li><a href="{% url 'acceil_admin' %}">Acceil</a></li>
                 <!-- <li><a href="#">Graphique<i class="fas fa-caret-down"></i></a>
@@ -37,6 +36,33 @@
                    <!--</div>--> 
                 </li>
                 <li><a href="{% url 'liste_esp' %}">Appareils</a></li>
+                <li>
+    <a href="#">{% trans 'Langue' %}<i class="fas fa-caret-down"></i></a>
+    <ul>
+        <li>
+            <form action="{% url 'set_language' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button type="submit" name="language" value="mg">{% trans 'Malgache' %}</button>
+            </form>
+        </li>
+        <li>
+            <form action="{% url 'set_language' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button type="submit" name="language" value="fr">{% trans 'Français' %}</button>
+            </form>
+        </li>
+        <li>
+            <form action="{% url 'set_language' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button type="submit" name="language" value="en">{% trans 'Anglais' %}</button>
+            </form>
+        </li>
+    </ul>
+</li>
+ 
             </ul>
             <img src="{% if admin_profile.image %}
             {{ admin_profile.image.url }}

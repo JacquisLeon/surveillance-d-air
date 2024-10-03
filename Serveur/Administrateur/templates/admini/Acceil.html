@@ -1,15 +1,71 @@
 {% extends 'admini/base.html' %}
 {% load static %}
+{% load i18n %}
 {% block content %}
+ <!-- Leaflet CSS -->
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
 <style>
-  body{
+ /* body{
     background-image: url('/static/adm/image/carte.png');
-    background-size: cover; /* Pour couvrir tout l'écran */
-    background-position: center; /* Centrer l'image */
-  }
+    background-size: cover; 
+    background-position: center; 
+  }*/
+  #map {
+            height: 800px; /* Taille de la carte */
+            width: 100%;
+        }
 </style>
+<div id="map">
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+<script>
+  // Créer la carte centrée sur Fianarantsoa
+  var map = L.map('map').setView([-21.4545, 47.0833], 13);
+
+  // Ajouter la couche de tuiles
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Récupérer les données ESP passées depuis Django (converties en JSON)
+  var espData = JSON.parse('{{ esp_list|escapejs }}');
+
+  // Fonction pour construire l'URL vers la vue courbe_admin
+  function getCourbeUrl(espId) {
+      return "{% url 'courbe_admin' '0' %}".replace('0', espId);
+  }
+
+  espData.forEach(function(esp) {
+      if (esp.latitude && esp.longitude) {
+          // Créer un marqueur
+          var marker = L.marker([esp.latitude, esp.longitude]).addTo(map);
+          
+          // Ajouter un popup avec un lien vers la courbe
+          marker.bindPopup('<b>' + esp.lieu + '</b><br>' +
+                           'Latitude: ' + esp.latitude + ', Longitude: ' + esp.longitude + '<br>' +
+                           '<a href="' + getCourbeUrl(esp.id) + '">Voir données ESP ' + esp.id + '</a>');
+      }
+  });
+
+  // Ajouter un marqueur au clic sur la carte (optionnel)
+  map.on('click', function(e) {
+      var lat = e.latlng.lat;
+      var lng = e.latlng.lng;
+
+      L.marker([lat, lng]).addTo(map)
+          .bindPopup('Coordonnées: ' + lat.toFixed(5) + ', ' + lng.toFixed(5))
+          .openPopup();
+  });
+</script>
+
+</div>
+
+      
 <div>
- 
+ <h1>{% trans 'bonjour' %}</h1>
     
     <a href="{% url 'courbe_admin' 2 %}">
         <button>Voir données ESP 2</button>
@@ -48,4 +104,4 @@
     </div>
   </div>
   
-{% endblock %}
+{% endblock %} 

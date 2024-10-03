@@ -2,45 +2,59 @@
 
 {% load static %}
 {% block content %}
-<div style="margin-top: 200px;">
-    <a href="{% url 'courbe_data' 1 %}">
-        <button>Voir données ESP 1</button>
-    </a>
-    <a href="{% url 'courbe_data' 2 %}">
-        <button>Voir données ESP 2</button>
-    </a>
-    <a href="{% url 'courbe_data' 3 %}">
-        <button>Voir données ESP 3</button>
-    </a>
+
+ <!-- Leaflet CSS -->
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+<style>
+ /* body{
+    background-image: url('/static/adm/image/carte.png');
+    background-size: cover; 
+    background-position: center; 
+  }*/
+  #map {
+            height: 800px; /* Taille de la carte */
+            width: 100%;
+        }
+</style>
+<div id="map">
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+<script>
+  // Créer la carte centrée sur Fianarantsoa
+  var map = L.map('map').setView([-21.4545, 47.0833], 13);
+
+  // Ajouter la couche de tuiles
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Récupérer les données ESP passées depuis Django (converties en JSON)
+  var espData = JSON.parse('{{ esp_list|escapejs }}');
+
+  // Fonction pour construire l'URL vers la vue courbe_admin
+  function getCourbeUrl(espId) {
+      return "{% url 'courbe_data' '0' %}".replace('0', espId);
+  }
+
+  espData.forEach(function(esp) {
+      if (esp.latitude && esp.longitude) {
+          // Créer un marqueur
+          var marker = L.marker([esp.latitude, esp.longitude]).addTo(map);
+          
+          // Ajouter un popup avec un lien vers la courbe
+          marker.bindPopup('<b>' + esp.lieu + '</b><br>' +
+                           '<a href="' + getCourbeUrl(esp.id) + '">Voir données de ' + esp.lieu + '</a>');
+      }
+  });
+
+
+</script>
+
 </div>
 
-<a href="#">Ajouter ESP</a>
-<a href="{% url 'liste_esp' %}">Liste ESP</a>
-
-
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-    Launch static backdrop modal
-  </button>
-  
-  <!-- Modal -->
-  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <input type="text" placeholder=" votre nom">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Understood</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  
+    
 {% endblock %}
 

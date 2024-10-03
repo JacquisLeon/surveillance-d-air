@@ -1,95 +1,99 @@
 {% extends 'admini/base.html' %}
 
 {% load static %}  
-
+{% load i18n %}
 {% block content %}  
-<link rel="stylesheet" href="{% static 'adm\css\liste_util.css' %}">
+<link rel="stylesheet" href="{% static 'adm/css/liste_util.css' %}">
 
-    <div id="container">
-        <div class="d-flex justify-content-between align-items-center" >
-            <h5 class="text-center alert text-bg-warning mb-3" style="width: 80%;">Liste des appareils</h5>
-
-            <button style="width: 19%; height: 57px;" type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#ajoute">
-                Ajouter nouveau
-            </button>
-        
-        </div>
-        
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Lieu</th>
-                    <th scope="col">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-              {% for data in all_esp %}
-              <!-- Bouton pour ouvrir la modal -->
-              <tr>
-                  <th scope="row">{{ data.id }}</th>
-                  <td>{{ data.lieu }}</td>
-                  <td style="width: 30%; text-align: center;"> 
-                      <a href="{% url 'histo_esp' data.id %}" class="btn btn-outline-success">Historique</a>
-                      <a href="#" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#modifier{{ data.id }}">Modifier</a>
-                      <a href="{% url 'supre_esp' data.id %}" class="btn btn-outline-danger" onclick="return confirm('Etes-vous sûr de vouloir supprimer cet appareil ?');">Supprimer</a> 
-                  </td>
-              </tr>
-              
-              <!-- Modal de modification -->
-              <div class="modal fade" id="modifier{{ data.id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modifierLabel{{ data.id }}" aria-hidden="true">
-                  <div class="modal-dialog">
+<div id="container">
+    <div class="d-flex justify-content-between align-items-center">
+        <h5 class="text-center alert text-bg-warning mb-3" style="width: 80%;">{% trans 'Liste des appareils' %}</h5>
+        <button style="width: 19%; height: 57px;" type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#ajoute">
+            Ajouter nouveau
+        </button>
+    </div>
+    
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Lieu</th>
+                <th scope="col">Latitude</th>
+                <th scope="col">Longitude</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in all_esp %}
+            <tr>
+                <th scope="row">{{ data.id }}</th>
+                <td>{{ data.lieu }}</td>
+                <td>{{ data.latitude }}</td>
+                <td>{{ data.longitude }}</td>
+                <td style="width: 30%; text-align: center;"> 
+                    <a href="{% url 'histo_esp' data.id %}" class="btn btn-outline-success">Historique</a>
+                    <a href="#" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#modifier{{ data.id }}">Modifier</a>
+                    <a href="{% url 'supre_esp' data.id %}" class="btn btn-outline-danger" onclick="return confirm('Etes-vous sûr de vouloir supprimer cet appareil ?');">Supprimer</a> 
+                </td>
+            </tr>
+            
+            <!-- Modal de modification -->
+            <div class="modal fade" id="modifier{{ data.id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modifierLabel{{ data.id }}" aria-hidden="true">
+                <div class="modal-dialog">
                     <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="modifierLabel{{ data.id }}">Modifier l'emplacement de l'appareil</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body">
-                        <form method="post" action="{% url 'modifier_esp' data.id %}">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="lieu" class="form-label">Lieu</label>
-                                <input type="text" class="form-control" name="lieu" value="{{ data.lieu }}">
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                                <button type="submit" class="btn btn-primary">Modifier</button>
-                            </div>
-                        </form>
-                      </div>
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modifierLabel{{ data.id }}">Modifier l'emplacement de l'appareil</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="post" action="{% url 'modifier_esp' data.id %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="lieu{{ data.id }}" class="form-label">Lieu</label>
+                                    <input type="text" class="form-control" id="lieu{{ data.id }}" name="lieu" value="{{ data.lieu }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="latitude{{ data.id }}" class="form-label">Latitude</label>
+                                    <input type="text" class="form-control" id="latitude{{ data.id }}" name="latitude" value="{{ data.latitude }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="longitude{{ data.id }}" class="form-label">Longitude</label>
+                                    <input type="text" class="form-control" id="longitude{{ data.id }}" name="longitude" value="{{ data.longitude }}" required>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                    <button type="submit" class="btn btn-primary">Modifier</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                  </div>
-              </div>
-              {% endfor %}
-              
-        </table>
-    </div>
-
-<!-- Button trigger modal 
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-    Launch static backdrop modal
-  </button>-->
-  
-  <!-- Modal d'ajoute -->
-  <div class="modal fade" id="ajoute" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">Ajouter novelle appareil</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }} 
+                </div>
             </div>
-            <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Enregistrer</button>
-        </form>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal d'ajout -->
+<div class="modal fade" id="ajoute" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Ajouter nouvel appareil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }} 
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-  
-{% endblock content %} 
+</div>
+
+{% endblock content %}

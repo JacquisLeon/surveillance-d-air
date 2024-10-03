@@ -25,8 +25,11 @@ import json
 def acceil(request):
     # Récupérer le profil de l'utilisateur connecté
     profil = models.UserProfile.objects.get(user=request.user)
+    esp_list = models.ESP.objects.all()
+    esp_data = [{'id':esp.id,'latitude': esp.latitude, 'longitude': esp.longitude, 'lieu': esp.lieu} for esp in esp_list]
     return render(request, 'Util/Acceil.html',{'utilisateur': request.user,
-        'profil': profil,})
+        'profil': profil,
+        'esp_list': json.dumps(esp_data)})
 
 from django.http import JsonResponse
 import json
@@ -110,7 +113,6 @@ def courbe_data(request, esp_id):
     return render(request, 'Util/courbe.html', context)
     #utilisateur a son propre donnée
 @login_required(login_url='login_util')
-
 def bar_data(request, esp_id):
     esp = get_object_or_404(models.ESP, id=esp_id)
     # Récupérer les dernières données de l'utilisateur connecté
@@ -361,6 +363,8 @@ def modifier_profil(request):
 
     # Si la méthode n'est pas POST, vous n'avez pas besoin de faire quoi que ce soit.
     return HttpResponse(status=400)  # Ou un autre statut si nécessaire
+
+
 #**************************pour android**************************************
 
 from django.http import HttpResponse
@@ -402,30 +406,7 @@ def apk_data(request):
         data1 = None,
         data2 = None,
     return JsonResponse({"data1": data1, "data2": data2})
-#efa mety f tss sary
-"""
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
-#from .models import UserProfile
 
-@login_required
-def user_profile_view(request):
-    user = request.user
-
-    # Récupérer le profil de l'utilisateur connecté
-    try:
-        user_profile = models.UserProfile.objects.get(user=user)
-        response_data = {
-            'username': user.username,
-            'email': user.email,
-            'profile_image': request.build_absolute_uri(user_profile.image.url) if user_profile.image else None,
-        }
-        return JsonResponse(response_data)
-
-    except models.UserProfile.DoesNotExist:
-        return JsonResponse({'status': 'error', 'message': 'Profil utilisateur non trouvé'}, status=404)
-        """
         
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -449,69 +430,8 @@ def user_profile_view(request):
     except models.UserProfile.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Profil utilisateur non trouvé'}, status=404)
 
-#recupere historique
-# views.py
-from django.http import JsonResponse
 
 
-def dht_data_view(request):
-    # Récupérer toutes les données de DHTData
-    data = DHTData.objects.all().order_by('-timestamp')  # Trier par date de façon décroissante
-    data_list = list(data.values('temperature', 'humidity', 'gaz', 'timestamp'))
-    
-    # Renvoyer les données sous forme de JSON
-    return JsonResponse({'dht_data': data_list})
-
-
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.models import User
-#from .models import UserProfile  # Importez votre modèle UserProfile si vous en avez un
-from django.core.files.base import ContentFile
-import base64
-"""
-@csrf_exempt
-def update_profile(request):
-    if request.method == 'POST':
-        # Récupération des données de l'utilisateur
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        profile_image_base64 = request.POST.get('profile_image')
-
-        # Vérification si l'utilisateur est authentifié
-        if request.user.is_authenticated:
-            user = request.user
-
-            # Mise à jour des données de l'utilisateur
-            if username:
-                user.username = username
-            if email:
-                user.email = email
-            if password:
-                user.set_password(password)  # Change le mot de passe
-            user.save()
-
-            # Mise à jour de l'image de profil si fournie
-            if profile_image_base64:
-                try:
-                    format, imgstr = profile_image_base64.split(';base64,') 
-                    ext = format.split('/')[-1] 
-                    profile_image = ContentFile(base64.b64decode(imgstr), name=f"{user.username}.{ext}")
-                    
-                    # Assurez-vous que vous avez un champ `image` dans votre modèle UserProfile
-                    user_profile = models.UserProfile.objects.get(user=user)
-                    user_profile.image = profile_image
-                    user_profile.save()
-                except Exception as e:
-                    return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
-
-            return JsonResponse({'status': 'success', 'message': 'Profile updated successfully'})
-        else:
-            return JsonResponse({'status': 'error', 'message': "User not authenticated"}, status=401)
-
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
-"""
 @csrf_exempt
 def update_profile(request):
     if request.method == 'POST':
@@ -547,4 +467,52 @@ def update_profile(request):
             return JsonResponse({'status': 'error', 'message': "User not authenticated"}, status=401)
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+###############################################
+from django.http import JsonResponse
+from Administrateur import models # Assurez-vous d'importer vos modèles
+#historique
+def get_esp_data(request, esp_id):
+    try:
+        # Récupérer l'objet ESP correspondant à l'esp_id
+        esp = models.ESP.objects.get(id=esp_id)
 
+        # Récupérer les données DHT associées à cet ESP
+        esp_data = models.DHTData.objects.filter(esp=esp).order_by('-timestamp')
+
+        # Convertir les données en format JSON
+        data = list(esp_data.values('temperature', 'humidity', 'gaz', 'feux', 'timestamp'))
+
+        # Ajouter 'lieu' à chaque entrée de la réponse
+        for item in data:
+            item['lieu'] = esp.lieu  # Ajouter le lieu de l'ESP aux données
+
+        return JsonResponse(data, safe=False)  # Renvoie les données au format JSON
+    except models.ESP.DoesNotExist:
+        return JsonResponse({'error': 'ESP not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+#Graphique
+def get_last_data(request, esp_id):
+    try:
+        # Récupérer l'ESP correspondant à l'esp_id
+        esp = models.ESP.objects.filter(id=esp_id).first()  # Changez DHTData par ESP pour obtenir les données de l'ESP
+
+        if esp:
+            last_data = DHTData.objects.filter(esp_id=esp_id).last()  # Récupérer la dernière donnée pour cet ESP
+
+            if last_data:
+                data = {
+                    'temperature': last_data.temperature,
+                    'humidity': last_data.humidity,
+                    'timestamp': last_data.timestamp,
+                    'lieu': esp.lieu  # Récupérer le lieu de l'ESP
+                }
+                return JsonResponse(data)
+            else:
+                return JsonResponse({'error': 'No data found'}, status=404)
+        else:
+            return JsonResponse({'error': 'ESP not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

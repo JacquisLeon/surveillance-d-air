@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,21 +16,58 @@
     <link href="{% static 'adm/css/bootstrap.min.css' %}" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="{% static 'adm/js/bootstrap.bundle.min.js' %}" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <nav>
-                   <!-- <img src="#" alt="Logo" class="logo">-->
-                   <h3>SURVEILLANCE DE QUALITER DE L'AIR</h3>
-        <ul>
-            
-            <li><a href="{% url 'acceil' %}">Acceil<i class="fas fa-caret-down"></i></a>
-                <!--<div class="dropdown-menu">
-                 <ul>
-                     <li><a href="#">Courbe</a></li>
-                     <li><a href="#">Bar</a></li>
-                     <li><a href="#">Jauge</a></li>
-                 </ul>-->
-            <!--</div>--> 
+        <!-- <img src="#" alt="Logo" class="logo">-->
+         <h3 style="color: white;">SURVEILLANCE DE QUALITE DE L'AIR</h3>
+         <ul> 
+             <li><a href="{% url 'acceil' %}">Acceil</a></li>
+             <!-- <li><a href="#">Graphique<i class="fas fa-caret-down"></i></a>
+                       
+                         <ul>
+                             <li><a href="#">Courbe</a></li>
+                             <li><a href="#">Bar</a></li>
+                             <li><a href="#">Jauge</a></li>
+                         </ul>
+                  
+             </li> -->
+         
+                 <!--<div class="dropdown-menu">
+                     <ul>
+                         <li><a href="{% url 'liste' %}">Liste</a></li>
+                         <li><a href="#">Créer nouveau</a></li>
+                     </ul>-->
+                <!--</div>--> 
+             </li>
+          
+             <li>
+ <a href="#">{% trans 'Langue' %}<i class="fas fa-caret-down"></i></a>
+ <ul>
+     <li>
+         <form action="{% url 'set_language' %}" method="POST">
+             {% csrf_token %}
+             <input type="hidden" name="next" value="{{ request.path }}">
+             <button type="submit" name="language" value="mg">{% trans 'Malgache' %}</button>
+         </form>
      </li>
-            <li><a href="#">Historique <i class="fas fa-caret-down"></i></a></li>
-        </ul>
+     <li>
+         <form action="{% url 'set_language' %}" method="POST">
+             {% csrf_token %}
+             <input type="hidden" name="next" value="{{ request.path }}">
+             <button type="submit" name="language" value="fr">{% trans 'Français' %}</button>
+         </form>
+     </li>
+     <li>
+         <form action="{% url 'set_language' %}" method="POST">
+             {% csrf_token %}
+             <input type="hidden" name="next" value="{{ request.path }}">
+             <button type="submit" name="language" value="en">{% trans 'Anglais' %}</button>
+         </form>
+     </li>
+ </ul>
+</li>
+
+         </ul>
+           
+        
 
         <!-- Affichage de l'image de l'utilisateur connecté -->
         <img src="{% if profil.image %}
