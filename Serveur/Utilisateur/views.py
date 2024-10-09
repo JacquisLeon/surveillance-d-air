@@ -34,9 +34,18 @@ def acceil(request):
 from django.http import JsonResponse
 import json
 from Administrateur.models import DHTData
+
+# Définissez votre token personnalisé ici
+CUSTOM_TOKEN = '1234'
 @csrf_exempt
 def receive_data(request):
     if request.method == 'POST':
+        token = request.headers.get('Authorization')
+        
+        # Vérifiez le token
+        if token != f'Bearer {CUSTOM_TOKEN}':
+            return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=401)
+
         try:
             # Chargement des données envoyées dans la requête POST
             data = json.loads(request.body)
@@ -74,7 +83,36 @@ def receive_data(request):
             return JsonResponse({'status': 'error', 'message': 'Invalid data format'}, status=400)
     # Retourner une erreur si la requête n'est pas POST
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+"""
+from django.http import JsonResponse
 
+# Définissez votre token personnalisé ici
+CUSTOM_TOKEN = '1234'
+@csrf_exempt
+def receive_data(request):
+    if request.method == 'POST':
+        token = request.headers.get('Authorization')
+        
+        # Vérifiez le token
+        if token != f'Bearer {CUSTOM_TOKEN}':
+            return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=401)
+
+        # Lire les données JSON envoyées
+        try:
+            data = json.loads(request.body)  # Charge les données JSON envoyées
+            #print("Données reçues :", data)  # Affiche les données dans le terminal
+            print("Donnée:", data.get("value") )
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+
+        # Traitez les données ici (par exemple, enregistrement dans la base de données)
+
+        return JsonResponse({'status': 'success', 'message': 'Data received'})
+    
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+
+"""
 #courbe pour esp id
 """
 @login_required(login_url='login_util')
@@ -101,7 +139,7 @@ def courbe_data(request, esp_id):
     # Récupérer le profil de l'utilisateur connecté
     profil = models.UserProfile.objects.get(user=request.user)
     # Récupérez les données de DHTData sans utiliser le champ esp
-    data = DHTData.objects.last()  # Ou appliquez d'autres filtres si nécessaire
+    data = models.DHTData.objects.last()  # Ou appliquez d'autres filtres si nécessaire
     # Préparez les données pour votre template
     context = {
         'data': data,
@@ -116,7 +154,7 @@ def courbe_data(request, esp_id):
 def bar_data(request, esp_id):
     esp = get_object_or_404(models.ESP, id=esp_id)
     # Récupérer les dernières données de l'utilisateur connecté
-    data = DHTData.objects.last()
+    data = models.DHTData.objects.last()
     # Récupérer le profil de l'utilisateur connecté
     profil = models.UserProfile.objects.get(user=request.user)
     return render(request, 'Util/bar.html', {
@@ -132,7 +170,7 @@ def bar_data(request, esp_id):
 def jauge_data(request, esp_id):
     esp = get_object_or_404(models.ESP, id=esp_id)
     # Récupérer les dernières données de l'utilisateur connecté
-    data = DHTData.objects.last()
+    data = models.DHTData.objects.last()
     # Récupérer le profil de l'utilisateur connecté
     profil = models.UserProfile.objects.get(user=request.user)
     return render(request, 'Util/jauge.html', {
@@ -155,7 +193,7 @@ logger = logging.getLogger(__name__)
 def get_data(request, esp_id):
     logger.info(f"Request for esp_id: {esp_id}")
     try:
-        last_data = DHTData.objects.filter(esp_id=esp_id).last()
+        last_data = models.DHTData.objects.filter(esp_id=esp_id).last()
         if last_data:
             data = {
                 'temperature': last_data.temperature,
@@ -187,7 +225,7 @@ def historique_data(request, esp_id):
     esp = get_object_or_404(models.ESP, id=esp_id)
 
     # Récupérer les données associées à cet ESP
-    esp_data = DHTData.objects.filter(esp=esp).order_by('-timestamp')
+    esp_data = models.DHTData.objects.filter(esp=esp).order_by('-timestamp')
 
     # Récupérer le profil de l'utilisateur connecté
     try:
@@ -398,7 +436,7 @@ def random_data(request):
 
 
 def apk_data(request):
-    latest_data = DHTData.objects.last()
+    latest_data = models.DHTData.objects.last()
     if latest_data:
         data1 = latest_data.temperature,
         data2 = latest_data.humidity,
@@ -500,12 +538,13 @@ def get_last_data(request, esp_id):
         esp = models.ESP.objects.filter(id=esp_id).first()  # Changez DHTData par ESP pour obtenir les données de l'ESP
 
         if esp:
-            last_data = DHTData.objects.filter(esp_id=esp_id).last()  # Récupérer la dernière donnée pour cet ESP
+            last_data = models.DHTData.objects.filter(esp_id=esp_id).last()  # Récupérer la dernière donnée pour cet ESP
 
             if last_data:
                 data = {
                     'temperature': last_data.temperature,
                     'humidity': last_data.humidity,
+                    'gaz': last_data.gaz,
                     'timestamp': last_data.timestamp,
                     'lieu': esp.lieu  # Récupérer le lieu de l'ESP
                 }
@@ -516,3 +555,7 @@ def get_last_data(request, esp_id):
             return JsonResponse({'error': 'ESP not found'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+def get_esp_position(request):
+    esp_data = list(models.ESP.objects.values('id', 'lieu', 'latitude', 'longitude'))
+    return JsonResponse(esp_data, safe=False)

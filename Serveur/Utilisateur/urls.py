@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+
    path('acceil/', views.acceil, name='acceil'),
    path('get_data/<int:esp_id>/', views.get_data, name='get_data'),
    path('display_data/<int:esp_id>/', views.historique_data, name='historique'),
@@ -22,5 +23,7 @@ urlpatterns = [
    #################################
    path('app/get_esp_data/<int:esp_id>/', views.get_esp_data, name='get_esp_data'),
    path('app/get_last_data/<int:esp_id>/', views.get_last_data, name='get_last_data'),
+   path('app/esp-data/', views.get_esp_position, name='get_esp_data'),
+
    
 ]
