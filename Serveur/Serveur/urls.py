@@ -24,14 +24,14 @@ from django.conf.urls.i18n import i18n_patterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include(util_url)),  # Affiche le template
+    #path('', include(util_url)),  # Affiche le template
     #path('admini/', include(admin_url)),
     path('accounts/', include('django.contrib.auth.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += i18n_patterns(
     path('admini/', include(admin_url)),
-
+    path('', include(util_url)), 
 )
 urlpatterns += [
     path('i18n/', include('django.conf.urls.i18n')),

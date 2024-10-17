@@ -30,6 +30,23 @@
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
   }).addTo(map);
+// Définir une icône rouge pour les marqueurs lorsque feux est "oui"
+var redIcon = new L.Icon({
+    iconUrl: '{% static "adm/image/rouge.png" %}',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+
+  // Définir l'icône par défaut (bleue) pour les autres cas
+  var defaultIcon = new L.Icon({
+    iconUrl: '{% static "adm/image/verte.png" %}',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
 
   // Récupérer les données ESP passées depuis Django (converties en JSON)
   var espData = JSON.parse('{{ esp_list|escapejs }}');
@@ -40,16 +57,19 @@
   }
 
   espData.forEach(function(esp) {
-      if (esp.latitude && esp.longitude) {
-          // Créer un marqueur
-          var marker = L.marker([esp.latitude, esp.longitude]).addTo(map);
-          
-          // Ajouter un popup avec un lien vers la courbe
-          marker.bindPopup('<b>' + esp.lieu + '</b><br>' +
-                           '<a href="' + getCourbeUrl(esp.id) + '">Voir données de ' + esp.lieu + '</a>');
-      }
-  });
+    if (esp.latitude && esp.longitude) {
+      // Choisir l'icône en fonction de la valeur de feux
+      var markerIcon = esp.feux.toLowerCase() === 'oui' ? redIcon : defaultIcon;
 
+      // Créer un marqueur avec l'icône appropriée
+      var marker = L.marker([esp.latitude, esp.longitude], { icon: markerIcon }).addTo(map);
+      
+      // Ajouter un popup avec un lien vers la courbe et les données de feux
+      marker.bindPopup('<b>' + esp.lieu + '</b><br>' +
+                       'Feux: ' + esp.feux + '<br>' +  // Afficher la valeur de feux
+                       '<a href="' + getCourbeUrl(esp.id) + '">Voir données: ' + esp.lieu + '</a>');
+    }
+  });
 
 </script>
 

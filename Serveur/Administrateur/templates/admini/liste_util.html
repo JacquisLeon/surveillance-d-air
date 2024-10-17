@@ -1,16 +1,16 @@
 {% extends 'admini/base.html' %}
 
 {% load static %}  
-
+{% load i18n %}
 {% block content %}  
 <link rel="stylesheet" href="{% static 'adm\css\liste_util.css' %}">
 
     <div id="container">
         <div class="d-flex justify-content-between align-items-center" >
-            <h5 class="text-center alert text-bg-warning mb-3" style="width: 80%;">Liste d'utilisateurs</h5>
+            <h5 class="text-center alert text-bg-warning mb-3" style="width: 80%;">{% trans "Liste d'utilisateurs" %}</h5>
 
             <button style="width: 19%; height: 57px;" type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#ajouter">
-                Ajouter nouveau
+                {% trans 'Ajouter nouveau' %}
             </button>
         
         </div>
@@ -18,12 +18,12 @@
             <thead>
                 <tr>
                     <th scope="col">ID</th>
-                    <th scope="col">Nom d'utilisateur</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Rôle</th>
-                    <th scope="col" id="col_pass">Mot de passe</th>
-                    <th scope="col">Photo</th>
-                    <th scope="col">Action</th>
+                    <th scope="col">{% trans "Nom d'utilisateur" %}</th>
+                    <th scope="col">{% trans "Email" %}</th>
+                    <th scope="col">{% trans "Rôle" %}</th>
+                    <th scope="col" id="col_pass">{% trans "Mot de passe" %}</th>
+                    <th scope="col">{% trans 'Photos' %}</th>
+                    <th scope="col">{% trans 'Action' %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -34,9 +34,9 @@
                     <td>{{ data.email }}</td>
                     <td>
                         {% if data.is_superuser %}
-                            Administrateur
+                            {% trans "Administrateur" %}
                         {% else %}
-                            Utilisateur
+                            {% trans "Utilisateur" %}
                         {% endif %}
                     </td>
                     <td id="col_pass">{{ data.password }}</td>
@@ -45,18 +45,18 @@
                         {% if data.userprofile.image %}
                             <img src="{{ data.userprofile.image.url }}" alt="Photo de profil" style="width: 50px; height: 50px; object-fit: cover;">
                         {% else %}
-                            <p>Aucune image</p>
+                            <p>{% trans "Aucune image" %}</p>
                         {% endif %}
                     </td>
                     
                     <td style="text-align: center;"> 
-                        <a href="#" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#modifier{{ data.id }}">Modifier</a>
-                        <a href="{% url 'suprimer' data.id %}" class="btn btn-outline-danger" onclick="return confirm('Etes-vous sûr de vouloir suprimer cet utilisateur ?');">Suprimer</a> 
+                        <a href="#" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#modifier{{ data.id }}">{% trans 'Modifier' %}</a>
+                        <a href="{% url 'suprimer' data.id %}" class="btn btn-outline-danger" onclick="return confirm('Etes-vous sûr de vouloir suprimer cet utilisateur ?');">{% trans 'Suprimer' %}</a> 
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6">Aucune donnée disponible</td>
+                    <td colspan="6">{% trans "Aucune donnée disponible" %}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -72,40 +72,40 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="ajouter">Ajouter un Utilisateur</h5>
+                <h5 class="modal-title" id="ajouter">{% trans "Ajouter un Utilisateur" %}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form action="{% url 'ajouter' %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="username" class="form-label">Nom d'utilisateur</label>
+                        <label for="username" class="form-label">{% trans "Nom d'utilisateur" %}</label>
                         <input type="text" class="form-control" name="name" id="username" required>
                     </div>
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
+                        <label for="email" class="form-label">{% trans "Email" %}</label>
                         <input type="email" class="form-control" name="email" id="email" required>
                     </div>
                     <div class="mb-3">
-                        <label for="role" class="form-label">Rôle</label>
+                        <label for="role" class="form-label">{% trans "Rôle" %}</label>
                         <select class="form-select" name="role" id="role" required>
-                            <option value="" disabled selected>Sélectionnez un rôle</option>
-                            <option value="admin">Administrateur</option>
-                            <option value="user">Utilisateur</option>
+                            <option value="" disabled selected>{% trans "Sélectionnez un rôle" %}</option>
+                            <option value="admin">{% trans 'Administrateur' %}</option>
+                            <option value="user">{% trans 'Utilisateur' %}</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="password" class="form-label">Mot de passe</label>
+                        <label for="password" class="form-label">{% trans 'Mot de passe' %}</label>
                         <input type="password" class="form-control" name="pass" id="password" required>
                     </div>
                     <div class="mb-3">
-                        <label for="image" class="form-label">Photo de profil</label>
+                        <label for="image" class="form-label">{% trans 'Photo de profils' %}</label>
                         <input type="file" class="form-control" name="image" id="image" accept="image/*">
                     </div>
                  
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                        <button type="submit" class="btn btn-primary">Ajouter</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans 'Fermer' %}</button>
+                        <button type="submit" class="btn btn-primary">{% trans 'Ajouter' %}</button>
                     </div>
                 </form>
             </div>
@@ -119,43 +119,43 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Modifier profil Utilisateur</h5>
+                <h5 class="modal-title">{% trans "Modifier profil Utilisateur" %}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form action="{% url 'modifier' data.id %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="username{{ data.id }}" class="form-label">Nom d'utilisateur</label>
+                        <label for="username{{ data.id }}" class="form-label">{% trans "Nom d'utilisateur" %}</label>
                         <input type="text" class="form-control" value="{{ data.username }}" name="name" id="username{{ data.id }}" required>
                     </div>
                     <div class="mb-3">
-                        <label for="email{{ data.id }}" class="form-label">Email</label>
+                        <label for="email{{ data.id }}" class="form-label">{% trans 'Email' %}</label>
                         <input type="email" class="form-control" value="{{ data.email }}" name="email" id="email{{ data.id }}" required>
                     </div>
                     <div class="mb-3">
-                        <label for="role{{ data.id }}" class="form-label">Rôle</label>
+                        <label for="role{{ data.id }}" class="form-label">{% trans "Rôle" %}</label>
                         <select class="form-select" name="role" id="role{{ data.id }}" required>
-                            <option value="admin" {% if data.is_superuser %}selected{% endif %}>Administrateur</option>
-                            <option value="user" {% if not data.is_superuser %}selected{% endif %}>Utilisateur</option>
+                            <option value="admin" {% if data.is_superuser %}selected{% endif %}>{% trans 'Administrateur' %}</option>
+                            <option value="user" {% if not data.is_superuser %}selected{% endif %}>{% trans 'Utilisateur' %}</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="password{{ data.id }}" class="form-label">Mot de passe</label>
-                        <input type="password" class="form-control" placeholder="laisser vide pour ne pas changer" name="pass" id="password{{ data.id }}">
+                        <label for="password{{ data.id }}" class="form-label">{% trans 'Mot de passe' %}</label>
+                        <input type="password" class="form-control" placeholder="{% trans 'laisser vide pour ne pas changer' %}" name="pass" id="password{{ data.id }}">
                     </div>
                     <div class="mb-3">
-                        <label for="image{{ data.id }}" class="form-label">Photo de profil</label>
+                        <label for="image{{ data.id }}" class="form-label">{% trans 'Photo de profils' %}</label>
                         <input type="file" class="form-control" name="image" id="image{{ data.id }}" accept="image/*">
                         {% if data.userprofile.image %}
                             <img src="{{ data.userprofile.image.url }}" alt="Photo de profil" style="width: 100px; height: 100px; object-fit: cover; border-image: round;">
                         {% else %}
-                            <p>Aucune image</p>
+                            <p>{% trans 'Aucune image' %}</p>
                         {% endif %}
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                        <button type="submit" class="btn btn-primary">Modifier</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans 'Fermer' %}</button>
+                        <button type="submit" class="btn btn-primary">{% trans 'Modifier' %}</button>
                     </div>
                 </form>
             </div>

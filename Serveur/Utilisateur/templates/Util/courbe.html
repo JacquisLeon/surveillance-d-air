@@ -1,216 +1,265 @@
 {% extends 'Util/base.html' %}
-
+{% load i18n %}
 {% load static %}
 {% block content %}
 <link rel="stylesheet" href="{% static 'adm/css/menu_graphe.css' %}">
 <link rel="stylesheet" href="{% static 'adm/css/tous_graphe.css' %}">
 <div id="container">
     <div class="d-flex justify-content-between align-items-center" >
-        <h4 class="text-center alert text-bg-warning mb-xxl-5" style="width: 80%; margin-left: 50px;">Affichage des données actuelle: {{esp.lieu}}</h4>
+        <h4 class="text-center alert text-bg-warning mb-xxl-5" style="width: 80%; margin-left: 50px;">{% trans "Affichage des données actuelle" %}: {{esp.lieu}}</h4>
     
        
             <ul class="menu text-center alert text-bg-warning mb-xxl-5">
                 <li class="dropdown">
-                    <a href="#">Type de graphique <i class="fas fa-caret-down"></i></a>
+                    <a href="#">{% trans "Autre options" %} <i class="fas fa-caret-down"></i></a>
                     <ul class="dropdown-menu">
-                        <li><a href="{% url 'courbe_data' esp_id=esp_id %}">Graphique courbe</a></li>
-                        <li><a href="{% url 'bar_data' esp_id=esp_id %}">Graphique bar</a></li>
-                        <li><a href="{% url 'jauge_data' esp_id=esp_id %}">Graphique jauge</a></li>
-                        <li><a href="{% url 'historique' esp_id=esp_id %}">Historique</a></li>
+                        <li><a href="{% url 'courbe_data' esp_id=esp_id %}">{% trans 'Graphique courbe' %}</a></li>
+                        <li><a href="{% url 'bar_data' esp_id=esp_id %}">{% trans 'Graphique bar' %}</a></li>
+                        <li><a href="{% url 'jauge_data' esp_id=esp_id %}">{% trans 'Graphique jauge' %}</a></li>
+                        <li><a href="{% url 'historique' esp_id=esp_id %}">{% trans 'Historique' %}</a></li>
                     </ul>
                 </li>
             </ul>
         
     </div>
     <div class="charts-container">
-        <!-- Sous-conteneur pour la température et l'humidité côte à côte -->
         <div class="charts-row">
-            <!-- Sous-conteneur pour la température -->
             <div class="chart-wrapper">
-                <p style="text-align: center;"><strong>Température : <span id="temperature">--</span></strong></p>
-                <div id="temperatureChart" class="chart" style="width: 700px; height: 400px;"></div>
-               <!--  <p id="temperatureAlert" style=" font-weight: bold; text-align: center;"></p>-->
+                <p style="text-align: center;"><strong>{% trans "Feux :" %} <span id="feux">--</span></strong></p>
+                <div id="feuxChart" class="chart" style="width: 700px; height: 400px;"></div>
             </div>
-
-            <!-- Sous-conteneur pour l'humidité -->
             <div class="chart-wrapper">
-                <p style="text-align: center;"><strong>Humidité : <span id="humidity">--</span></strong></p>
+                <p style="text-align: center;"><strong>{% trans "Gaz :" %} <span id="gaz">--</span></strong></p>
+                <div id="gazChart" class="chart" style="width: 700px; height: 400px; margin: 0;"></div>
+            </div>
+            
+        </div>
+        
+        <div class="charts-row">
+            <div class="chart-wrapper">
+                <p style="text-align: center;"><strong>{% trans "Température :" %} <span id="temperature">--</span></strong></p>
+                <div id="temperatureChart" class="chart" style="width: 700px; height: 400px;"></div>
+            </div>
+            <div class="chart-wrapper">
+                <p style="text-align: center;"><strong>{% trans "Humidité :" %} <span id="humidity">--</span></strong></p>
                 <div id="humidityChart" class="chart" style="width: 700px; height: 400px;"></div>
             </div>
         </div>
-
-        <!-- Sous-conteneur pour le gaz en dessous de la température -->
-        <div class="chart-wrapper">
-        <div class="chart-gaz">
-            <p style="text-align: center;"><strong>Gaz : <span id="gaz">--</span></strong></p>
-            <div id="gazChart" class="chart" style="width: 700px; height: 400px; margin: 0;"></div>
-        </div>
     </div>
-    </div>
-
-    
 </div>
-
 
 <script>
    $(document).ready(function() {
-       var temperatureChart = echarts.init(document.getElementById('temperatureChart'));
-       var humidityChart = echarts.init(document.getElementById('humidityChart'));
-       var gazChart = echarts.init(document.getElementById('gazChart'));
+     // Initialisation des graphiques
+     var temperatureChart = echarts.init(document.getElementById('temperatureChart'));
+     var humidityChart = echarts.init(document.getElementById('humidityChart'));
+     var gazChart = echarts.init(document.getElementById('gazChart'));
+     var feuxChart = echarts.init(document.getElementById('feuxChart'));
 
-       var temperatureData = { labels: [], values: [] };
-       var humidityData = { labels: [], values: [] };
-       var gazData = { labels: [], values: [] };
+     var temperatureData = { labels: [], values: [] };
+     var humidityData = { labels: [], values: [] };
+     var gazData = { labels: [], values: [] };
 
-       function createLineOption(name, color, data) {
+     function createLineOption(name, color, data) {
+         return {
+             xAxis: {
+                 type: 'category',
+                 boundaryGap: false,
+                 data: data.labels,
+                 axisLabel: {
+                     color: '#000',
+                     fontSize: 14,
+                     fontWeight: 'bold'
+                 },
+                 axisLine: {
+                     lineStyle: {
+                         color: '#333',
+                         width: 2
+                     }
+                 },
+                 axisTick: {
+                     show: true,
+                     lineStyle: {
+                         color: '#333',
+                         width: 1
+                     }
+                 },
+                 splitLine: {
+                     show: true,
+                     lineStyle: {
+                         color: '#ddd',
+                         width: 1
+                     }
+                 }
+             },
+             yAxis: {
+                 type: 'value',
+                 axisLabel: {
+                     color: '#000',
+                     fontSize: 14,
+                     fontWeight: 'bold'
+                 },
+                 axisLine: {
+                     lineStyle: {
+                         color: '#333',
+                         width: 2
+                     }
+                 },
+                 axisTick: {
+                     show: true,
+                     lineStyle: {
+                         color: '#333',
+                         width: 1
+                     }
+                 },
+                 splitLine: {
+                     show: true,
+                     lineStyle: {
+                         color: '#ddd',
+                         width: 1
+                     }
+                 }
+             },
+             series: [
+                 {
+                     name: name,
+                     type: 'line',
+                     smooth: true,
+                     data: data.values,
+                     lineStyle: {
+                         color: color
+                     },
+                     itemStyle: {
+                         color: color,
+                         borderColor: 'rgba(0, 0, 0, 0.5)',
+                         borderWidth: 2
+                     },
+                     symbol: 'circle',
+                     symbolSize: 8,
+                     emphasis: {
+                         itemStyle: {
+                             color: color,
+                             borderColor: 'rgba(0, 0, 0, 0.7)'
+                         }
+                     }
+                 }
+             ]
+         };
+     }
+
+     function createPieOption(title, data, feuxState) {
     return {
-        xAxis: {
-            type: 'category',
-            boundaryGap: false,
-            data: data.labels,
-            axisLabel: {
-                color: '#000',
-                fontSize: 14,
-                fontWeight: 'bold'
-            },
-            axisLine: {
-                lineStyle: {
-                    color: '#333',
-                    width: 2
-                }
-            },
-            axisTick: {
-                show: true,
-                lineStyle: {
-                    color: '#333',
-                    width: 1
-                }
-            },
-            splitLine: {
-                show: true,
-                lineStyle: {
-                    color: '#ddd', // Couleur des lignes de grille
-                    width: 1 // Épaisseur des lignes de grille
-                }
-            }
+        title: {
+            text: title,
+           // subtext: 'Statistiques des feux',
+            left: 'center'
         },
-        yAxis: {
-            type: 'value',
-            axisLabel: {
-                color: '#000',
-                fontSize: 14,
-                fontWeight: 'bold'
-            },
-            axisLine: {
-                lineStyle: {
-                    color: '#333',
-                    width: 2
-                }
-            },
-            axisTick: {
-                show: true,
-                lineStyle: {
-                    color: '#333',
-                    width: 1
-                }
-            },
-            splitLine: {
-                show: true,
-                lineStyle: {
-                    color: '#ddd', // Couleur des lignes de grille
-                    width: 1 // Épaisseur des lignes de grille
-                }
-            }
+        tooltip: {
+            trigger: 'item'
         },
-        series: [
-            {
-                name: name,
-                type: 'line',
-                smooth: true,
-                data: data.values,
-                lineStyle: {
-                    color: color
-                },
+        series: [{
+            type: 'pie',
+            radius: '50%',
+            data: data,
+            itemStyle: {
+                color: function(params) {
+                    // Utilisez la fonction determineFeuxColor pour définir la couleur en fonction de l'état des feux
+                    return determineFeuxColor(feuxState);
+                }
+            },
+            emphasis: {
                 itemStyle: {
-                    color: color,
-                    borderColor: 'rgba(0, 0, 0, 0.5)',
-                    borderWidth: 2
-                },
-                symbol: 'circle',
-                symbolSize: 8,
-                emphasis: {
-                    itemStyle: {
-                        color: color,
-                        borderColor: 'rgba(0, 0, 0, 0.7)'
-                    }
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
                 }
+            },
+            animationType: 'scale',
+            animationEasing: 'elasticOut',
+            animationDuration: 10000,
+            animationDelay: function (idx) {
+                return Math.random() * 1000;
             }
-        ]
+        }]
     };
 }
 
+     function determineColor(value, min, max) {
+         if (value >= min && value <= max) {
+             return 'green';
+         } else if (value < min) {
+             return 'blue';
+         } else {
+             return 'red';
+         }
+     }
 
-function determineColor(value, min, max) {
-    if (value >= min && value <= max) {
-        return 'green';
-    } else if (value < min) {
-        return 'blue';
-    } else {
-        return 'red';
-    }
-}
-
-function fetchData() {
-    $.ajax({
-        url: "{% url 'get_data' esp_id=esp_id %}",
-        method: 'GET',
-        success: function(data) {
-            var now = new Date();
-            var time = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
-            
-            temperatureData.labels.push(time);
-            temperatureData.values.push(data.temperature);
-            humidityData.labels.push(time);
-            humidityData.values.push(data.humidity);
-            gazData.labels.push(time);
-            gazData.values.push(data.gaz);
-
-            // Limiter à 10 points pour chaque jeu de données
-            if (temperatureData.labels.length > 10) temperatureData.labels.shift();
-            if (humidityData.labels.length > 10) humidityData.labels.shift();
-            if (gazData.labels.length > 10) gazData.labels.shift();
-
-            // Définir les couleurs
-            var temperatureColor = determineColor(data.temperature, 20, 25);
-            var humidityColor = determineColor(data.humidity, 40, 60);
-            var gazColor = determineColor(data.gaz, 0, 1000);
-
-            // Mettre à jour les textes et couleurs
-            $('#temperature').text(data.temperature).css('color', temperatureColor);
-            $('#humidity').text(data.humidity).css('color', humidityColor);
-            $('#gaz').text(data.gaz).css('color', gazColor);
-
-            // Mettre à jour les graphiques
-            temperatureChart.setOption(createLineOption('Température', temperatureColor, temperatureData));
-            humidityChart.setOption(createLineOption('Humidité', humidityColor, humidityData));
-            gazChart.setOption(createLineOption('Gaz', gazColor, gazData));
-        },
-        error: function() {
-            console.log('Erreur lors de la récupération des données');
+     function determineFeuxColor(feuxState) {
+        if (feuxState == 'Oui'){
+            return 'red';
+        } 
+        else {
+            return 'green';
         }
-    });
-}
+       
+     }
 
+     function fetchData() {
+         $.ajax({
+             url: "{% url 'get_data' esp_id=esp_id %}",
+             method: 'GET',
+             success: function(data) {
+                 console.log(data); // Vérifiez la structure des données
+                 
+                 var now = new Date();
+                 var time = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+                 
+                 temperatureData.labels.push(time);
+                 temperatureData.values.push(data.temperature);
+                 humidityData.labels.push(time);
+                 humidityData.values.push(data.humidity);
+                 gazData.labels.push(time);
+                 gazData.values.push(data.gaz);
 
+                 // Limiter à 10 points pour chaque jeu de données
+                 if (temperatureData.labels.length > 10) temperatureData.labels.shift();
+                 if (humidityData.labels.length > 10) humidityData.labels.shift();
+                 if (gazData.labels.length > 10) gazData.labels.shift();
 
+                 // Définir les couleurs
+                 var temperatureColor = determineColor(data.temperature, 20, 25);
+                 var humidityColor = determineColor(data.humidity, 40, 60);
+                 var gazColor = determineColor(data.gaz, 0, 1000);
+                 
+                 // Définir les données des feux
+                 var feuxData = [
+                     { name: 'État normal', value: data.feux === 'Oui' ? 0 : 1 }, 
+                     { name: 'État d\'alerte', value: data.feux === 'Oui' ? 1 : 0 }
+                 ];
+                 
+                 // Mettre à jour les textes et couleurs
+                 $('#temperature').text(data.temperature).css('color', temperatureColor);
+                 $('#humidity').text(data.humidity).css('color', humidityColor);
+                 $('#gaz').text(data.gaz).css('color', gazColor);
+                 $('#feux').text(data.feux).css('color', determineFeuxColor(data.feux));
+                 
+                 // Mettre à jour les graphiques
+                 temperatureChart.setOption(createLineOption('Température', temperatureColor, temperatureData));
+                 humidityChart.setOption(createLineOption('Humidité', humidityColor, humidityData));
+                 gazChart.setOption(createLineOption('Gaz', gazColor, gazData));
+                 feuxChart.setOption(createPieOption('{% trans "Etat des feux" %}', feuxData, data.feux));
+             },
+             error: function() {
+                 console.log('Erreur lors de la récupération des données');
+             }
+         });
+     }
 
+     // Appel initial pour obtenir les données immédiatement
+     fetchData();
 
-       // Appel initial pour obtenir les données immédiatement
-       fetchData();
-
-       // Appel périodique pour mettre à jour les données
-       setInterval(fetchData, 2000); // Met à jour toutes les 2 secondes
+     // Appel périodique pour mettre à jour les données
+     setInterval(fetchData, 2000); // Met à jour toutes les 2 secondes
    });
 </script>
-  
-{% endblock content %}
+{% endblock %}

@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -16,14 +17,14 @@
         <div class="shape"></div>
     </div>
     <form method="post">
-        <h3>Administrateur</h3>
+        <h3>{% trans 'Administrateur' %}</h3>
         {% csrf_token %}
-        <label for="username">Nom d'Administrateur</label>
+        <label for="username">{% trans "Nom d'Administrateur" %}</label>
         <input type="text" placeholder="Tapez votre nom d'Administrateur ici" id="username" name="admname">
-        <label for="password">Mot de passe</label>
+        <label for="password">{% trans "Mot de passe" %}</label>
         <input type="password" placeholder="Tapez votre mot de passe ici" name="admpass">
 
-        <button type="submit">Se connecter</button>
+        <button type="submit">{% trans 'Se connecter' %}</button>
         {% if messages %}
                 {% for message in messages %}
                     <p id="mssg">{{ message }}</p>

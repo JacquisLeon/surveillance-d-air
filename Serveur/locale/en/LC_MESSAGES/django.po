@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-15 10:31+0400\n"
+"POT-Creation-Date: 2024-10-16 19:36+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-#: .\Serveur\settings.py:147
+
+#: .\Serveur\settings.py:148
 msgid "English"
 msgstr "Anglais"
 
-#: .\Serveur\settings.py:148
+#: .\Serveur\settings.py:149 .\Utilisateur\templates\Util\base.html:55
 msgid "Français"
 msgstr "French"
 
@@ -36,3 +37,181 @@ msgstr "Air monitoring"
 #: .\Utilisateur\admin.py:7
 msgid "Bienvenue au Admi"
 msgstr " welcom"
+
+#: .\Utilisateur\templates\Util\bar.html:9
+msgid "Affichage des données actuelles"
+msgstr "Displaying current data"
+
+#: .\Utilisateur\templates\Util\bar.html:13
+#: .\Utilisateur\templates\Util\courbe.html:14
+#: .\Utilisateur\templates\Util\jauge.html:15
+msgid "Autre options"
+msgstr "Other options"
+
+#: .\Utilisateur\templates\Util\bar.html:15
+#: .\Utilisateur\templates\Util\courbe.html:16
+#: .\Utilisateur\templates\Util\jauge.html:17
+msgid "Graphique courbe"
+msgstr "Curved graph"
+
+#: .\Utilisateur\templates\Util\bar.html:16
+#: .\Utilisateur\templates\Util\courbe.html:17
+#: .\Utilisateur\templates\Util\jauge.html:18
+msgid "Graphique bar"
+msgstr "Bar chart"
+
+#: .\Utilisateur\templates\Util\bar.html:17
+#: .\Utilisateur\templates\Util\courbe.html:18
+#: .\Utilisateur\templates\Util\jauge.html:19
+msgid "Graphique jauge"
+msgstr "Gauge chart"
+
+#: .\Utilisateur\templates\Util\bar.html:18
+#: .\Utilisateur\templates\Util\courbe.html:19
+#: .\Utilisateur\templates\Util\jauge.html:20
+msgid "Historique"
+msgstr "Historical"
+
+#: .\Utilisateur\templates\Util\bar.html:27
+#: .\Utilisateur\templates\Util\courbe.html:28
+#: .\Utilisateur\templates\Util\jauge.html:28
+msgid "Feux :"
+msgstr "Lights :"
+
+#: .\Utilisateur\templates\Util\bar.html:31
+#: .\Utilisateur\templates\Util\courbe.html:32
+#: .\Utilisateur\templates\Util\jauge.html:32
+msgid "Gaz :"
+msgstr "Gas :"
+
+#: .\Utilisateur\templates\Util\bar.html:39
+#: .\Utilisateur\templates\Util\courbe.html:40
+#: .\Utilisateur\templates\Util\jauge.html:40
+msgid "Température :"
+msgstr "Temperature :"
+
+#: .\Utilisateur\templates\Util\bar.html:43
+#: .\Utilisateur\templates\Util\courbe.html:44
+#: .\Utilisateur\templates\Util\jauge.html:44
+msgid "Humidité :"
+msgstr "Humidity :"
+
+#: .\Utilisateur\templates\Util\bar.html:193
+#: .\Utilisateur\templates\Util\courbe.html:250
+msgid "Etat des feux"
+msgstr "State of the lights"
+
+#: .\Utilisateur\templates\Util\base.html:20
+msgid "SURVEILLANCE DE QUALITE DE L'AIR"
+msgstr "AIR QUALITY MONITORING"
+
+#: .\Utilisateur\templates\Util\base.html:22
+msgid "Map"
+msgstr "Map"
+
+#: .\Utilisateur\templates\Util\base.html:42
+msgid "Langue"
+msgstr "Language"
+
+#: .\Utilisateur\templates\Util\base.html:48
+msgid "Malgache"
+msgstr "Malagasy"
+
+#: .\Utilisateur\templates\Util\base.html:62
+msgid "Anglais"
+msgstr "English"
+
+#: .\Utilisateur\templates\Util\base.html:89
+msgid "Profils"
+msgstr "Profiles"
+
+#: .\Utilisateur\templates\Util\base.html:95
+msgid "Déconnexion"
+msgstr "Logout"
+
+#: .\Utilisateur\templates\Util\base.html:120
+msgid "Modifier votre Profils"
+msgstr "Edit your Profiles"
+
+#: .\Utilisateur\templates\Util\base.html:127
+#: .\Utilisateur\templates\Util\login.html:23
+msgid "Nom d'utilisateur"
+msgstr "User name"
+
+#: .\Utilisateur\templates\Util\base.html:131
+msgid "Email"
+msgstr "E-mail"
+
+#: .\Utilisateur\templates\Util\base.html:135
+#: .\Utilisateur\templates\Util\login.html:26
+msgid "Mot de passe"
+msgstr "Password"
+
+#: .\Utilisateur\templates\Util\base.html:139
+msgid "Photo de profils"
+msgstr "Profile photo"
+
+#: .\Utilisateur\templates\Util\base.html:144
+msgid "Aucune image"
+msgstr "No image"
+
+#: .\Utilisateur\templates\Util\base.html:148
+msgid "Fermer"
+msgstr "Close"
+
+#: .\Utilisateur\templates\Util\base.html:149
+msgid "Mettre à jour"
+msgstr "To update"
+
+#: .\Utilisateur\templates\Util\base.html:165
+msgid "2024 Surveillance de qualité de l'air."
+msgstr "2024 Air quality monitoring"
+
+#: .\Utilisateur\templates\Util\courbe.html:9
+#: .\Utilisateur\templates\Util\jauge.html:11
+msgid "Affichage des données actuelle"
+msgstr "Displaying current data"
+
+#: .\Utilisateur\templates\Util\historique.html:11
+msgid "Historique des données"
+msgstr "Data History"
+
+#: .\Utilisateur\templates\Util\historique.html:20
+msgid "Température"
+msgstr "Temperature"
+
+#: .\Utilisateur\templates\Util\historique.html:21
+msgid "Humidité"
+msgstr "Humidity"
+
+#: .\Utilisateur\templates\Util\historique.html:22
+msgid "Gaz"
+msgstr "Gas"
+
+#: .\Utilisateur\templates\Util\historique.html:23
+msgid "Incendie"
+msgstr "Fire"
+
+#: .\Utilisateur\templates\Util\historique.html:24
+msgid "Date et Heure"
+msgstr "Date and Time"
+
+#: .\Utilisateur\templates\Util\historique.html:40
+msgid "Aucune donnée disponible"
+msgstr "No data available"
+
+#: .\Utilisateur\templates\Util\login.html:21
+msgid "UTILISATEUR"
+msgstr "USER"
+
+#: .\Utilisateur\templates\Util\login.html:29
+msgid "Se connecter"
+msgstr "Login"
+
+#: .\Utilisateur\views.py:239
+msgid "Veuillez remplir tous les champs!"
+msgstr "Please fill in all fields!"
+
+#: .\Utilisateur\views.py:247
+msgid "Nom d'utilisateur ou mot de passe incorrect!"
+msgstr "Incorrect username or password!"

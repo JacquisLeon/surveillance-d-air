@@ -9,7 +9,7 @@
     <div class="d-flex justify-content-between align-items-center">
         <h5 class="text-center alert text-bg-warning mb-3" style="width: 80%;">{% trans 'Liste des appareils' %}</h5>
         <button style="width: 19%; height: 57px;" type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#ajoute">
-            Ajouter nouveau
+            {% trans 'Ajouter nouveau' %}
         </button>
     </div>
     
@@ -17,10 +17,10 @@
         <thead>
             <tr>
                 <th scope="col">ID</th>
-                <th scope="col">Lieu</th>
-                <th scope="col">Latitude</th>
-                <th scope="col">Longitude</th>
-                <th scope="col">Action</th>
+                <th scope="col">{% trans 'Lieu' %}</th>
+                <th scope="col">{% trans 'Latitude' %}</th>
+                <th scope="col">{% trans 'Longitude' %}</th>
+                <th scope="col">{% trans 'Action' %}</th>
             </tr>
         </thead>
         <tbody>
@@ -31,9 +31,9 @@
                 <td>{{ data.latitude }}</td>
                 <td>{{ data.longitude }}</td>
                 <td style="width: 30%; text-align: center;"> 
-                    <a href="{% url 'histo_esp' data.id %}" class="btn btn-outline-success">Historique</a>
-                    <a href="#" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#modifier{{ data.id }}">Modifier</a>
-                    <a href="{% url 'supre_esp' data.id %}" class="btn btn-outline-danger" onclick="return confirm('Etes-vous sûr de vouloir supprimer cet appareil ?');">Supprimer</a> 
+                    <a href="{% url 'histo_esp' data.id %}" class="btn btn-outline-success">{% trans 'Historique' %}</a>
+                    <a href="#" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#modifier{{ data.id }}">{% trans 'Modifier' %}</a>
+                    <a href="{% url 'supre_esp' data.id %}" class="btn btn-outline-danger" onclick="return confirm('Etes-vous sûr de vouloir supprimer cet appareil ?');">{% trans 'Supprimer' %}</a> 
                 </td>
             </tr>
             
@@ -42,7 +42,7 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="modifierLabel{{ data.id }}">Modifier l'emplacement de l'appareil</h5>
+                            <h5 class="modal-title" id="modifierLabel{{ data.id }}">{% trans "Modifier l'emplacement de l'appareil" %}</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -62,7 +62,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                                    <button type="submit" class="btn btn-primary">Modifier</button>
+                                    <button type="submit" class="btn btn-primary">{% trans 'Modifier' %}</button>
                                 </div>
                             </form>
                         </div>
@@ -74,12 +74,12 @@
     </table>
 </div>
 
-<!-- Modal d'ajout -->
+<!-- Modal d'ajouter -->
 <div class="modal fade" id="ajoute" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Ajouter nouvel appareil</h5>
+                <h5 class="modal-title" id="staticBackdropLabel">{% trans 'Ajouter nouvel appareil' %}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -87,8 +87,8 @@
                     {% csrf_token %}
                     {{ form.as_p }} 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans 'Fermer' %}</button>
+                        <button type="submit" class="btn btn-primary">{% trans 'Enregistrer' %}</button>
                     </div>
                 </form>
             </div>

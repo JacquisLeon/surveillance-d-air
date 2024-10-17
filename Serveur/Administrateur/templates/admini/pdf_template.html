@@ -19,16 +19,16 @@
     </style>
 </head>
 <body>
-    <h4>Historique des données d'{{ esp.lieu }}</h4>
+    <h4>{% trans "Historique des données" %}:{{ esp.lieu }}</h4>
     <table>
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Température (°C)</th>
-                <th>Humidité (%)</th>
-                <th>Gaz (PPT)</th>
-                <th>Incendie</th>
-                <th>Date et Heure</th>
+                <th>{% trans "Température" %}(°C)</th>
+                <th>{% trans "Humidité" %}(%)</th>
+                <th>{% trans "Gaz" %}(PPT)</th>
+                <th>{% trans "Incendie" %}</th>
+                <th>{% trans "Date et Heure" %}</th>
             </tr>
         </thead>
         <tbody>

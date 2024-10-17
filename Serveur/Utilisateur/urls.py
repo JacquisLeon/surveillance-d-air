@@ -16,6 +16,7 @@ urlpatterns = [
    path('add-dht-data/', views.add_dht_data, name='add_dht_data'),#ajouter donnée au interface
 #*****************androi*******************************
    #path('sse/', views.sse_view, name='sse'),
+   path('teste/', views.teste_connexion, name='teste_connexion'),
    path('app/login/', views.login_app, name='android'),
    path('random-data/', views.apk_data, name='random_data'),
    path('app/user_info/', views.user_profile_view, name='user_profile'),

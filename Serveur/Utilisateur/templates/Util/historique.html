@@ -3,12 +3,12 @@
 {% extends 'Util/base.html' %}
 
 {% load static %}
-
+{% load i18n %}
 {% block content %}
 
 <link rel="stylesheet" href="{% static 'Utl/css/page.css' %}">
 
-    <h4 class="text-center alert text-bg-warning">Historique des données d'{{esp.lieu}}</h4>
+    <h4 class="text-center alert text-bg-warning">{% trans "Historique des données" %}: {{esp.lieu}}</h4>
     <div id="container">
     <form method="POST" action="#">
         {% csrf_token %}
@@ -17,11 +17,11 @@
                 <tr>
                 
                     <th scope="col">ID</th>
-                    <th scope="col">Température (°C)</th>
-                    <th scope="col">Humidité (%)</th>
-                    <th scope="col">Gaz (PPT)</th>
-                    <th scope="col">Incendie</th>
-                    <th scope="col">Date et Heure</th>
+                    <th scope="col">{% trans "Température" %} (°C)</th>
+                    <th scope="col">{% trans "Humidité" %} (%)</th>
+                    <th scope="col">{% trans "Gaz" %} (PPT)</th>
+                    <th scope="col">{% trans "Incendie" %}</th>
+                    <th scope="col">{% trans "Date et Heure" %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,7 +37,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5">Aucune donnée disponible</td>
+                    <td colspan="5">{% trans "Aucune donnée disponible" %}</td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -1,4 +1,86 @@
+#include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
+#include <DHT.h>
 
+#define DHTPIN 2      // Pin où le capteur DHT est connecté
+#define DHTTYPE DHT22 // Type de capteur
+#define Cap_feux 16
+
+DHT dht(DHTPIN, DHTTYPE);
+
+const int analogPin = A0;
+const float RL = 10.0; // Résistance de charge en kOhms
+float R0 = 10.0; // Valeur initiale de R0 (à ajuster après calibration)
+
+const char* ssid = "ESP";          // Remplace par ton SSID Wi-Fi
+const char* password = "12345678"; // Remplace par ton mot de passe Wi-Fi
+const char* serverUrl = "http://192.168.4.2:8000/fr/receive/"; // URL de ton serveur Django
+
+WiFiClient client;  // Créer un objet WiFiClient
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(Cap_feux, INPUT);
+  dht.begin();
+
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connexion au Wi-Fi...");
+  }
+  Serial.println("Connecté au Wi-Fi");
+}
+
+// Fonction pour calculer la concentration de gaz en ppm
+float getGasConcentration() {
+  int sensorValue = analogRead(analogPin);
+  float sensorVoltage = sensorValue * (3.3 / 1023.0); // Conversion de la valeur analogique en tension (3.3V pour l'ESP8266)
+  float RS_gas = (3.3 - sensorVoltage) / sensorVoltage * RL;
+  float ratio = RS_gas / R0;
+
+  // Formule pour calculer la concentration de CO₂ en ppm
+  float ppm = 116.6020682 * pow(ratio, -2.769034857);
+  return ppm;
+}
+
+void loop() {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+
+    float temperature = dht.readTemperature();
+    float humidity = dht.readHumidity();
+    float gaz = getGasConcentration(); // Obtenir la concentration de gaz en ppm
+    int feux = digitalRead(Cap_feux);
+
+    if (isnan(temperature) || isnan(humidity)) {
+      Serial.println("Erreur de lecture du capteur DHT");
+      return;
+    }
+
+    // Créer une requête HTTP POST avec WiFiClient
+    http.begin(client, serverUrl);  // Utilise WiFiClient ici
+    http.addHeader("Content-Type", "application/json");
+    http.addHeader("Authorization", "Bearer 1234"); // Ajoutez l'en-tête d'autorisation
+
+    // Spécifier les données à un utilisateur
+    String esp_id = "2";  // Remplacez ceci par un identifiant utilisateur dynamique ou configuré
+    String postData = "{\"esp_id\": \"" + esp_id + "\", \"temperature\": " + String(temperature) + ", \"humidity\": " + String(humidity) + ", \"gaz_ppm\": " + String(gaz) + ", \"feux\": " + String(feux) + "}";
+
+    int httpResponseCode = http.POST(postData);
+    if (httpResponseCode > 0) {
+      String response = http.getString();
+      Serial.println("Réponse du serveur : " + response);
+    } else {
+      Serial.println("Erreur lors de l'envoi : " + String(httpResponseCode));
+    }
+
+    http.end();
+  }
+
+  delay(10000); // Envoyer les données toutes les 10 secondes
+}
+
+/*
   #include <ESP8266WiFi.h>
   #include <ESP8266HTTPClient.h>
   #include <DHT.h>
@@ -16,7 +98,7 @@
 
   const char* ssid = "ESP";          // Remplace par ton SSID Wi-Fi
   const char* password = "12345678";  // Remplace par ton mot de passe Wi-Fi
-  const char* serverUrl = "http://192.168.4.2:8000/receive/"; // URL de ton serveur Django
+  const char* serverUrl = "http://192.168.4.2:8000/fr/receive/"; // URL de ton serveur Django
   //const char* serverUrl = "http://192.168.137.44:8000";
   WiFiClient client;  // Créer un objet WiFiClient
 
@@ -70,7 +152,7 @@
   }
 
   delay(10000); // Envoyer les données toutes les 10 secondes
-  }
+  }*/
   
 /*
 #include <ESP8266WiFi.h>

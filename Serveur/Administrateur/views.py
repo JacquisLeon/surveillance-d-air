@@ -1,7 +1,7 @@
 
 #from gettext import translation
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 #from .decorators import superuser_required # type: ignore
 from django.contrib.auth import authenticate, login, logout
@@ -20,20 +20,33 @@ def is_admin(user):
     return user.is_staff  # Vérifie si l'utilisateur est un administrateur
 @user_passes_test(is_admin, login_url='login_admin')
 def acceil_admin(request):
-         # Récupérer l'image de profil de l'administrateur connecté
+    # Récupérer l'image de profil de l'administrateur connecté
     admin = request.user
     try:
         admin_profile = admin.userprofile  # Profil de l'administrateur
     except UserProfile.DoesNotExist:
         admin_profile = None  # Si l'administrateur n'a pas de profil
-        
+
     esp_list = models.ESP.objects.all()
-    esp_data = [{'id':esp.id,'latitude': esp.latitude, 'longitude': esp.longitude, 'lieu': esp.lieu} for esp in esp_list]
-    return render(request, 'admini/Acceil.html',{'admin_profile': admin_profile,  # Profil de l'administrateur
-                                                 'administrateur':request.user,
-                                                 'esp_list': json.dumps(esp_data)})
+    esp_data = []
+    
+    for esp in esp_list:
+        dernier_dht = models.DHTData.objects.filter(esp=esp).order_by('-timestamp').first()  # Récupère la dernière donnée pour chaque ESP
+        esp_data.append({
+            'id': esp.id,
+            'latitude': esp.latitude,
+            'longitude': esp.longitude,
+            'lieu': esp.lieu,
+            'feux': dernier_dht.feux if dernier_dht else "N/A"  # Valeur de feux ou N/A si pas de données
+        })
 
+    return render(request, 'admini/Acceil.html', {
+        'admin_profile': admin_profile,  # Profil de l'administrateur
+        'administrateur': request.user,
+        'esp_list': json.dumps(esp_data)
+    })
 
+    
 #@user_passes_test(is_admin, login_url='login_admin')
 from django.contrib import messages
 from django.shortcuts import render, redirect
@@ -133,9 +146,9 @@ def login_admin(request):
                     login(request,adm)
                     return redirect('acceil_admin') #ouvrir la paged'admin
                 else:
-                    messages.error(request,"Vous n'avez pas les droits administratifs!")
+                    messages.error(request,_("Vous n'avez pas les droits administratifs!"))
             else:
-                messages.error(request,"Nom d'utilisateur ou mot de passe incorrect!")
+                messages.error(request,_("Nom d'utilisateur ou mot de passe incorrect!"))
     return render(request, 'admini/login.html')
 
 @user_passes_test(is_admin, login_url='login_admin')
@@ -147,7 +160,7 @@ def logout_admin(request):
 def supre_util(request, user_id):
     util = get_object_or_404(User, id=user_id)
     util.delete()
-    messages.success(request, "L'utilisateur a été supprimé avec succès!")
+    messages.success(request, _("L'utilisateur a été supprimé avec succès!"))
     return redirect('liste')
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -167,7 +180,7 @@ def ajouter_utilisateur(request):
 
         # Vérifier si un utilisateur avec cet email ou ce nom d'utilisateur existe déjà
         if User.objects.filter(username=nom_util).exists() or User.objects.filter(email=email_util).exists():
-            messages.error(request, "Cet utilisateur existe déjà.")
+            messages.error(request, _("Cet utilisateur existe déjà."))
             return redirect('liste')
 
         # Créer un nouvel utilisateur
@@ -187,7 +200,7 @@ def ajouter_utilisateur(request):
         # Ajouter une image de profil si elle est fournie
         UserProfile.objects.create(user=utilisateur, image=img, role=role_util)
 
-        messages.success(request, "Utilisateur ajouté avec succès!")
+        messages.success(request, _("Utilisateur ajouté avec succès!"))
         return redirect('liste')
 
     return render(request, 'admini/liste_util.html')
@@ -226,7 +239,7 @@ def modifier_utilisateur(request, user_id):
 
         utilisateur.save()
 
-        messages.success(request, "Utilisateur modifié avec succès!")
+        messages.success(request, _("Utilisateur modifié avec succès!"))
         return redirect('liste')
 
     return render(request, 'admini/liste_util.html', {'utilisateur': utilisateur})
@@ -265,7 +278,7 @@ def modifier_profil_admin(request):
         admin_profile.save()
         # Mettre à jour la session pour éviter la déconnexion après le changement de mot de passe
         update_session_auth_hash(request, user)
-        messages.success(request, "Profil administrateur mis à jour avec succès!")
+        messages.success(request, _("Profil administrateur mis à jour avec succès!"))
         #return redirect(None)  # Redirige vers la page d'accueil après modification
 
   # Vous pouvez retourner une réponse HTTP 204 No Content pour indiquer que tout s'est bien passé
@@ -281,7 +294,7 @@ def delete_selected(request):
     if request.method == 'POST':
         item_ids = request.POST.getlist('items_to_delete')
         models.DHTData.objects.filter(id__in=item_ids).delete()
-        messages.success(request, "Données sélectionnées supprimées avec succès!")
+        messages.success(request, _("Données sélectionnées supprimées avec succès!"))
         return redirect('histo')  # Redirige vers la vue d'affichage des données
     return redirect('histo')
 
@@ -365,7 +378,7 @@ def modifier_esp(request, esp_id):
 def supre_esp(request, esp_id):
     esp = get_object_or_404(models.ESP, id=esp_id)
     esp.delete()
-    messages.success(request, "Suppression succès!")
+    messages.success(request, _("Suppression succès!"))
     return redirect('liste_esp')
 
 from django.shortcuts import redirect

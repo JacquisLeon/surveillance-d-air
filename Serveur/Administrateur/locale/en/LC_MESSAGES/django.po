@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-01 13:18+0400\n"
+"POT-Creation-Date: 2024-10-16 19:36+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,9 +18,86 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\Administrateur\templates\admini\Acceil.html:69
-msgid "bonjour"
-msgstr "hello"
+#: .\Administrateur\templates\admini\Bar.html:9
+msgid "Affichage des données actuelles"
+msgstr "Displaying current data"
+
+#: .\Administrateur\templates\admini\Bar.html:13
+#: .\Administrateur\templates\admini\courbe.html:13
+#: .\Administrateur\templates\admini\jauge.html:15
+msgid "Autre options"
+msgstr "Other options"
+
+#: .\Administrateur\templates\admini\Bar.html:15
+#: .\Administrateur\templates\admini\courbe.html:15
+#: .\Administrateur\templates\admini\jauge.html:17
+msgid "Graphique courbe"
+msgstr "Curved graph"
+
+#: .\Administrateur\templates\admini\Bar.html:16
+#: .\Administrateur\templates\admini\courbe.html:16
+#: .\Administrateur\templates\admini\jauge.html:18
+msgid "Graphique bar"
+msgstr "Bar chart"
+
+#: .\Administrateur\templates\admini\Bar.html:17
+#: .\Administrateur\templates\admini\courbe.html:17
+#: .\Administrateur\templates\admini\jauge.html:19
+msgid "Graphique jauge"
+msgstr "Gauge chart"
+
+#: .\Administrateur\templates\admini\Bar.html:18
+#: .\Administrateur\templates\admini\courbe.html:18
+#: .\Administrateur\templates\admini\jauge.html:20
+#: .\Administrateur\templates\admini\liste_esp.html:34
+msgid "Historique"
+msgstr "Historical"
+
+#: .\Administrateur\templates\admini\Bar.html:27
+#: .\Administrateur\templates\admini\courbe.html:27
+#: .\Administrateur\templates\admini\jauge.html:28
+msgid "Feux :"
+msgstr "Lights :"
+
+#: .\Administrateur\templates\admini\Bar.html:31
+#: .\Administrateur\templates\admini\courbe.html:31
+#: .\Administrateur\templates\admini\jauge.html:32
+msgid "Gaz :"
+msgstr "Gas :"
+
+#: .\Administrateur\templates\admini\Bar.html:39
+#: .\Administrateur\templates\admini\historique_esp.html:36
+#: .\Administrateur\templates\admini\pdf_template.html:27
+msgid "Température"
+msgstr "Temperature"
+
+#: .\Administrateur\templates\admini\Bar.html:43
+#: .\Administrateur\templates\admini\historique_esp.html:37
+#: .\Administrateur\templates\admini\pdf_template.html:28
+msgid "Humidité"
+msgstr "Humidity"
+
+#: .\Administrateur\templates\admini\Bar.html:193
+#: .\Administrateur\templates\admini\courbe.html:249
+#: .\Administrateur\templates\admini\jauge.html:169
+msgid "Etat des feux"
+msgstr "State of lights"
+
+#: .\Administrateur\templates\admini\base.html:18
+msgid "SURVEILLANCE DE QUALITE DE L'AIR"
+msgstr "AIR QUALITY MONITORING"
+
+#: .\Administrateur\templates\admini\base.html:20
+msgid "Map"
+msgstr "Map"
+
+#: .\Administrateur\templates\admini\base.html:30
+msgid "Utilisateurs"
+msgstr "Users"
+
+#: .\Administrateur\templates\admini\base.html:38
+msgid "Appareils"
+msgstr "Devices"
 
 #: .\Administrateur\templates\admini\base.html:40
 msgid "Langue"
@@ -38,18 +115,267 @@ msgstr "French"
 msgid "Anglais"
 msgstr "English"
 
+#: .\Administrateur\templates\admini\base.html:88
+msgid "Profils"
+msgstr "Profiles"
+
+#: .\Administrateur\templates\admini\base.html:94
+msgid "Déconnexion"
+msgstr "Logout"
+
+#: .\Administrateur\templates\admini\base.html:121
+msgid "Modifier Profil Administrateur"
+msgstr "Edit Administrator Profile"
+
+#: .\Administrateur\templates\admini\base.html:128
+#: .\Administrateur\templates\admini\liste_util.html:21
+#: .\Administrateur\templates\admini\liste_util.html:82
+#: .\Administrateur\templates\admini\liste_util.html:129
+msgid "Nom d'utilisateur"
+msgstr "Username"
+
+#: .\Administrateur\templates\admini\base.html:132
+#: .\Administrateur\templates\admini\liste_util.html:22
+#: .\Administrateur\templates\admini\liste_util.html:86
+#: .\Administrateur\templates\admini\liste_util.html:133
+msgid "Email"
+msgstr "E-mail"
+
+#: .\Administrateur\templates\admini\base.html:136
+#: .\Administrateur\templates\admini\liste_util.html:24
+#: .\Administrateur\templates\admini\liste_util.html:98
+#: .\Administrateur\templates\admini\liste_util.html:144
+#: .\Administrateur\templates\admini\login.html:24
+msgid "Mot de passe"
+msgstr "Password"
+
+#: .\Administrateur\templates\admini\base.html:140
+#: .\Administrateur\templates\admini\liste_util.html:102
+#: .\Administrateur\templates\admini\liste_util.html:148
+msgid "Photo de profils"
+msgstr "Profile photo"
+
+#: .\Administrateur\templates\admini\base.html:145
+#: .\Administrateur\templates\admini\liste_util.html:48
+#: .\Administrateur\templates\admini\liste_util.html:153
+msgid "Aucune image"
+msgstr "No pictures"
+
+#: .\Administrateur\templates\admini\base.html:149
+#: .\Administrateur\templates\admini\liste_esp.html:90
+#: .\Administrateur\templates\admini\liste_util.html:107
+#: .\Administrateur\templates\admini\liste_util.html:157
+msgid "Fermer"
+msgstr "Close"
+
+#: .\Administrateur\templates\admini\base.html:150
+msgid "Mettre à jour"
+msgstr "To update"
+
+#: .\Administrateur\templates\admini\base.html:165
+msgid "2024 Surveillance de qualité de l'air."
+msgstr "2024 Air quality monitoring"
+
+#: .\Administrateur\templates\admini\courbe.html:9
+#: .\Administrateur\templates\admini\jauge.html:11
+msgid "Affichage des données actuelle"
+msgstr "Displaying current data"
+
+#: .\Administrateur\templates\admini\courbe.html:39
+#: .\Administrateur\templates\admini\jauge.html:40
+msgid "Température :"
+msgstr "Temperature"
+
+#: .\Administrateur\templates\admini\courbe.html:43
+#: .\Administrateur\templates\admini\jauge.html:44
+msgid "Humidité :"
+msgstr "Humidity"
+
+#: .\Administrateur\templates\admini\historique_esp.html:21
+#: .\Administrateur\templates\admini\pdf_template.html:22
+msgid "Historique des données"
+msgstr "Historical"
+
+#: .\Administrateur\templates\admini\historique_esp.html:22
+msgid "Télécharger en PDF"
+msgstr "Download as PDF"
+
+#: .\Administrateur\templates\admini\historique_esp.html:33
+#: .\Administrateur\templates\admini\liste_esp.html:36
+msgid "Supprimer"
+msgstr "Delete"
+
+#: .\Administrateur\templates\admini\historique_esp.html:38
+#: .\Administrateur\templates\admini\pdf_template.html:29
+msgid "Gaz"
+msgstr "Gas :"
+
+#: .\Administrateur\templates\admini\historique_esp.html:39
+#: .\Administrateur\templates\admini\pdf_template.html:30
+msgid "Incendie"
+msgstr "Fire"
+
+#: .\Administrateur\templates\admini\historique_esp.html:40
+#: .\Administrateur\templates\admini\pdf_template.html:31
+msgid "Date et Heure"
+msgstr "Date and Time"
+
+#: .\Administrateur\templates\admini\historique_esp.html:56
+msgid "Aucune donnée disponible pour cet utilisateur"
+msgstr "No data available for this user"
+
 #: .\Administrateur\templates\admini\liste_esp.html:10
 msgid "Liste des appareils"
 msgstr "List of devices"
 
-#~ msgid "Affichage des données actuelle"
-#~ msgstr " this data"
+#: .\Administrateur\templates\admini\liste_esp.html:12
+#: .\Administrateur\templates\admini\liste_util.html:13
+msgid "Ajouter nouveau"
+msgstr "Add new"
+
+#: .\Administrateur\templates\admini\liste_esp.html:20
+msgid "Lieu"
+msgstr "Place"
+
+#: .\Administrateur\templates\admini\liste_esp.html:21
+msgid "Latitude"
+msgstr "Latitude"
+
+#: .\Administrateur\templates\admini\liste_esp.html:22
+msgid "Longitude"
+msgstr "Longitude"
+
+#: .\Administrateur\templates\admini\liste_esp.html:23
+#: .\Administrateur\templates\admini\liste_util.html:26
+msgid "Action"
+msgstr "Action"
+
+#: .\Administrateur\templates\admini\liste_esp.html:35
+#: .\Administrateur\templates\admini\liste_esp.html:65
+#: .\Administrateur\templates\admini\liste_util.html:53
+#: .\Administrateur\templates\admini\liste_util.html:158
+msgid "Modifier"
+msgstr "To modify"
+
+#: .\Administrateur\templates\admini\liste_esp.html:45
+msgid "Modifier l'emplacement de l'appareil"
+msgstr "Change device location"
+
+#: .\Administrateur\templates\admini\liste_esp.html:82
+msgid "Ajouter nouvel appareil"
+msgstr "List of devices"
+
+#: .\Administrateur\templates\admini\liste_esp.html:91
+msgid "Enregistrer"
+msgstr "Save"
+
+#: .\Administrateur\templates\admini\liste_util.html:10
+msgid "Liste d'utilisateurs"
+msgstr "List of users"
+
+#: .\Administrateur\templates\admini\liste_util.html:23
+#: .\Administrateur\templates\admini\liste_util.html:90
+#: .\Administrateur\templates\admini\liste_util.html:137
+msgid "Rôle"
+msgstr "Role"
+
+#: .\Administrateur\templates\admini\liste_util.html:25
+msgid "Photos"
+msgstr "Photos"
+
+#: .\Administrateur\templates\admini\liste_util.html:37
+#: .\Administrateur\templates\admini\liste_util.html:93
+#: .\Administrateur\templates\admini\liste_util.html:139
+#: .\Administrateur\templates\admini\login.html:20
+msgid "Administrateur"
+msgstr "Administrator"
+
+#: .\Administrateur\templates\admini\liste_util.html:39
+#: .\Administrateur\templates\admini\liste_util.html:94
+#: .\Administrateur\templates\admini\liste_util.html:140
+msgid "Utilisateur"
+msgstr "Users"
+
+#: .\Administrateur\templates\admini\liste_util.html:54
+msgid "Suprimer"
+msgstr "Delete"
+
+#: .\Administrateur\templates\admini\liste_util.html:59
+msgid "Aucune donnée disponible"
+msgstr "No data available"
+
+#: .\Administrateur\templates\admini\liste_util.html:75
+msgid "Ajouter un Utilisateur"
+msgstr "Add on user"
+
+#: .\Administrateur\templates\admini\liste_util.html:92
+msgid "Sélectionnez un rôle"
+msgstr "Select a role"
+
+#: .\Administrateur\templates\admini\liste_util.html:108
+msgid "Ajouter"
+msgstr "Add"
+
+#: .\Administrateur\templates\admini\liste_util.html:122
+msgid "Modifier profil Utilisateur"
+msgstr "Edit Administrator Profile"
+
+#: .\Administrateur\templates\admini\liste_util.html:145
+msgid "laisser vide pour ne pas changer"
+msgstr "leave blank so as not to change"
+
+#: .\Administrateur\templates\admini\login.html:22
+msgid "Nom d'Administrateur"
+msgstr "Username"
+
+#: .\Administrateur\templates\admini\login.html:27
+msgid "Se connecter"
+msgstr "Login"
+
+#: .\Administrateur\views.py:149
+msgid "Vous n'avez pas les droits administratifs!"
+msgstr "You do not have administrative rights!"
+
+#: .\Administrateur\views.py:151
+msgid "Nom d'utilisateur ou mot de passe incorrect!"
+msgstr "Incorrect username or password!"
+
+#: .\Administrateur\views.py:163
+msgid "L'utilisateur a été supprimé avec succès!"
+msgstr "User created successfully!"
+
+#: .\Administrateur\views.py:183
+msgid "Cet utilisateur existe déjà."
+msgstr "This user already exists."
+
+#: .\Administrateur\views.py:203
+msgid "Utilisateur ajouté avec succès!"
+msgstr "User created successfully!"
+
+#: .\Administrateur\views.py:242
+msgid "Utilisateur modifié avec succès!"
+msgstr "User created successfully!"
+
+#: .\Administrateur\views.py:281
+msgid "Profil administrateur mis à jour avec succès!"
+msgstr "User created successfully!"
+
+#: .\Administrateur\views.py:297
+msgid "Données sélectionnées supprimées avec succès!"
+msgstr "Selected data successfully deleted!"
+
+#: .\Administrateur\views.py:381
+msgid "Suppression succès!"
+msgstr "Deletion success!"
+
+#~ msgid "Affichage des données actuelle:"
+#~ msgstr "Displaying current data"
+
+#~ msgid "Nom d\\"
+#~ msgstr "Username"
+
+#~ msgid "bonjour"
+#~ msgstr "hello"
 
 #~ msgid "Veuillez remplir tous les champs!"
-#~ msgstr "complity"
-
-#~ msgid "Utilisateur créé avec succès!"
-#~ msgstr "succesful"
-
-#~ msgid "Nom d'utilisateur existe déjà!"
-#~ msgstr "exity"
+#~ msgstr "Please fill out all fields!"

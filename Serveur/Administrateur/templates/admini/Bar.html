@@ -1,20 +1,21 @@
 {% extends 'admini/base.html' %}
 {% load static %}
+{% load i18n %}
 {% block content %}
 <link rel="stylesheet" href="{% static 'adm/css/menu_graphe.css' %}">
 <link rel="stylesheet" href="{% static 'adm/css/tous_graphe.css' %}">
 <div id="container">
     <div class="d-flex justify-content-between align-items-center">
-        <h5 class="text-center alert text-bg-warning mb-xxl-5" style="width: 80%; margin-left: 50px;">Affichage des données actuelles: {{esp.lieu}}</h5>
+        <h5 class="text-center alert text-bg-warning mb-xxl-5" style="width: 80%; margin-left: 50px;">{% trans 'Affichage des données actuelles' %}: {{esp.lieu}}</h5>
         
         <ul class="menu text-center alert text-bg-warning mb-xxl-5">
             <li class="dropdown">
-                <a href="#">Type de graphique <i class="fas fa-caret-down"></i></a>
+                <a href="#"> {% trans 'Autre options' %} <i class="fas fa-caret-down"></i></a>
                 <ul class="dropdown-menu">
-                    <li><a href="{% url 'courbe_admin' esp_id=esp_id %}">Graphique courbe</a></li>
-                    <li><a href="{% url 'bar_admin' esp_id=esp_id %}">Graphique bar</a></li>
-                    <li><a href="{% url 'jauge_admin' esp_id=esp_id %}">Graphique jauge</a></li>
-                    <li><a href="{% url 'histo_esp' esp_id=esp_id %}">Historique</a></li>
+                    <li><a href="{% url 'courbe_admin' esp_id=esp_id %}">{% trans 'Graphique courbe' %}</a></li>
+                    <li><a href="{% url 'bar_admin' esp_id=esp_id %}">{% trans 'Graphique bar' %}</a></li>
+                    <li><a href="{% url 'jauge_admin' esp_id=esp_id %}">{% trans 'Graphique jauge' %}</a></li>
+                    <li><a href="{% url 'histo_esp' esp_id=esp_id %}">{% trans 'Historique' %}</a></li>
                 </ul>
             </li>
         </ul>
@@ -23,23 +24,27 @@
     <div class="charts-container">
         <div class="charts-row">
             <div class="chart-wrapper">
-                <p style="text-align: center;"><strong>Température : <span id="temperature">--</span></strong></p>
+                <p style="text-align: center;"><strong>{% trans 'Feux :' %} <span id="feux">--</span></strong></p>
+                <div id="feuxChart" class="chart" style="width: 700px; height: 400px;"></div>
+            </div>
+            <div class="chart-wrapper">
+                <p style="text-align: center;"><strong>{% trans 'Gaz :' %} <span id="gaz">--</span></strong></p>
+                <div id="gazChart" class="chart" style="width: 700px; height: 400px; margin: 0;"></div>
+            </div>
+            
+        </div>
+        
+        <div class="charts-row">
+            <div class="chart-wrapper">
+                <p style="text-align: center;"><strong>{% trans 'Température' %} : <span id="temperature">--</span></strong></p>
                 <div id="temperatureChart" class="chart" style="width: 700px; height: 400px;"></div>
             </div>
             <div class="chart-wrapper">
-                <p style="text-align: center;"><strong>Humidité : <span id="humidity">--</span></strong></p>
+                <p style="text-align: center;"><strong>{% trans 'Humidité' %} : <span id="humidity">--</span></strong></p>
                 <div id="humidityChart" class="chart" style="width: 700px; height: 400px;"></div>
             </div>
         </div>
-
-        <div class="chart-wrapper">
-            <div class="chart-gaz">
-                <p style="text-align: center;"><strong>Gaz : <span id="gaz">--</span></strong></p>
-                <div id="gazChart" class="chart" style="width: 700px; height: 400px; margin: 0;"></div>
-            </div>
-        </div>
     </div>
-
     <a href="{% url 'add_dht_data' %}">Ajouter des données DHT</a>
 </div>
 
@@ -48,6 +53,7 @@
         var temperatureChart = echarts.init(document.getElementById('temperatureChart'));
         var humidityChart = echarts.init(document.getElementById('humidityChart'));
         var gazChart = echarts.init(document.getElementById('gazChart'));
+        var feuxChart = echarts.init(document.getElementById('feuxChart'));
 
         var temperatureData = { labels: [], values: [] };
         var humidityData = { labels: [], values: [] };
@@ -68,6 +74,14 @@
         function getGazColor(value) {
             return value < 1000 ? 'green' : 'red';
         }
+        function determineFeuxColor(feuxState) {
+        if (feuxState == 'Oui'){
+            return 'red';
+        } 
+        else {
+            return 'green';
+        }
+    }
 
         function createStackedBarOption(name, data, colorFunc) {
             return {
@@ -104,6 +118,43 @@
                 ]
             };
         }
+        function createPieOption(title, data, feuxState) {
+    return {
+        title: {
+            text: title,
+            subtext: 'Statistiques des feux',
+            left: 'center'
+        },
+        tooltip: {
+            trigger: 'item'
+        },
+        series: [{
+            type: 'pie',
+            radius: '50%',
+            data: data,
+            itemStyle: {
+                color: function(params) {
+                    // Utilisez la fonction determineFeuxColor pour définir la couleur en fonction de l'état des feux
+                    return determineFeuxColor(feuxState);
+                }
+            },
+            emphasis: {
+                itemStyle: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+            },
+            animationType: 'scale',
+            animationEasing: 'elasticOut',
+            animationDuration: 10000,
+            animationDelay: function (idx) {
+                return Math.random() * 1000;
+            }
+        }]
+    };
+}
+
 
         function fetchData() {
             $.ajax({
@@ -130,15 +181,22 @@
                         gazData.labels.shift();
                         gazData.values.shift();
                     }
-
+      // Définir les données des feux
+      var feuxData = [
+                     { name: 'État normal', value: data.feux === 'Oui' ? 0 : 1 }, 
+                     { name: 'État d\'alerte', value: data.feux === 'Oui' ? 1 : 0 }
+                 ];
                     // Mettre à jour les graphiques avec les couleurs dynamiques
                     temperatureChart.setOption(createStackedBarOption('Température', temperatureData, getTemperatureColor));
                     humidityChart.setOption(createStackedBarOption('Humidité', humidityData, getHumidityColor));
                     gazChart.setOption(createStackedBarOption('Gaz', gazData, getGazColor));
-
+                    feuxChart.setOption(createPieOption(' {% trans "Etat des feux" %}', feuxData, data.feux));
+         
+                 
                     $('#temperature').text(data.temperature + '°C');
                     $('#humidity').text(data.humidity + '%');
                     $('#gaz').text(data.gaz + 'PPT');
+                    $('#feux').text(data.feux).css('color', determineFeuxColor(data.feux));
                 },
                 error: function() {
                     console.log('Erreur lors de la récupération des données');
@@ -149,6 +207,7 @@
         fetchData();
         setInterval(fetchData, 2000);
     });
+ 
 </script>
 
 {% endblock content %}

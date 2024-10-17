@@ -2,23 +2,17 @@
 {% load static %}
 {% load i18n %}
 {% block content %}
- <!-- Leaflet CSS -->
- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 
 <style>
- /* body{
-    background-image: url('/static/adm/image/carte.png');
-    background-size: cover; 
-    background-position: center; 
-  }*/
   #map {
-            height: 800px; /* Taille de la carte */
-            width: 100%;
-        }
+    height: 800px; /* Taille de la carte */
+    width: 100%;
+  }
 </style>
-<div id="map">
 
-<!-- Leaflet JS -->
+<div id="map"></div>
+
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
 <script>
@@ -29,6 +23,23 @@
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
   }).addTo(map);
+// Définir une icône rouge pour les marqueurs lorsque feux est "oui"
+var redIcon = new L.Icon({
+    iconUrl: '{% static "adm/image/rouge.png" %}',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+
+  // Définir l'icône par défaut (bleue) pour les autres cas
+  var defaultIcon = new L.Icon({
+    iconUrl: '{% static "adm/image/verte.png" %}',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
 
   // Récupérer les données ESP passées depuis Django (converties en JSON)
   var espData = JSON.parse('{{ esp_list|escapejs }}');
@@ -39,69 +50,29 @@
   }
 
   espData.forEach(function(esp) {
-      if (esp.latitude && esp.longitude) {
-          // Créer un marqueur
-          var marker = L.marker([esp.latitude, esp.longitude]).addTo(map);
-          
-          // Ajouter un popup avec un lien vers la courbe
-          marker.bindPopup('<b>' + esp.lieu + '</b><br>' +
-                           'Latitude: ' + esp.latitude + ', Longitude: ' + esp.longitude + '<br>' +
-                           '<a href="' + getCourbeUrl(esp.id) + '">Voir données ESP ' + esp.id + '</a>');
-      }
-  });
+    if (esp.latitude && esp.longitude) {
+      // Choisir l'icône en fonction de la valeur de feux
+      var markerIcon = esp.feux.toLowerCase() === 'oui' ? redIcon : defaultIcon;
 
+      // Créer un marqueur avec l'icône appropriée
+      var marker = L.marker([esp.latitude, esp.longitude], { icon: markerIcon }).addTo(map);
+      
+      // Ajouter un popup avec un lien vers la courbe et les données de feux
+      marker.bindPopup('<b>' + esp.lieu + '</b><br>' +
+                        'Latitude: ' + esp.latitude + ', Longitude: ' + esp.longitude + '<br>' +
+                       'Feux: ' + esp.feux + '<br>' +  // Afficher la valeur de feux
+                       '<a href="' + getCourbeUrl(esp.id) + '">Voir données: ' + esp.lieu + '</a>');
+    }
+  });
+  
   // Ajouter un marqueur au clic sur la carte (optionnel)
   map.on('click', function(e) {
-      var lat = e.latlng.lat;
-      var lng = e.latlng.lng;
+    var lat = e.latlng.lat;
+    var lng = e.latlng.lng;
 
-      L.marker([lat, lng]).addTo(map)
-          .bindPopup('Coordonnées: ' + lat.toFixed(5) + ', ' + lng.toFixed(5))
-          .openPopup();
+    L.marker([lat, lng]).addTo(map)
+      .bindPopup('Coordonnées: ' + lat.toFixed(5) + ', ' + lng.toFixed(5))
+      .openPopup();
   });
 </script>
-
-</div>
-
-      
-<div>
- <h1>{% trans 'bonjour' %}</h1>
-    
-    <a href="{% url 'courbe_admin' 2 %}">
-        <button>Voir données ESP 2</button>
-    </a>
-    <a href="{% url 'courbe_admin' 3 %}">
-        <button>Voir données ESP 3</button>
-    </a>
-</div>
-
-<div style="margin-top: 650px; margin-left: 1100px;">
-  <a href="{% url 'courbe_admin' 1 %}"><button >Andrainjato</button></a>
-</div>
-
-
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-    Launch static backdrop modal
-  </button>
-  
-  <!-- Modal -->
-  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <input type="text" placeholder=" votre nom">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Understood</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-{% endblock %} 
+{% endblock %}

@@ -1,5 +1,5 @@
 # views.py
-import random
+from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.http import JsonResponse
@@ -25,8 +25,20 @@ import json
 def acceil(request):
     # Récupérer le profil de l'utilisateur connecté
     profil = models.UserProfile.objects.get(user=request.user)
+   # esp_list = models.ESP.objects.all()
+   # esp_data = [{'id':esp.id,'latitude': esp.latitude, 'longitude': esp.longitude, 'lieu': esp.lieu} for esp in esp_list]
     esp_list = models.ESP.objects.all()
-    esp_data = [{'id':esp.id,'latitude': esp.latitude, 'longitude': esp.longitude, 'lieu': esp.lieu} for esp in esp_list]
+    esp_data = []
+    
+    for esp in esp_list:
+        dernier_dht = models.DHTData.objects.filter(esp=esp).order_by('-timestamp').first()  # Récupère la dernière donnée pour chaque ESP
+        esp_data.append({
+            'id': esp.id,
+            'latitude': esp.latitude,
+            'longitude': esp.longitude,
+            'lieu': esp.lieu,
+            'feux': dernier_dht.feux if dernier_dht else "N/A"  # Valeur de feux ou N/A si pas de données
+        })
     return render(request, 'Util/Acceil.html',{'utilisateur': request.user,
         'profil': profil,
         'esp_list': json.dumps(esp_data)})
@@ -83,57 +95,8 @@ def receive_data(request):
             return JsonResponse({'status': 'error', 'message': 'Invalid data format'}, status=400)
     # Retourner une erreur si la requête n'est pas POST
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
-"""
-from django.http import JsonResponse
-
-# Définissez votre token personnalisé ici
-CUSTOM_TOKEN = '1234'
-@csrf_exempt
-def receive_data(request):
-    if request.method == 'POST':
-        token = request.headers.get('Authorization')
-        
-        # Vérifiez le token
-        if token != f'Bearer {CUSTOM_TOKEN}':
-            return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=401)
-
-        # Lire les données JSON envoyées
-        try:
-            data = json.loads(request.body)  # Charge les données JSON envoyées
-            #print("Données reçues :", data)  # Affiche les données dans le terminal
-            print("Donnée:", data.get("value") )
-        except json.JSONDecodeError:
-            return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
-
-        # Traitez les données ici (par exemple, enregistrement dans la base de données)
-
-        return JsonResponse({'status': 'success', 'message': 'Data received'})
-    
-    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
 
 
-"""
-#courbe pour esp id
-"""
-@login_required(login_url='login_util')
-def courbe_data(request, esp_id=None):
-    if esp_id:
-        # récupérer les données pour cet ESP
-        esp = ESP.objects.get(id=esp_id)
-        latest_data = DHTData.objects.filter(esp=esp).last()
-    else:
-        # par défaut, prendre les données du premier ESP de l'utilisateur
-        esp = ESP.objects.filter(user=request.user).first()
-        latest_data = DHTData.objects.filter(user=request.user).last()
-
-    profil = models.UserProfile.objects.get(user=request.user)
-
-    return render(request, 'Util/courbe.html', {
-        'dht_data': latest_data,
-        'utilisateur': request.user,
-        'profil': profil,
-        'esp_id': esp.id  # Passer l'ID de l'ESP au template
-    })"""
 def courbe_data(request, esp_id):
     esp = get_object_or_404(models.ESP, id=esp_id)
     # Récupérer le profil de l'utilisateur connecté
@@ -151,6 +114,7 @@ def courbe_data(request, esp_id):
     return render(request, 'Util/courbe.html', context)
     #utilisateur a son propre donnée
 @login_required(login_url='login_util')
+
 def bar_data(request, esp_id):
     esp = get_object_or_404(models.ESP, id=esp_id)
     # Récupérer les dernières données de l'utilisateur connecté
@@ -198,7 +162,8 @@ def get_data(request, esp_id):
             data = {
                 'temperature': last_data.temperature,
                 'humidity': last_data.humidity,
-                'gaz': last_data.gaz
+                'gaz': last_data.gaz,
+                'feux': last_data.feux
                 
             }
             logger.info(f"Data found: {data}")
@@ -206,7 +171,8 @@ def get_data(request, esp_id):
             data = {
                 'temperature': None,
                 'humidity': None,
-                'gaz': None
+                'gaz': None,
+                'feux': None
             }
             logger.warning(f"No data found for esp_id: {esp_id}")
     except Exception as e:
@@ -262,86 +228,15 @@ def add_dht_data(request):
     
     return render(request, 'Util/add_dht_data.html', {'form': form})
 
-"""
-recevoire de donnée combiner
-@csrf_exempt
-def receive_data(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            temperature = data.get('temperature')
-            humidity = data.get('humidity')
-            gaz = data.get('gaz')
-            incendie = data.get('feux')
-            if incendie==1:
-                feux = "Oui"
-            else:
-                feux = "Non"
-            
-            # Afficher les données dans le terminal
-            print(f"Température : {temperature}°C, Humidité : {humidity}% , Gaz : {gaz}mg/L, Feux: {feux}")
-            
-            # Enregistrer les données dans la base de données
-            dht_data = DHTData(temperature=temperature, humidity=humidity, gaz=gaz ,feux=feux)
-            dht_data.save()
-
-            return JsonResponse({'status': 'success', 'temperature': temperature, 'humidity': humidity, 'gaz': gaz, 'feux': feux})
-        except json.JSONDecodeError:
-            return JsonResponse({'status': 'error', 'message': 'Invalid data format'}, status=400)
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
-"""
-
-"""
-#utilisateur combiner a un donner
-@login_required(login_url='login_util') #verroullage
-def show_data(request):
-    # Récupérer les dernières données de la base de données
-    latest_data = DHTData.objects.last()
-    # Récupérer le profil de l'utilisateur connecté
-    profil = models.UserProfile.objects.get(user=request.user)
-    return render(request, 'Util/graphique.html', {
-        'dht_data': latest_data,
-        'utilisateur': request.user,
-        'profil': profil,
-    })
 
 
-def get_data(request):#pour le graphe avec ajax
-    latest_data = DHTData.objects.last()
-    if latest_data:
-        data = {
-            'temperature': latest_data.temperature,
-            'humidity': latest_data.humidity,
-            'gaz': latest_data.gaz,
-            'timestamp': latest_data.timestamp
-        }
-    else:
-        data = {
-            'temperature': None,
-            'humidity': None,
-            'gaz': None,
-        }
-    return JsonResponse(data)
-"""
-"""
-#historique combiner
-@login_required(login_url='login_util') #verroullage
-def display_data(request):
-    # Récupérer toutes les données de la base de données
-    all_data = DHTData.objects.all().order_by('-timestamp')
-     # Récupérer le profil de l'utilisateur connecté
-    profil = models.UserProfile.objects.get(user=request.user)
-    return render(request, 'Util/historique.html', {'all_data': all_data,
-                                                    'profil': profil,
-                                                    'utilisateur': request.user,})
-"""
 
 def login_util(request):
     if request.method == 'POST':
         nm = request.POST.get('name')
         pwd = request.POST.get('pass')
         if not nm or not pwd:
-            messages.error(request, "Veuillez remplir tous les champs!")
+            messages.error(request, _("Veuillez remplir tous les champs!"))
         
         else:
             user = authenticate(request,username=nm,password=pwd)
@@ -349,7 +244,7 @@ def login_util(request):
                 login(request,user)
                 return redirect('acceil')
             else:
-                messages.error(request,"Nom d'utilisateur ou mot de passe incorrect!")
+                messages.error(request, _("Nom d'utilisateur ou mot de passe incorrect!"))
     return render(request, 'Util/login.html')
 
 def logout_util(request):
@@ -391,7 +286,7 @@ def modifier_profil(request):
         # Mettre à jour la session pour éviter la déconnexion après le changement de mot de passe
         update_session_auth_hash(request, utilisateur)
 
-        messages.success(request, "Votre profil a été mis à jour avec succès!")
+       # messages.success(request, "Votre profil a été mis à jour avec succès!")
         #return redirect('P_modifier')
  
     #return render(request, 'Util/modifier.html', {'utilisateur': utilisateur})
@@ -422,17 +317,6 @@ def login_app(request):
             return JsonResponse({'status': 'error', 'message': "Nom d'utilisateur ou mot de passe incorrect!"}, status=401)
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
-
-from django.http import JsonResponse
-import random
-
-def random_data(request):
-    # Génération de deux ensembles de données aléatoires
-    data1 = [random.uniform(10, 100) for _ in range(10)]  # Données pour le LineChart
-    data2 = [random.uniform(20, 200) for _ in range(10)]  # Données pour le BarChart
-
-    # Retourne une réponse JSON avec les deux jeux de données
-    return JsonResponse({"data1": data1, "data2": data2})
 
 
 def apk_data(request):
@@ -545,6 +429,7 @@ def get_last_data(request, esp_id):
                     'temperature': last_data.temperature,
                     'humidity': last_data.humidity,
                     'gaz': last_data.gaz,
+                    'feux': last_data.feux,
                     'timestamp': last_data.timestamp,
                     'lieu': esp.lieu  # Récupérer le lieu de l'ESP
                 }
@@ -555,7 +440,31 @@ def get_last_data(request, esp_id):
             return JsonResponse({'error': 'ESP not found'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-
+    
+from django.http import JsonResponse
+from django.db.models import Max
+from Administrateur.models import ESP, DHTData
 def get_esp_position(request):
-    esp_data = list(models.ESP.objects.values('id', 'lieu', 'latitude', 'longitude'))
+    #esp_data = list(models.ESP.objects.values('id', 'lieu', 'latitude', 'longitude'))
+    #return JsonResponse(esp_data, safe=False)
+    esp_data = []
+    esp_objects = ESP.objects.all()
+
+    for esp in esp_objects:
+        last_data = DHTData.objects.filter(esp=esp).order_by('-timestamp').first()  # Récupère la dernière donnée
+
+        esp_info = {
+            'id': esp.id,
+            'lieu': esp.lieu,
+            'latitude': esp.latitude,
+            'longitude': esp.longitude,
+            'feux': last_data.feux if last_data else 'N/A',  # 'N/A' si pas de données
+        }
+
+        esp_data.append(esp_info)
+
     return JsonResponse(esp_data, safe=False)
+
+def teste_connexion(request):
+    # Renvoie une réponse JSON avec un statut 200 pour indiquer que le serveur fonctionne
+    return JsonResponse({'status': 'OK'}, status=200)
