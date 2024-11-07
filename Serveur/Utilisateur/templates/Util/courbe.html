@@ -29,7 +29,7 @@
                 <div id="feuxChart" class="chart" style="width: 700px; height: 400px;"></div>
             </div>
             <div class="chart-wrapper">
-                <p style="text-align: center;"><strong>{% trans "Gaz :" %} <span id="gaz">--</span></strong></p>
+                <p style="text-align: center;"><strong>{% trans "CO2 :" %} <span id="gaz">--</span></strong></p>
                 <div id="gazChart" class="chart" style="width: 700px; height: 400px; margin: 0;"></div>
             </div>
             
@@ -238,9 +238,9 @@
                  ];
                  
                  // Mettre à jour les textes et couleurs
-                 $('#temperature').text(data.temperature).css('color', temperatureColor);
-                 $('#humidity').text(data.humidity).css('color', humidityColor);
-                 $('#gaz').text(data.gaz).css('color', gazColor);
+                 $('#temperature').text(data.temperature + '°C').css('color', temperatureColor);
+                 $('#humidity').text(data.humidity + '%').css('color', humidityColor);
+                 $('#gaz').text(data.gaz + 'PPM').css('color', gazColor);
                  $('#feux').text(data.feux).css('color', determineFeuxColor(data.feux));
                  
                  // Mettre à jour les graphiques

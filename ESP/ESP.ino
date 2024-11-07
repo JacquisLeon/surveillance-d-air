@@ -1,16 +1,22 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include <DHT.h>
+#include <MQUnifiedsensor.h>
+// Définitions
+#define placa "ESP8266"  // Changer pour ESP8266
+#define Voltage_Resolution 3.3  // L'ESP8266 fonctionne avec 3.3V
+#define pin A0  // Pin analogique de l'ESP8266
+#define type "MQ-135"  // MQ135
+#define ADC_Bit_Resolution 10  // Résolution ADC pour ESP8266
+#define RatioMQ135CleanAir 3.6  // RS / R0 = 3.6 ppm
 
 #define DHTPIN 2      // Pin où le capteur DHT est connecté
 #define DHTTYPE DHT22 // Type de capteur
 #define Cap_feux 16
+// Déclarer le capteur
+MQUnifiedsensor MQ135(placa, Voltage_Resolution, ADC_Bit_Resolution, pin, type);
 
 DHT dht(DHTPIN, DHTTYPE);
-
-const int analogPin = A0;
-const float RL = 10.0; // Résistance de charge en kOhms
-float R0 = 10.0; // Valeur initiale de R0 (à ajuster après calibration)
 
 const char* ssid = "ESP";          // Remplace par ton SSID Wi-Fi
 const char* password = "12345678"; // Remplace par ton mot de passe Wi-Fi
@@ -22,7 +28,36 @@ void setup() {
   Serial.begin(115200);
   pinMode(Cap_feux, INPUT);
   dht.begin();
+// **************MQ135********************
+  // Définir le modèle mathématique pour calculer la concentration en PPM et la valeur des constantes
+  MQ135.setRegressionMethod(1); //_PPM = a * ratio^b
 
+  // Initialiser le capteur MQ
+  MQ135.init(); 
+
+  // Routine de calibration
+  Serial.print("Calibration en cours, veuillez patienter.");
+  float calcR0 = 0;
+  for(int i = 1; i <= 10; i++) {
+    MQ135.update(); // Mettre à jour les données
+    calcR0 += MQ135.calibrate(RatioMQ135CleanAir);
+    Serial.print(".");
+  }
+  MQ135.setR0(calcR0 / 10);
+  Serial.println(" fait!");
+
+  if (isinf(calcR0)) {
+    Serial.println("Avertissement : Problème de connexion, R0 est infini (circuit ouvert détecté). Veuillez vérifier votre câblage et l'alimentation.");
+    while (1);
+  }
+  if (calcR0 == 0) {
+    Serial.println("Avertissement : Problème de connexion trouvé, R0 est zéro (la pin analogique est court-circuitée à la masse). Veuillez vérifier votre câblage et l'alimentation.");
+    while (1);
+  }
+
+  //Serial.println("** Valeurs du MQ-135 ****");
+  //Serial.println("|    CO   |  Alcool |   CO2  |  Toluène  |  NH4  |  Acétone  |");  
+//***********************
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
@@ -31,25 +66,14 @@ void setup() {
   Serial.println("Connecté au Wi-Fi");
 }
 
-// Fonction pour calculer la concentration de gaz en ppm
-float getGasConcentration() {
-  int sensorValue = analogRead(analogPin);
-  float sensorVoltage = sensorValue * (3.3 / 1023.0); // Conversion de la valeur analogique en tension (3.3V pour l'ESP8266)
-  float RS_gas = (3.3 - sensorVoltage) / sensorVoltage * RL;
-  float ratio = RS_gas / R0;
-
-  // Formule pour calculer la concentration de CO₂ en ppm
-  float ppm = 116.6020682 * pow(ratio, -2.769034857);
-  return ppm;
-}
-
 void loop() {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
-
+  MQ135.update(); // Mettre à jour les données
     float temperature = dht.readTemperature();
     float humidity = dht.readHumidity();
-    float gaz = getGasConcentration(); // Obtenir la concentration de gaz en ppm
+  MQ135.setA(110.47); MQ135.setB(-2.862); // CO2
+  float gaz = (MQ135.readSensor())+400; 
     int feux = digitalRead(Cap_feux);
 
     if (isnan(temperature) || isnan(humidity)) {
@@ -64,7 +88,7 @@ void loop() {
 
     // Spécifier les données à un utilisateur
     String esp_id = "2";  // Remplacez ceci par un identifiant utilisateur dynamique ou configuré
-    String postData = "{\"esp_id\": \"" + esp_id + "\", \"temperature\": " + String(temperature) + ", \"humidity\": " + String(humidity) + ", \"gaz_ppm\": " + String(gaz) + ", \"feux\": " + String(feux) + "}";
+    String postData = "{\"esp_id\": \"" + esp_id + "\", \"temperature\": " + String(temperature) + ", \"humidity\": " + String(humidity) + ", \"gaz\": " + String(gaz) + ", \"feux\": " + String(feux) + "}";
 
     int httpResponseCode = http.POST(postData);
     if (httpResponseCode > 0) {
@@ -73,11 +97,12 @@ void loop() {
     } else {
       Serial.println("Erreur lors de l'envoi : " + String(httpResponseCode));
     }
-
+/*Serial.print("Co2: ");
+Serial.println(gaz);*/
     http.end();
   }
 
-  delay(10000); // Envoyer les données toutes les 10 secondes
+  delay(500); // Envoyer les données toutes les 10 secondes
 }
 
 /*

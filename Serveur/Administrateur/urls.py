@@ -4,6 +4,10 @@ from . import views
 #from django.conf.urls.static import static
 
 urlpatterns = [
+    path('seuils/update/', views.update_seuils_data, name='update_seuils_data'),
+
+    path('seuils/', views.afficher_seuils, name='afficher_seuils'),
+   # path('seuils/', views.modifier_seuils, name = 'seuils'),
     path('acceul_admin/', views.acceil_admin, name='acceil_admin'),
     path('ajouter/', views.ajouter_utilisateur, name='ajouter'), 
     path('login/', views.login_admin, name='login_admin'),

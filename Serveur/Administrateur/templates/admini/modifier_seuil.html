@@ -1,0 +1,11 @@
+{% extends 'admini/base.html' %}
+{% block content %}
+<h1>Modifier Seuil</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}  <!-- Affiche le formulaire -->
+    <button type="submit">Enregistrer les modifications</button>
+</form>
+<a href="{% url 'afficher_seuils' %}">Retour à la liste des seuils</a>
+
+{% endblock %}

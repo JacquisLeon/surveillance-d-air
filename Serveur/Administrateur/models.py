@@ -17,7 +17,7 @@ class UserProfile(models.Model):
 
 
 class ESP(models.Model):
-    #esp_id = models.CharField(max_length=50, unique=True, default=0)  # Champ unique pour identifier chaque ESP
+    
     lieu = models.CharField(max_length=100)
     latitude = models.FloatField(null=True, blank=True)  # Ajout de la latitude
     longitude = models.FloatField(null=True, blank=True)  # Ajout de la longitude
@@ -32,3 +32,11 @@ class DHTData(models.Model):
 
     def __str__(self):
         return f"Temp: {self.temperature}°C, Hum: {self.humidity}%, Time: {self.timestamp}, Gaz: {self.gaz}, Feux: {self.feux}"
+
+class Seuils(models.Model):
+    humMax = models.FloatField( default=0, null=True)
+    humMin = models.FloatField(default=0, null=True)
+    tempMax = models.FloatField(default=0, null=True)
+    tempMin = models.FloatField(default=0, null=True)
+    gazMax = models.FloatField(default=0, null=True)
+    gazMin = models.FloatField(default=0, null=True)

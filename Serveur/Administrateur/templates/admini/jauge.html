@@ -29,7 +29,7 @@
             <div id="feuxChart" class="chart" style="width: 700px; height: 400px;"></div>
         </div>
         <div class="chart-wrapper">
-            <p style="text-align: center;"><strong>{% trans 'Gaz :' %} <span id="gaz">--</span></strong></p>
+            <p style="text-align: center;"><strong>{% trans 'CO2 :' %} <span id="gaz">--</span></strong></p>
             <div id="gazChart" class="chart" style="width: 700px; height: 400px; margin: 0;"></div>
         </div>
         
@@ -47,157 +47,167 @@
     </div>
 </div>
 </div>
-
+<div id="Stemp" 
+data-min="{{ seuils.tempMin }}" 
+data-max="{{ seuils.tempMax }}">
+</div>
+<div id="Shum" 
+data-min="{{ seuils.humMin }}" 
+data-max="{{ seuils.humMax }}">
+<div id="Sgaz" 
+data-min="{{ seuils.gazMin }}" 
+data-max="{{ seuils.gazMax }}">
+</div>
 <script>
     $(document).ready(function() {
-        // Initialisation des graphiques
-        var temperatureChart = echarts.init(document.getElementById('temperatureChart'));
-        var humidityChart = echarts.init(document.getElementById('humidityChart'));
-        var gazChart = echarts.init(document.getElementById('gazChart'));
-        var feuxChart = echarts.init(document.getElementById('feuxChart'));
-
-        // Fonction pour créer les options de la jauge
-        function createGaugeOption(label, value, min, max, unit, colorRanges) {
-            return {
-                tooltip: {
-                    formatter: '{a} <br/>{b} : {c}' + unit
-                },
-                series: [
-                    {
-                        name: label,
-                        type: 'gauge',
-                        radius: '90%',
-                        min: min,
-                        max: max,
-                        splitNumber: 10,
-                        axisLine: {
-                            lineStyle: {
-                                color: colorRanges,
-                                width: 10
-                            }
-                        },
-                        axisTick: {
-                            length: 15,
-                            lineStyle: {
-                                color: 'auto'
-                            }
-                        },
-                        splitLine: {
-                            length: 20,
-                            lineStyle: {
-                                color: 'auto'
-                            }
-                        },
-                        title: {
-                            show: true,
-                            offsetCenter: [0, '-30%'],
-                            textStyle: {
+            // Initialisation des graphiques
+            var temperatureChart = echarts.init(document.getElementById('temperatureChart'));
+            var humidityChart = echarts.init(document.getElementById('humidityChart'));
+            var gazChart = echarts.init(document.getElementById('gazChart'));
+            var feuxChart = echarts.init(document.getElementById('feuxChart'));
+    
+            // Fonction pour créer les options de la jauge
+            function createGaugeOption(label, value, min, max, unit, colorRanges) {
+                return {
+                    tooltip: {
+                        formatter: '{a} <br/>{b} : {c}' + unit
+                    },
+                    series: [
+                        {
+                            name: label,
+                            type: 'gauge',
+                            radius: '90%',
+                            min: min,
+                            max: max,
+                            splitNumber: 10,
+                            axisLine: {
+                                lineStyle: {
+                                    color: colorRanges,
+                                    width: 10
+                                }
+                            },
+                            axisTick: {
+                                length: 15,
+                                lineStyle: {
+                                    color: 'auto'
+                                }
+                            },
+                            splitLine: {
+                                length: 20,
+                                lineStyle: {
+                                    color: 'auto'
+                                }
+                            },
+                            title: {
+                                show: true,
+                                offsetCenter: [0, '-30%'],
+                                textStyle: {
+                                    fontSize: 20
+                                }
+                            },
+                            detail: {
+                                formatter: '{value}' + unit,
                                 fontSize: 20
-                            }
-                        },
-                        detail: {
-                            formatter: '{value}' + unit,
-                            fontSize: 20
-                        },
-                        data: [{ value: value, name: label }]
-                    }
-                ]
-            };
-        }
-        function createPieOption(title, data, feuxState) {
-    return {
-        title: {
-            text: title,
-            subtext: 'Statistiques des feux',
-            left: 'center'
-        },
-        tooltip: {
-            trigger: 'item'
-        },
-        series: [{
-            type: 'pie',
-            radius: '50%',
-            data: data,
-            itemStyle: {
-                color: function(params) {
-                    // Utilisez la fonction determineFeuxColor pour définir la couleur en fonction de l'état des feux
-                    return determineFeuxColor(feuxState);
-                }
-            },
-            emphasis: {
-                itemStyle: {
-                    shadowBlur: 10,
-                    shadowOffsetX: 0,
-                    shadowColor: 'rgba(0, 0, 0, 0.5)'
-                }
-            },
-            animationType: 'scale',
-            animationEasing: 'elasticOut',
-            animationDuration: 10000,
-            animationDelay: function (idx) {
-                return Math.random() * 1000;
+                            },
+                            data: [{ value: value, name: label }]
+                        }
+                    ]
+                };
             }
-        }]
-    };
-}
-function determineFeuxColor(feuxState) {
-        if (feuxState == 'Oui'){
-            return 'red';
-        } 
-        else {
-            return 'green';
-        }
-       
-     }
-
-        // Fonction pour récupérer les données
-        function fetchData() {
-            $.ajax({
-                url: "{% url 'get_data' esp_id=esp_id %}",
-                method: 'GET',
-                success: function(data) {
-                    $('#temperature').text(data.temperature + '°C');
-                    $('#humidity').text(data.humidity + '%');
-                    $('#gaz').text(data.gaz + 'PPT');
-                    $('#feux').text(data.feux).css('color', determineFeuxColor(data.feux));
-                 
-                    // Définir les données des feux
-                var feuxData = [
-                     { name: 'État normal', value: data.feux === 'Oui' ? 0 : 1 }, 
-                     { name: 'État d\'alerte', value: data.feux === 'Oui' ? 1 : 0 }
-                 ];
-                 feuxChart.setOption(createPieOption('{% trans "Etat des feux" %}', feuxData, data.feux));
-         
-                    // Mise à jour des jauges
-                    temperatureChart.setOption(createGaugeOption('Température', data.temperature, 0, 50, '°C', [
-                        [0.4, '#0000FF'], // Bleu pour 0 à 20
-                        [0.5, '#008000'], // Vert pour 20 à 25
-                        [1, '#FF0000']    // Rouge au-dessus de 25
-                    ]));
-
-                    humidityChart.setOption(createGaugeOption('Humidité', data.humidity, 0, 100, '%', [
-                        [0.4, '#0000FF'], // Vert pour 0 à 40
-                        [0.6, '#008000'], // Bleu pour 40 à 60
-                        [1, '#FF0000']    // Rouge au-dessus de 60
-                    ]));
-
-                    gazChart.setOption(createGaugeOption('Gaz', data.gaz, 0, 2000, 'mg/L', [
-                        [0.5, '#008000'], // Vert pour inférieur à 1000
-                        [1, '#FF0000']    // Rouge au-dessus de 1000
-                    ]));
+            function createPieOption(title, data, feuxState) {
+        return {
+            title: {
+                text: title,
+               // subtext: 'Statistiques des feux',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            series: [{
+                type: 'pie',
+                radius: '50%',
+                data: data,
+                itemStyle: {
+                    color: function(params) {
+                        // Utilisez la fonction determineFeuxColor pour définir la couleur en fonction de l'état des feux
+                        return determineFeuxColor(feuxState);
+                    }
                 },
-                error: function() {
-                    console.log('Erreur lors de la récupération des données');
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                },
+                animationType: 'scale',
+                animationEasing: 'elasticOut',
+                animationDuration: 10000,
+                animationDelay: function (idx) {
+                    return Math.random() * 1000;
                 }
-            });
-        }
-
-        // Appel initial pour obtenir les données immédiatement
-        fetchData();
-
-        // Appel périodique pour mettre à jour les données
-        setInterval(fetchData, 2000); // Met à jour toutes les 2 secondes
-    });
+            }]
+        };
+    }
+    function determineFeuxColor(feuxState) {
+            if (feuxState == 'Oui'){
+                return 'red';
+            } 
+            else {
+                return 'green';
+            }
+           
+         }
+    
+            // Fonction pour récupérer les données
+            function fetchData() {
+                $.ajax({
+                    url: "{% url 'get_data' esp_id=esp_id %}",
+                    method: 'GET',
+                    success: function(data) {
+                        $('#temperature').text(data.temperature + '°C');
+                        $('#humidity').text(data.humidity + '%');
+                        $('#gaz').text(data.gaz + 'PPM');
+                        $('#feux').text(data.feux).css('color', determineFeuxColor(data.feux));
+                     
+                        // Définir les données des feux
+                    var feuxData = [
+                         { name: 'État normal', value: data.feux === 'Oui' ? 0 : 1 }, 
+                         { name: 'État d\'alerte', value: data.feux === 'Oui' ? 1 : 0 }
+                     ];
+                     feuxChart.setOption(createPieOption('Etat des feux', feuxData, data.feux));
+             
+                        // Mise à jour des jauges
+                        temperatureChart.setOption(createGaugeOption('Température', data.temperature, 0, 50, '°C', [
+                            [0.4, '#0000FF'], // Bleu pour 0 à 20
+                            [0.5, '#008000'], // Vert pour 20 à 25
+                            [1, '#FF0000']    // Rouge au-dessus de 25
+                        ]));
+    
+                        humidityChart.setOption(createGaugeOption('Humidité', data.humidity, 0, 100, '%', [
+                            [0.4, '#0000FF'], // Vert pour 0 à 40
+                            [0.6, '#008000'], // Bleu pour 40 à 60
+                            [1, '#FF0000']    // Rouge au-dessus de 60
+                        ]));
+    
+                        gazChart.setOption(createGaugeOption('Gaz', data.gaz, 0, 2000, 'mg/L', [
+                            [0.5, '#008000'], // Vert pour inférieur à 1000
+                            [1, '#FF0000']    // Rouge au-dessus de 1000
+                        ]));
+                    },
+                    error: function() {
+                        console.log('Erreur lors de la récupération des données');
+                    }
+                });
+            }
+    
+            // Appel initial pour obtenir les données immédiatement
+            fetchData();
+    
+            // Appel périodique pour mettre à jour les données
+            setInterval(fetchData, 2000); // Met à jour toutes les 2 secondes
+        });
 </script>
 
 {% endblock content %}

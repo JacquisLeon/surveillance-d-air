@@ -28,7 +28,7 @@
                 <div id="feuxChart" class="chart" style="width: 700px; height: 400px;"></div>
             </div>
             <div class="chart-wrapper">
-                <p style="text-align: center;"><strong>{% trans 'Gaz :' %} <span id="gaz">--</span></strong></p>
+                <p style="text-align: center;"><strong>{% trans 'CO2 :' %} <span id="gaz">--</span></strong></p>
                 <div id="gazChart" class="chart" style="width: 700px; height: 400px; margin: 0;"></div>
             </div>
             
@@ -46,7 +46,17 @@
         </div>
     </div>
 </div>
-
+<div id="Stemp" 
+data-min="{{ seuils.tempMin }}" 
+data-max="{{ seuils.tempMax }}">
+</div>
+<div id="Shum" 
+data-min="{{ seuils.humMin }}" 
+data-max="{{ seuils.humMax }}">
+<div id="Sgaz" 
+data-min="{{ seuils.gazMin }}" 
+data-max="{{ seuils.gazMax }}">
+</div>
 <script>
    $(document).ready(function() {
      // Initialisation des graphiques
@@ -202,6 +212,13 @@
         }
        
      }
+   // Récupérer les valeurs des seuils depuis les attributs data-* de l'élément
+   var tempMin = parseFloat(document.getElementById('Stemp').dataset.min);
+        var tempMax = parseFloat(document.getElementById('Stemp').dataset.max);
+        var humMin = parseFloat(document.getElementById('Shum').dataset.min);
+        var humMax = parseFloat(document.getElementById('Shum').dataset.max);
+        var gazMin = parseFloat(document.getElementById('Sgaz').dataset.min);
+        var gazMax = parseFloat(document.getElementById('Sgaz').dataset.max);
 
      function fetchData() {
          $.ajax({
@@ -226,9 +243,9 @@
                  if (gazData.labels.length > 10) gazData.labels.shift();
 
                  // Définir les couleurs
-                 var temperatureColor = determineColor(data.temperature, 20, 25);
-                 var humidityColor = determineColor(data.humidity, 40, 60);
-                 var gazColor = determineColor(data.gaz, 0, 1000);
+                 var temperatureColor = determineColor(data.temperature, tempMin, tempMax);
+                 var humidityColor = determineColor(data.humidity, humMin, humMax);
+                 var gazColor = determineColor(data.gaz, gazMin, gazMax);
                  
                  // Définir les données des feux
                  var feuxData = [
@@ -236,18 +253,20 @@
                      { name: 'État d\'alerte', value: data.feux === 'Oui' ? 1 : 0 }
                  ];
                  
-                 // Mettre à jour les textes et couleurs
-                 $('#temperature').text(data.temperature).css('color', temperatureColor);
-                 $('#humidity').text(data.humidity).css('color', humidityColor);
-                 $('#gaz').text(data.gaz).css('color', gazColor);
-                 $('#feux').text(data.feux).css('color', determineFeuxColor(data.feux));
-                 
+
                  // Mettre à jour les graphiques
                  temperatureChart.setOption(createLineOption('Température', temperatureColor, temperatureData));
                  humidityChart.setOption(createLineOption('Humidité', humidityColor, humidityData));
                  gazChart.setOption(createLineOption('Gaz', gazColor, gazData));
                  feuxChart.setOption(createPieOption(' {% trans "Etat des feux" %}', feuxData, data.feux));
-             },
+                             // Mettre à jour les textes et couleurs
+                $('#temperature').text(data.temperature + '°C').css('color', temperatureColor);
+                 $('#humidity').text(data.humidity + '%').css('color', humidityColor);
+                 $('#gaz').text(data.gaz + 'PPM').css('color', gazColor);
+                 $('#feux').text(data.feux).css('color', determineFeuxColor(data.feux));
+                 
+            
+                },
              error: function() {
                  console.log('Erreur lors de la récupération des données');
              }

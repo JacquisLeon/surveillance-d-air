@@ -4,8 +4,42 @@
 {% load i18n %}
 {% block content %}  
 <link rel="stylesheet" href="{% static 'adm/css/liste_util.css' %}">
-
 <div id="container">
+    <div class="d-flex justify-content-between align-items-center">
+        <h5 class="text-center alert text-bg-success mb-3" style="width: 80%;">{% trans 'Seuils' %}</h5>
+        <button style="width: 19%; height: 57px;" type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#seuils">
+            {% trans 'Modifier seuils' %}
+        </button>
+    </div>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Humidité Min</th>
+            <th>Humidité Max</th>
+            <th>Température Min</th>
+            <th>Température Max</th>
+            <th>Gaz Min</th>
+            <th>Gaz Max</th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        
+            <tr>
+                <td>{{ seuils.humMin }}</td>
+                <td>{{ seuils.humMax }}</td>
+                <td>{{ seuils.tempMin }}</td>
+                <td>{{ seuils.tempMax }}</td>
+                <td>{{ seuils.gazMin }}</td>
+                <td>{{ seuils.gazMax }}</td>
+                
+            </tr>
+        
+    
+    </tbody>
+</table>
+
+
     <div class="d-flex justify-content-between align-items-center">
         <h5 class="text-center alert text-bg-warning mb-3" style="width: 80%;">{% trans 'Liste des appareils' %}</h5>
         <button style="width: 19%; height: 57px;" type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#ajoute">
@@ -96,4 +130,67 @@
     </div>
 </div>
 
+<style>
+    .cote-container {
+      display: flex;
+      gap: 10px; /* Ajoute un espace entre les deux champs */
+    }
+  
+    .temp-item {
+      flex: 1; /* Les deux champs prennent la même largeur */
+    }
+  </style>
+
+  <!-- Modal -->
+<div class="modal fade" id="seuils" tabindex="-1" aria-labelledby="seuilsLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="seuilsLabel">Modifier Seuils</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'update_seuils_data' %}">  <!-- Action pour la mise à jour -->
+                    {% csrf_token %}
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="humMin" class="form-label">Humidité Min</label>
+                            <input type="text" class="form-control" id="humMin" name="humMin" value="{{ seuils.humMin }}">
+                        </div>
+                        <div class="col">
+                            <label for="humMax" class="form-label">Humidité Max</label>
+                            <input type="text" class="form-control" id="humMax" name="humMax" value="{{ seuils.humMax }}">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="tempMin" class="form-label">Température Min</label>
+                            <input type="text" class="form-control" id="tempMin" name="tempMin" value="{{ seuils.tempMin }}">
+                        </div>
+                        <div class="col">
+                            <label for="tempMax" class="form-label">Température Max</label>
+                            <input type="text" class="form-control" id="tempMax" name="tempMax" value="{{ seuils.tempMax }}">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="gazMin" class="form-label">Gaz Min</label>
+                            <input type="text" class="form-control" id="gazMin" name="gazMin" value="{{ seuils.gazMin }}">
+                        </div>
+                        <div class="col">
+                            <label for="gazMax" class="form-label">Gaz Max</label>
+                            <input type="text" class="form-control" id="gazMax" name="gazMax" value="{{ seuils.gazMax }}">
+                        </div>
+                    </div>
+                          <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                        <button type="submit" class="btn btn-primary">Sauvegarder</button>  <!-- Bouton pour soumettre le formulaire -->
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock content %}

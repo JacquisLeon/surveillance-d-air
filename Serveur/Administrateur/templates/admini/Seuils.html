@@ -1,0 +1,33 @@
+{% extends 'admini/base.html' %}
+{% block content %}
+    <h1>Seuils</h1>
+    <a href="{% url '' %}"></a>
+    <table>
+        <thead>
+            <tr>
+                <th>Humidité Max</th>
+                <th>Humidité Min</th>
+                <th>Température Max</th>
+                <th>Température Min</th>
+                <th>Gaz Max</th>
+                <th>Gaz Min</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for seuil in seuils %}
+                <tr>
+                    <td>{{ seuil.humMax }}</td>
+                    <td>{{ seuil.humMin }}</td>
+                    <td>{{ seuil.tempMax }}</td>
+                    <td>{{ seuil.tempMin }}</td>
+                    <td>{{ seuil.gazMax }}</td>
+                    <td>{{ seuil.gazMin }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="6">Aucun seuil disponible.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

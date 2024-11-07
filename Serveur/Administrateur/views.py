@@ -79,6 +79,7 @@ def courbe_admin(request, esp_id):
     # Récupérez les données de DHTData sans utiliser le champ esp
     data = models.DHTData.objects.last()  # Ou appliquez d'autres filtres si nécessaire
     esp = get_object_or_404(models.ESP, id=esp_id)
+    seuils = models.Seuils.objects.first()
     # Préparez les données pour votre template
     context = {
         'admin_profile': admin_profile,
@@ -86,6 +87,7 @@ def courbe_admin(request, esp_id):
         'data': data,
         'esp_id': esp_id,  # Ajoutez esp_id ici
          'esp': esp,
+         'seuils': seuils
     }
     return render(request, 'admini/courbe.html', context)
 
@@ -101,6 +103,7 @@ def jauge_admin(request, esp_id):
     # Récupérez les données de DHTData sans utiliser le champ esp
     data = models.DHTData.objects.last()  # Ou appliquez d'autres filtres si nécessaire
     esp = get_object_or_404(models.ESP, id=esp_id)
+    seuils = models.Seuils.objects.first()
     # Préparez les données pour votre template
     context = {
         'admin_profile': admin_profile,
@@ -108,6 +111,7 @@ def jauge_admin(request, esp_id):
         'data': data,
         'esp_id': esp_id,  # Ajoutez esp_id ici
         'esp': esp,
+        'seuils': seuils
     }
     return render(request, 'admini/jauge.html', context)
 
@@ -122,6 +126,7 @@ def bar_admin(request, esp_id):
     # Récupérez les données de DHTData sans utiliser le champ esp
     data = models.DHTData.objects.last()  # Ou appliquez d'autres filtres si nécessaire
     esp = get_object_or_404(models.ESP, id=esp_id)
+    seuils = models.Seuils.objects.first()
     # Préparez les données pour votre template
     context = {
         'admin_profile': admin_profile,
@@ -129,6 +134,7 @@ def bar_admin(request, esp_id):
         'data': data,
         'esp_id': esp_id,  # Ajoutez esp_id ici
         'esp': esp,
+        'seuils': seuils
     }
     return render(request, 'admini/bar.html', context)
 
@@ -323,10 +329,51 @@ def historique_esp(request, esp_id):
         'admin_profile': admin_profile,  # Profil de l'administrateur
         'administrateur':request.user
     })
+    
 from Administrateur.forms import Esp_forms
-
-
 from Administrateur import models
+"""
+def modifier_seuils(request):
+    # Récupérer l'image de profil de l'administrateur connecté
+    admin = request.user
+    try:
+        admin_profile = admin.userprofile  # Profil de l'administrateur
+    except UserProfile.DoesNotExist:
+        admin_profile = None  # Si l'administrateur n'a pas de profil
+    
+     # Récupérer tous les seuils
+    seuils = models.Seuils.objects.all()
+
+    if request.method == "POST":
+        # Mettre à jour les seuils en fonction des données soumises
+        for seuil in seuils:
+            tempMin = request.POST.get('tempMin')
+            tempMax = request.POST.get('tempMax')
+            humMin = request.POST.get('humMin')
+            humMax = request.POST.get('humMax')
+            gazMin = request.POST.get('gazMin')
+            gazMax = request.POST.get('gazMax')
+
+            # Mettez à jour les valeurs
+            seuil.tempMin = tempMin
+            seuil.tempMax = tempMax
+            seuil.humMin = humMin
+            seuil.humMax = humMax
+            seuil.gazMin = gazMin
+            seuil.gazMax = gazMax
+
+            # Sauvegarder les modifications
+            seuil.save()
+
+        return redirect('liste_esp')  # Redirige après modification
+
+    return render(request, 'admini/liste_esp.html', {
+        'seuils': seuils,
+        'admin_profile': admin_profile,  # Profil de l'administrateur
+        'administrateur': request.user
+    })
+    """
+
 def liste_ESP(request):
     # Récupérer l'image de profil de l'administrateur connecté
     admin = request.user
@@ -336,6 +383,7 @@ def liste_ESP(request):
         admin_profile = None  # Si l'administrateur n'a pas de profil
         
     if request.method == 'POST':
+        
         form = Esp_forms(request.POST)
         if form.is_valid():
             dht_data = form.save(commit=False)
@@ -346,10 +394,11 @@ def liste_ESP(request):
         form = Esp_forms()
     # Récupérer toutes les données de la base de données
     all_esp = models.ESP.objects.all().order_by('-id')
-  
+    seuils = models.Seuils.objects.first()
     #profil = models.UserProfile.objects.get(user=request.user)
     return render(request, 'admini/liste_esp.html', {'all_esp': all_esp,
                                                      'form': form,
+                                                     'seuils': seuils,
                                                     'admin_profile': admin_profile,  # Profil de l'administrateur
                                                     'administrateur':request.user})
 
@@ -420,3 +469,42 @@ def download_pdf(request, esp_id):
     response = HttpResponse(pdf_file, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="historique_{esp.lieu}.pdf"'
     return response
+
+from django.shortcuts import render
+from .models import Seuils
+
+def afficher_seuils(request):
+    seuils = Seuils.objects.all()  # Récupère tous les objets Seuils
+    return render(request, 'admini/Seuils.html', {'seuils': seuils})
+
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Seuils
+from .forms import SeuilsForm
+
+def modifier_seuil(request, seuil_id):
+    seuil = get_object_or_404(Seuils, id=seuil_id)
+    
+    if request.method == 'POST':
+        form = SeuilsForm(request.POST, instance=seuil)
+        if form.is_valid():
+            form.save()  # Enregistre les modifications
+            return redirect('afficher_seuils')  # Redirige vers la page d'affichage
+    else:
+        form = SeuilsForm(instance=seuil)  # Préremplit le formulaire avec les données existantes
+    
+    return render(request, 'modifier_seuil.html', {'form': form})
+
+
+from django.shortcuts import redirect
+
+def update_seuils_data(request):
+    if request.method == 'POST':
+        seuils = Seuils.objects.first()  # Récupérer la première instance (ajustez selon vos besoins)
+        seuils.humMax = float(request.POST.get('humMax').replace(',', '.'))
+        seuils.humMin = float(request.POST.get('humMin').replace(',', '.'))
+        seuils.tempMax = float(request.POST.get('tempMax').replace(',', '.'))
+        seuils.tempMin = float(request.POST.get('tempMin').replace(',', '.'))
+        seuils.gazMax = float(request.POST.get('gazMax').replace(',', '.'))
+        seuils.gazMin = float(request.POST.get('gazMin').replace(',', '.'))
+        seuils.save()  # Sauvegarder les modifications
+        return redirect('liste_esp')  # Rediriger vers la page d'édition

@@ -28,7 +28,7 @@
                 <div id="feuxChart" class="chart" style="width: 700px; height: 400px;"></div>
             </div>
             <div class="chart-wrapper">
-                <p style="text-align: center;"><strong>{% trans "Gaz :" %} <span id="gaz">--</span></strong></p>
+                <p style="text-align: center;"><strong>{% trans "CO2 :" %} <span id="gaz">--</span></strong></p>
                 <div id="gazChart" class="chart" style="width: 700px; height: 400px; margin: 0;"></div>
             </div>
             
@@ -195,7 +195,7 @@
                  
                     $('#temperature').text(data.temperature + '°C');
                     $('#humidity').text(data.humidity + '%');
-                    $('#gaz').text(data.gaz + 'PPT');
+                    $('#gaz').text(data.gaz + 'PPM');
                     $('#feux').text(data.feux).css('color', determineFeuxColor(data.feux));
                 },
                 error: function() {

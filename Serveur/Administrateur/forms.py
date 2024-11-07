@@ -11,3 +11,8 @@ class Esp_forms(forms.ModelForm):
             'latitude': forms.TextInput(attrs={'placeholder': 'latitude', 'class': 'form-control'}),
             'longitude': forms.TextInput(attrs={'placeholder': 'longitude', 'class': 'form-control'}),
         }
+
+class SeuilsForm(forms.ModelForm):
+    class Meta:
+        model = models.Seuils
+        fields = ['humMax', 'humMin', 'tempMax', 'tempMin', 'gazMax', 'gazMin']

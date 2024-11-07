@@ -28,7 +28,7 @@
                 <div id="feuxChart" class="chart" style="width: 700px; height: 400px;"></div>
             </div>
             <div class="chart-wrapper">
-                <p style="text-align: center;"><strong>{% trans 'Gaz :' %} <span id="gaz">--</span></strong></p>
+                <p style="text-align: center;"><strong>{% trans 'CO2 :' %} <span id="gaz">--</span></strong></p>
                 <div id="gazChart" class="chart" style="width: 700px; height: 400px; margin: 0;"></div>
             </div>
             
@@ -47,7 +47,17 @@
     </div>
     <a href="{% url 'add_dht_data' %}">Ajouter des données DHT</a>
 </div>
-
+<div id="Stemp" 
+data-min="{{ seuils.tempMin }}" 
+data-max="{{ seuils.tempMax }}">
+</div>
+<div id="Shum" 
+data-min="{{ seuils.humMin }}" 
+data-max="{{ seuils.humMax }}">
+<div id="Sgaz" 
+data-min="{{ seuils.gazMin }}" 
+data-max="{{ seuils.gazMax }}">
+</div>
 <script>
     $(document).ready(function() {
         var temperatureChart = echarts.init(document.getElementById('temperatureChart'));
@@ -58,21 +68,30 @@
         var temperatureData = { labels: [], values: [] };
         var humidityData = { labels: [], values: [] };
         var gazData = { labels: [], values: [] };
+      // Récupérer les valeurs des seuils depuis les attributs data-* de l'élément
+      var tempMin = parseFloat(document.getElementById('Stemp').dataset.min);
+        var tempMax = parseFloat(document.getElementById('Stemp').dataset.max);
+        var humMin = parseFloat(document.getElementById('Shum').dataset.min);
+        var humMax = parseFloat(document.getElementById('Shum').dataset.max);
+        var gazMin = parseFloat(document.getElementById('Sgaz').dataset.min);
+        var gazMax = parseFloat(document.getElementById('Sgaz').dataset.max);
 
         function getTemperatureColor(value) {
-            if (value < 20) return 'blue';
-            else if (value >= 20 && value <= 25) return 'green';
+            if (value < tempMin) return 'blue';
+            else if (value >= tempMin && value <= tempMax) return 'green';
             else return 'red';
         }
 
         function getHumidityColor(value) {
-            if (value < 40) return 'blue';
-            else if (value >= 40 && value <= 60) return 'green';
+            if (value < humMin) return 'blue';
+            else if (value >= humMin && value <= humMax) return 'green';
             else return 'red';
         }
 
         function getGazColor(value) {
-            return value < 1000 ? 'green' : 'red';
+            if (value < gazMin) return 'blue';
+            else if (value >= gazMin && value <= gazMax) return 'green';
+            else return 'red';
         }
         function determineFeuxColor(feuxState) {
         if (feuxState == 'Oui'){
@@ -195,7 +214,7 @@
                  
                     $('#temperature').text(data.temperature + '°C');
                     $('#humidity').text(data.humidity + '%');
-                    $('#gaz').text(data.gaz + 'PPT');
+                    $('#gaz').text(data.gaz + 'PPM');
                     $('#feux').text(data.feux).css('color', determineFeuxColor(data.feux));
                 },
                 error: function() {

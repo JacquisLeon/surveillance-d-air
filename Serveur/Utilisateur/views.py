@@ -77,7 +77,7 @@ def receive_data(request):
                 return JsonResponse({'status': 'error', 'message': 'ESP not found'}, status=400)
 
             # Afficher les données dans le terminal (facultatif pour debug)
-            print(f"ESP : {esp_id}, Température : {temperature}°C, Humidité : {humidity}%, Gaz : {gaz}ppt, Feux : {feux}")
+            print(f"ESP : {esp_id}, Température : {temperature}°C, Humidité : {humidity}%, Gaz : {gaz}ppm, Feux : {feux}")
 
             # Créer un nouvel enregistrement dans la table DHTData pour cet ESP
             dht_data = DHTData.objects.create(
@@ -423,7 +423,7 @@ def get_last_data(request, esp_id):
 
         if esp:
             last_data = models.DHTData.objects.filter(esp_id=esp_id).last()  # Récupérer la dernière donnée pour cet ESP
-
+            seuils = models.Seuils.objects.first()
             if last_data:
                 data = {
                     'temperature': last_data.temperature,
@@ -431,7 +431,13 @@ def get_last_data(request, esp_id):
                     'gaz': last_data.gaz,
                     'feux': last_data.feux,
                     'timestamp': last_data.timestamp,
-                    'lieu': esp.lieu  # Récupérer le lieu de l'ESP
+                    'lieu': esp.lieu,  # Récupérer le lieu de l'ESP
+                    'tempMax': seuils.tempMax,
+                    'tempMin': seuils.tempMin,
+                    'humMax': seuils.humMax,
+                    'humMin': seuils.humMin,
+                    'gazMax': seuils.gazMax,
+                    'gezMin': seuils.gazMin,
                 }
                 return JsonResponse(data)
             else:
